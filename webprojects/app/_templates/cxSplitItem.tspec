@@ -1,0 +1,8 @@
+@param id	The ID of the item
+@param selected {boolean}	True if and only if the item has been selected by
+							the user
+@param others {int}	The number of people (not counting the current user)
+					paying for the item
+@param name The name of the item on the ticket
+@param price The price for the ticket item
+@param mods Markup for the modifiers of the ticket item

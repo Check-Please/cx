@@ -1,0 +1,38 @@
+com.chkex.server.GreetingServiceImpl, /chkex/greet, greetServlet
+
+Admin Ops
+.AdminLoginServlet, /admin/login/
+.AdminLogoutServlet, /admin/logout/
+.CleanServlet, /admin/clean/
+.ClearDbServlet, /admin/clear_db/
+.DeleteAuthKeysServlet, /admin/delete_auth/
+.DumpServlet, /admin/dump/
+.NewMobileKeyServlet, /admin/new_mobile/
+.NewRestrServlet, /admin/new_restr/
+.TmpServlet, /admin/tmp/
+
+CX
+.ChannelConnectServlet, /_ah/channel/connected/
+.ChannelDisconnectServlet, /_ah/channel/disconnected/
+.CloseClientServlet, /cx/close/
+.GetMarkupServlet, /pay/
+.GetCardBacksServlet, /cardBacks/
+.GetCardFrontsServlet, /cardFronts/
+.GetCardServlet, /card/
+.LogPositionServlet, /cx/log_pos/
+.PayServlet, /cx/pay/
+.RateServlet, /cx/rate/
+.FactSheetServlet, /facts/
+
+CX - Split
+.AddToSplitServlet, /cx/split/add/
+.RemoveFromSplitServlet, /cx/split/remove/
+.StartSplitServlet, /cx/split/start/
+
+Users
+.AddCreditCardServlet, /user/add_cc/
+.EmailUserPasswordResetServlet, /user/email_password/
+.GetUserCreditCardsServlet, /user/get_cc/
+.LoginUserServlet, /user/login/
+.RegisterUserServlet, /user/register/
+.ResetUserPasswordServlet, /user/reset/

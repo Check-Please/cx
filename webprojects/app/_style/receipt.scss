@@ -1,0 +1,108 @@
+@import "../../_ignore/main.scss";
+
+#receipt-page .receipt {
+	display: block;
+	margin: 1em;
+	border: 1px solid #000;
+	background: #FFF;
+	box-shadow: 0px 0px 0.3em rgba(0,0,0,0.5);
+	font-family: monospace;
+	position: relative;
+	padding: 1.2em 0px 1.5em 0px;
+}
+
+#receipt-page .receipt h2.title {
+	text-align: center;
+	font-family: 'Droid Serif';
+	margin: 0px;
+}
+
+#receipt-page .receipt img.title {
+	display: block;
+	margin: auto;
+	height: 1.75em;
+	max-width: 24.5em;
+}
+
+#receipt-page .receipt.has-logo h2.title {
+	display: none;
+}
+
+#receipt-page .receipt .address {
+	text-align: center;
+	font-weight: normal;
+	margin: 0.5em 1em 1em 1em;
+	font-size: 1em;
+}
+
+#receipt-page .receipt .city.address {
+	margin-top: -1em;
+}
+
+#receipt-page .receipt ul {
+	list-style-type: none;
+	padding-left: 1.2em;
+	margin: 0px
+}
+
+#receipt-page .receipt .divider {
+	height: 1em;
+}
+
+#receipt-page .receipt .price {
+	position: absolute;
+	right: 1.2em;
+}
+
+#receipt-page .receipt .total {
+	font-weight: bold;
+}
+
+#receipt-page .tip {
+	width: 23em;
+	margin: auto;
+	position: relative;
+}
+
+#receipt-page .tip .buttons {
+	height: 2em;
+	line-height: 1.65em;
+}
+
+#receipt-page .tip .percent {
+	@include btn-base(0.2em 0px, 0.25em 0px 0.15em 0px);
+	@include btn-gradients("568CBE", "2C589B", "6798C5", "4269A5");
+	width: 3em;
+	line-height: 1.2em;
+	position: absolute;
+}
+
+#receipt-page .tip .fifteen.percent {
+	right: 69%;
+}
+
+#receipt-page .tip .seventeen.percent {
+	right: 46%;
+}
+
+#receipt-page .tip .twenty.percent {
+	right: 23%;
+}
+
+#receipt-page .tip .other.percent {
+	right: 0%;
+}
+
+#receipt-page .tip .not-picked.percent {
+	@include background-gradient(top, "999999", 0, "555555", 100);
+}
+
+#receipt-page .tip .input {
+	margin: 0.5em 0px 1em 0px;
+}
+
+#receipt-page .tip .input .tipPrct {
+	position: absolute;
+	right: 0px;
+	line-height: 1.6em
+}

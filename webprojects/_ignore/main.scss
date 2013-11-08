@@ -1,0 +1,288 @@
+@mixin no-text-adj {
+	-webkit-text-size-adjust: none;
+	-moz-text-size-adjust: none;
+	-o-text-size-adjust: none;
+	-khtml-text-size-adjust: none;
+	-ms-text-size-adjust: none;
+	text-size-adjust: none;
+}
+
+@mixin no-extra-style {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+
+@mixin user-select($a, $b:none) {
+	-webkit-touch-callout: $b;
+	-webkit-user-select: $a;
+	-khtml-user-select: $a;
+	-moz-user-select: $a;
+	-o-user-select: $a;
+	-ms-user-select: $a;
+	user-select: $a;
+}
+
+@mixin box-shadow($a) {
+	-webkit-box-shadow: $a;
+	-khtml-box-shadow: $a;
+	-moz-box-shadow: $a;
+	-o-box-shadow: $a;
+	-ms-box-shadow: $a;
+	box-shadow: $a;
+}
+
+@mixin box-shadow2($a,$b) {
+	-webkit-box-shadow: $a,$b;
+	-khtml-box-shadow: $a,$b;
+	-moz-box-shadow: $a,$b;
+	-o-box-shadow: $a,$b;
+	-ms-box-shadow: $a,$b;
+	box-shadow: $a,$b;
+}
+
+@mixin box-shadow3($a,$b,$c) {
+	-webkit-box-shadow: $a,$b,$c;
+	-khtml-box-shadow: $a,$b,$c;
+	-moz-box-shadow: $a,$b,$c;
+	-o-box-shadow: $a,$b,$c;
+	-ms-box-shadow: $a,$b,$c;
+	box-shadow: $a,$b,$c;
+}
+
+@mixin box-shadow4($a,$b,$c,$d) {
+	-webkit-box-shadow: $a,$b,$c,$d;
+	-khtml-box-shadow: $a,$b,$c,$d;
+	-moz-box-shadow: $a,$b,$c,$d;
+	-o-box-shadow: $a,$b,$c,$d;
+	-ms-box-shadow: $a,$b,$c,$d;
+	box-shadow: $a,$b,$c,$d;
+}
+
+@mixin box-shadow5($a,$b,$c,$d,$e) {
+	-webkit-box-shadow: $a,$b,$c,$d,$e;
+	-khtml-box-shadow: $a,$b,$c,$d,$e;
+	-moz-box-shadow: $a,$b,$c,$d,$e;
+	-o-box-shadow: $a,$b,$c,$d,$e;
+	-ms-box-shadow: $a,$b,$c,$d,$e;
+	box-shadow: $a,$b,$c,$d,$e;
+}
+
+@mixin box-shadow6($a,$b,$c,$d,$e,$f) {
+	-webkit-box-shadow: $a,$b,$c,$d,$e,$f;
+	-khtml-box-shadow: $a,$b,$c,$d,$e,$f;
+	-moz-box-shadow: $a,$b,$c,$d,$e,$f;
+	-o-box-shadow: $a,$b,$c,$d,$e,$f;
+	-ms-box-shadow: $a,$b,$c,$d,$e,$f;
+	box-shadow: $a,$b,$c,$d,$e,$f;
+}
+
+@mixin box-shadow7($a,$b,$c,$d,$e,$f,$g) {
+	-webkit-box-shadow: $a,$b,$c,$d,$e,$f,$g;
+	-khtml-box-shadow: $a,$b,$c,$d,$e,$f,$g;
+	-moz-box-shadow: $a,$b,$c,$d,$e,$f,$g;
+	-o-box-shadow: $a,$b,$c,$d,$e,$f,$g;
+	-ms-box-shadow: $a,$b,$c,$d,$e,$f,$g;
+	box-shadow: $a,$b,$c,$d,$e,$f,$g;
+}
+
+@mixin border-radius($x) {
+	-webkit-border-radius: $x;
+	-khtml-border-radius: $x;
+	-moz-border-radius: $x;
+	-o-border-radius: $x;
+	-ms-border-radius: $x;
+	border-radius: $x;
+}
+
+@mixin with-prefix($prop, $val) {
+	-webkit-#{$prop}: $val;
+	-khtml-#{$prop}: $val;
+	-moz-#{$prop}: $val;
+	-o-#{$prop}: $val;
+	-ms-#{$prop}: $val;
+	#{$prop}: $val;
+}
+
+@mixin background-gradient($angle, $color1, $offset1, $color2 ,$offset2:100, $color3:null, $offset3:100, $color4:null, $offset4:100, $color5:null, $offset5:100){
+	$angle_webkit: 'left top, left bottom';
+	$angle_svg: '%20x2%3d%220%25%22%20y2%3d%22100%25%22';
+	$color-stop1_css: '#'#{$color1}' '#{$offset1}'%';
+	$color-stop2_css: ',#'#{$color2}' '#{$offset2}'%';
+	$color-stop3_css: '';
+	$color-stop4_css: '';
+	$color-stop5_css: '';
+	$color-stop1_svg: '%3cstop%20style%3d%22stop%2dcolor%3a%23'#{$color1}'%22%20offset%3d%22'#{$offset1}'%25%22%2f%3e';
+	$color-stop2_svg: '%3cstop%20style%3d%22stop%2dcolor%3a%23'#{$color2}'%22%20offset%3d%22'#{$offset2}'%25%22%2f%3e';
+	$color-stop3_svg: '';
+	$color-stop4_svg: '';
+	$color-stop5_svg: '';
+	$color-stop1_webkit: 'color-stop('#{$offset1}'%, #'#{$color1}')';
+	$color-stop2_webkit: ',color-stop('#{$offset2}'%, #'#{$color2}')';
+	$color-stop3_webkit: '';
+	$color-stop4_webkit: '';
+	$color-stop5_webkit: '';
+	@if $angle == right{
+		$angle_webkit: 'right top, left top';
+		$angle_svg: '%20x2%3d%22100%25%22';
+	}
+	@if $angle == bottom{
+		$angle_webkit: 'left bottom, left top';
+		$angle_svg: '%20x2%3d%220%22%20y1%3d%22100%25%22';
+	}
+	@if $angle == left{
+		$angle_webkit: 'left top, right top';
+		$angle_svg: '';
+	}
+	@if $color3 != null {
+		$color-stop3_css: ',#'#{$color3}' '#{$offset3}'%';
+		$color-stop3_svg: '%3cstop%20style%3d%22stop%2dcolor%3a%23'#{$color3}'%22%20offset%3d%22'#{$offset3}'%25%22%2f%3e';
+		$color-stop3_webkit: ',color-stop(#'#{$offset3}',#'#{$color3}')';
+	}
+	@if $color4 != null {
+		$color-stop4_css: ',#'#{$color4}' '#{$offset4}'%';
+		$color-stop4_svg: '%3cstop%20style%3d%22stop%2dcolor%3a%23'#{$color4}'%22%20offset%3d%22'#{$offset4}'%25%22%2f%3e';
+		$color-stop4_webkit: ',color-stop(#'#{$offset4}',#'#{$color4}')';
+	}
+	@if $color5 != null {
+		$color-stop5_css: ',#'#{$color5}' '#{$offset5}'%';
+		$color-stop5_svg: '%3cstop%20style%3d%22stop%2dcolor%3a%23'#{$color5}'%22%20offset%3d%22'#{$offset5}'%25%22%2f%3e';
+		$color-stop5_webkit: ',color-stop(#'#{$offset5}',#'#{$color5}')';
+	}
+
+	background-image:url(data:image/svg+xml,%3c%3fxml%20version%3d%221%2e0%22%3f%3e%3csvg%20xmlns%3d%22http%3a%2f%2fwww%2ew3%2eorg%2f2000%2fsvg%22%20width%3d%22100%25%22%20height%3d%22100%25%22%3e%3cdefs%3e%3clinearGradient%20id%3d%22G%22#{$angle_svg}%3e#{$color-stop1_svg}#{$color-stop2_svg}#{$color-stop3_svg}#{$color-stop4_svg}#{$color-stop5_svg}%3c%2flinearGradient%3e%3c%2fdefs%3e%3crect%20width%3d%22100%25%22%20height%3d%22100%25%22%20fill%3d%22url%28%23G%29%22%2f%3e%3c%2fsvg%3e);
+	background-image: -webkit-gradient(linear,#{$angle_webkit},#{$color-stop1_webkit}#{$color-stop2_webkit}#{$color-stop3_webkit}#{$color-stop4_webkit}#{$color-stop5_webkit});
+	background-image:-webkit-linear-gradient(#{$angle},#{$color-stop1_css}#{$color-stop2_css}#{$color-stop3_css}#{$color-stop4_css}#{$color-stop5_css});
+	background-image:-moz-linear-gradient(#{$angle},#{$color-stop1_css}#{$color-stop2_css}#{$color-stop3_css}#{$color-stop4_css}#{$color-stop5_css});
+	background-image:-ms-linear-gradient(#{$angle},#{$color-stop1_css}#{$color-stop2_css}#{$color-stop3_css}#{$color-stop4_css}#{$color-stop5_css});
+	background-image:-o-linear-gradient(#{$angle},#{$color-stop1_css}#{$color-stop2_css}#{$color-stop3_css}#{$color-stop4_css}#{$color-stop5_css});
+	background-image:-khtml-linear-gradient(#{$angle},#{$color-stop1_css}#{$color-stop2_css}#{$color-stop3_css}#{$color-stop4_css}#{$color-stop5_css});
+	background:-pie-linear-gradient(#{$angle},#{$color-stop1_css}#{$color-stop2_css}#{$color-stop3_css}#{$color-stop4_css}#{$color-stop5_css});
+	background-image:linear-gradient(#{$angle},#{$color-stop1_css}#{$color-stop2_css}#{$color-stop3_css}#{$color-stop4_css}#{$color-stop5_css});
+}
+
+@mixin btn-base($p, $q)
+{
+	display: inline-block;
+	text-align: center;
+	color: #FFF;
+	text-shadow: 1px 1px rgba(0,0,0,0.3);
+	border-radius: 0.1em;
+	border: 1px solid rgba(0,0,0,0.1);
+	@include box-shadow(inset 0px 1px 1px 0px rgba(255,255,255,0.5));
+	padding: #{$p};
+	&:active {padding: #{$q};}
+	&.disabled:active {padding: #{$p};}
+}
+
+@mixin btn-gradients($a, $b, $c, $d)
+{
+	@include background-gradient(top, #{$a}, 0, #{$b}, 100);
+	&:active {@include background-gradient(top, #{$b}, 0, #{$a}, 100);}
+	&:hover {@include background-gradient(top, #{$c}, 0, #{$d}, 100);}
+	&:hover:active {@include background-gradient(top, #{$d}, 0, #{$c}, 100);}
+	&.disabled, &.disabled:active, &.disabled:hover, &.disabled:hover:active {
+		@include background-gradient(top, #{$a}, 0, #{$b}, 100);
+	}
+}
+
+@mixin opacity($x) {
+/*	The following is buggy, and so is commented out*/
+/*	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=#{$x});*/
+	filter:alpha(opacity=#{$x*100});
+	-ms-filter:"alpha(opacity=#{$x*100})";
+	-o-filter:"alpha(opacity=#{$x*100})";
+	-khtml-opacity: $x;
+	-moz-opacity: $x;
+	-webkit-opacity: $x;
+	-ms-opacity: $x;
+	-o-opacity: $x;
+	opacity: $x;
+}
+
+@mixin transition-css3($prop, $val) {
+	-khtml-transition: $prop $val;
+	-khtml-transition: -khtml-#{$prop} $val;
+	-moz-transition: $prop $val;
+	-moz-transition: -moz-#{$prop} $val;
+	-webkit-transition: $prop $val;
+	-webkit-transition: -webkit-#{$prop} $val;
+	-ms-transition: $prop $val;
+	-ms-transition: -ms-#{$prop} $val;
+	-o-transition: $prop $val;
+	-o-transition: -o-#{$prop} $val;
+	transition: $prop $val;
+}
+
+@mixin transition($prop, $val) {
+	-khtml-transition: $prop $val;
+	-moz-transition: $prop $val;
+	-webkit-transition: $prop $val;
+	-ms-transition: $prop $val;
+	-o-transition: $prop $val;
+	transition: $prop $val;
+}
+
+@mixin transition2($prop, $val, $prop2, $val2) {
+	-khtml-transition: $prop $val, $prop2 $val2;
+	-moz-transition: $prop $val, $prop2 $val2;
+	-webkit-transition: $prop $val, $prop2 $val2;
+	-ms-transition: $prop $val, $prop2 $val2;
+	-o-transition: $prop $val, $prop2 $val2;
+	transition: $prop $val, $prop2 $val2;
+}
+
+@mixin transition3($prop, $val, $prop2, $val2, $prop3, $val3) {
+	-khtml-transition: $prop $val, $prop2 $val2, $prop3 $val3;
+	-moz-transition: $prop $val, $prop2 $val2, $prop3 $val3;
+	-webkit-transition: $prop $val, $prop2 $val2, $prop3 $val3;
+	-ms-transition: $prop $val, $prop2 $val2, $prop3 $val3;
+	-o-transition: $prop $val, $prop2 $val2, $prop3 $val3;
+	transition: $prop $val, $prop2 $val2, $prop3 $val3;
+}
+
+@mixin transition4($prop, $val, $prop2, $val2, $prop3, $val3, $prop4, $val4){
+	-khtml-transition: $prop $val, $prop2 $val2, $prop3 $val3, $prop4 $val4;
+	-moz-transition: $prop $val, $prop2 $val2, $prop3 $val3, $prop4 $val4;
+	-webkit-transition: $prop $val, $prop2 $val2, $prop3 $val3, $prop4 $val4;
+	-ms-transition: $prop $val, $prop2 $val2, $prop3 $val3, $prop4 $val4;
+	-o-transition: $prop $val, $prop2 $val2, $prop3 $val3, $prop4 $val4;
+	transition: $prop $val, $prop2 $val2, $prop3 $val3, $prop4 $val4;
+}
+
+@mixin transform($x) {
+	-khtml-transform: $x;
+	-moz-transform: $x;
+	-webkit-transform: $x;
+	-ms-transform: $x;
+	-o-transform: $x;
+	transform: $x;
+}
+
+@mixin helvetica() {
+	font-family: HelveticaNeueLTPro-Roman, HelveticaNeueLTPro-Md, "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+@mixin helvetica-md() {
+	font-family: HelveticaNeueLTPro-Md, "Helvetica Neue", Helvetica, 'Segoe UI', Arial, "Lucida Grande", sans-serif;
+}
+
+
+@mixin helvetica-roman() {
+	font-family: HelveticaNeueLTPro-Roman, "Helvetica Neue", Helvetica, 'Segoe UI', Arial, "Lucida Grande", sans-serif;
+}
+
+@mixin arial() {
+	font-family: Arial, "Lucida Grande", sans-serif;
+}
+
+@mixin segoe() {
+	font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+@mixin times() {
+	font-family: "Times New Roman", Times, serif;
+}
+
+@mixin monospace() {
+	font-family: Monospace, "Lucida Console";
+}

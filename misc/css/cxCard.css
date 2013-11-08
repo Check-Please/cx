@@ -1,0 +1,125 @@
+body {
+  font-family: arial;
+  background: #FFF; }
+
+body.just-one {
+  background: #FAFAFA; }
+  body.just-one .card {
+    background: #FFF;
+    border: 1px solid #000;
+    display: block; }
+
+h1 {
+  text-align: center; }
+
+.title {
+  position: static;
+  display: block;
+  margin: 0.5in auto 1in auto;
+  font-size: 80px; }
+
+img.title {
+  height: 100px;
+  width: auto;
+  max-width: 90%; }
+
+.card {
+  position: relative;
+  margin: auto;
+  padding: 0.1in 0px;
+  width: 1.9in;
+  height: 1.7in;
+  display: inline-block; }
+
+.hspace {
+  width: 0.2in;
+  display: inline-block; }
+
+.vspace {
+  height: 0.2in; }
+  .vspace .hspace {
+    height: 100%;
+    position: relative; }
+    .vspace .hspace .v.marker {
+      height: 100%;
+      width: 0.1in;
+      top: 0px;
+      left: 0.05in;
+      box-shadow: inset 0px 3px 0px -2px black, inset 0px -3px 0px -2px black; }
+    .vspace .hspace .h.marker {
+      height: 0.1in;
+      width: 100%;
+      top: 0.05in;
+      left: 0px;
+      box-shadow: inset 3px 0px 0px -2px black, inset -3px 0px 0px -2px black; }
+    .vspace .hspace .marker {
+      position: absolute; }
+  .vspace .card {
+    display: inline-block;
+    margin: none;
+    height: 0px; }
+
+body.back, .back .card.back {
+  -moz-transform: scaleX(-1);
+  -o-transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+  filter: FlipH;
+  -ms-filter: "FlipH"; }
+
+.back .marker {
+  display: none; }
+
+.front h2 {
+  font-size: 10pt;
+  text-align: center;
+  margin: 0px;
+  padding: 0px 0.1em; }
+.front img {
+  width: 80px;
+  height: 80px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -40px;
+  margin-left: -40px; }
+.front a {
+  color: #000;
+  font-size: 10pt;
+  display: block;
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  left: 0;
+  bottom: 0.3in; }
+.front h3 {
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  bottom: 0in;
+  font-size: 0.7em; }
+
+.back h2, .back h3, .back h4 {
+  text-align: center;
+  margin: 0px;
+  font-weight: normal; }
+.back h2 {
+  padding: 0px 0.1em;
+  font-size: 20pt; }
+.back h3, .back h4 {
+  position: absolute;
+  width: 100%; }
+.back h3 {
+  height: 100px;
+  line-height: 100px;
+  margin-top: -50px;
+  font-size: 55pt;
+  top: 50%; }
+.back h4 {
+  bottom: 0.1in;
+  font-size: 8pt; }
+
+.blank {
+  margin: auto;
+  padding: 0px;
+  height: 0in; }

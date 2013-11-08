@@ -1,0 +1,86 @@
+#split-page p {
+  padding: 0px 1em; }
+
+#split-page .items {
+  list-style-type: none;
+  padding: 0px 1em;
+  margin: auto; }
+
+#split-page .item {
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  margin: 0.8em 0px;
+  -webkit-border-radius: 1em;
+  -khtml-border-radius: 1em;
+  -moz-border-radius: 1em;
+  -o-border-radius: 1em;
+  -ms-border-radius: 1em;
+  border-radius: 1em;
+  -webkit-box-shadow: inset 0.05em 0.05em 0.05em 0px white, inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1);
+  -khtml-box-shadow: inset 0.05em 0.05em 0.05em 0px white, inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: inset 0.05em 0.05em 0.05em 0px white, inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1);
+  -o-box-shadow: inset 0.05em 0.05em 0.05em 0px white, inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: inset 0.05em 0.05em 0.05em 0px white, inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0.05em 0.05em 0.05em 0px white, inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1); }
+
+#split-page .item.selected {
+  color: #FFF;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.3);
+  background-image: url(data:image/svg+xml,%3c%3fxml%20version%3d%221%2e0%22%3f%3e%3csvg%20xmlns%3d%22http%3a%2f%2fwww%2ew3%2eorg%2f2000%2fsvg%22%20width%3d%22100%25%22%20height%3d%22100%25%22%3e%3cdefs%3e%3clinearGradient%20id%3d%22G%22%20x2%3d%220%25%22%20y2%3d%22100%25%22%3e%3cstop%20style%3d%22stop%2dcolor%3a%23568CBE%22%20offset%3d%220%25%22%2f%3e%3cstop%20style%3d%22stop%2dcolor%3a%232C589B%22%20offset%3d%22100%25%22%2f%3e%3c%2flinearGradient%3e%3c%2fdefs%3e%3crect%20width%3d%22100%25%22%20height%3d%22100%25%22%20fill%3d%22url%28%23G%29%22%2f%3e%3c%2fsvg%3e);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #568CBE),color-stop(100%, #2C589B));
+  background-image: -webkit-linear-gradient(top, #568CBE 0%,#2C589B 100%);
+  background-image: -moz-linear-gradient(top, #568CBE 0%,#2C589B 100%);
+  background-image: -ms-linear-gradient(top, #568CBE 0%,#2C589B 100%);
+  background-image: -o-linear-gradient(top, #568CBE 0%,#2C589B 100%);
+  background-image: -khtml-linear-gradient(top, #568CBE 0%,#2C589B 100%);
+  background: -pie-linear-gradient(top, #568CBE 0%,#2C589B 100%);
+  background-image: linear-gradient(top, #568CBE 0%,#2C589B 100%);
+  -webkit-box-shadow: inset 0.05em 0.05em 0.05em 0px rgba(255, 255, 255, 0.3), inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1);
+  -khtml-box-shadow: inset 0.05em 0.05em 0.05em 0px rgba(255, 255, 255, 0.3), inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: inset 0.05em 0.05em 0.05em 0px rgba(255, 255, 255, 0.3), inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1);
+  -o-box-shadow: inset 0.05em 0.05em 0.05em 0px rgba(255, 255, 255, 0.3), inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: inset 0.05em 0.05em 0.05em 0px rgba(255, 255, 255, 0.3), inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0.05em 0.05em 0.05em 0px rgba(255, 255, 255, 0.3), inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1); }
+
+#split-page .item a {
+  display: block;
+  height: 100%;
+  padding: 0.5em 1em; }
+
+#split-page .item .price {
+  position: absolute;
+  right: 1em; }
+
+#split-page .item .mods {
+  list-style-type: none;
+  padding-left: 1em; }
+
+#split-page .item .mod {
+  margin-top: 0.3em;
+  font-size: 0.8em; }
+
+#split-page .others {
+  display: none;
+  position: absolute;
+  top: -0.9em;
+  right: -0.5em;
+  background: #E00;
+  -webkit-border-radius: 0.7em;
+  -khtml-border-radius: 0.7em;
+  -moz-border-radius: 0.7em;
+  -o-border-radius: 0.7em;
+  -ms-border-radius: 0.7em;
+  border-radius: 0.7em;
+  font-size: 0.7em;
+  color: #FFF;
+  padding: 0.1em 0.5em;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: inset 1px 1px 1px 0px rgba(255, 255, 255, 0.4), inset -1px -1px 1px 0px rgba(0, 0, 0, 0.1), 0.05em 0.1em 0.1em -0.05em rgba(0, 0, 0, 0.2);
+  -khtml-box-shadow: inset 1px 1px 1px 0px rgba(255, 255, 255, 0.4), inset -1px -1px 1px 0px rgba(0, 0, 0, 0.1), 0.05em 0.1em 0.1em -0.05em rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: inset 1px 1px 1px 0px rgba(255, 255, 255, 0.4), inset -1px -1px 1px 0px rgba(0, 0, 0, 0.1), 0.05em 0.1em 0.1em -0.05em rgba(0, 0, 0, 0.2);
+  -o-box-shadow: inset 1px 1px 1px 0px rgba(255, 255, 255, 0.4), inset -1px -1px 1px 0px rgba(0, 0, 0, 0.1), 0.05em 0.1em 0.1em -0.05em rgba(0, 0, 0, 0.2);
+  -ms-box-shadow: inset 1px 1px 1px 0px rgba(255, 255, 255, 0.4), inset -1px -1px 1px 0px rgba(0, 0, 0, 0.1), 0.05em 0.1em 0.1em -0.05em rgba(0, 0, 0, 0.2);
+  box-shadow: inset 1px 1px 1px 0px rgba(255, 255, 255, 0.4), inset -1px -1px 1px 0px rgba(0, 0, 0, 0.1), 0.05em 0.1em 0.1em -0.05em rgba(0, 0, 0, 0.2); }
+
+#split-page .item.has-others .others {
+  display: inline-block; }

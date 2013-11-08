@@ -1,0 +1,3 @@
+# Module checkout_express
+# RPC service class, partial path of RPC policy file
+com.chkex.client.GreetingService, 857134774CF8E6D1D2FF42527CA34092.gwt.rpc

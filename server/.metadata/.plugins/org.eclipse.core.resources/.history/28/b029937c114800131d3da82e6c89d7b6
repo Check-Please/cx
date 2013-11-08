@@ -1,0 +1,51 @@
+package templates;
+
+public class Cx {	public static String run(,ObjecterrMsgObjecttitleObjectstyleObjectemailObjecttokenObjectmobileKeyObjectclientIDObjectitemsObjectsplitObjectcardsObjectheaderObjectaskSplitObjectsplitPageObjectreceiptObjectloginObjectpayObjectfeedbackObjectfooterObjectnoJSObjectdebugUUID) {
+		return	"<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Pay Ticket - "+(title)+"</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="HandheldFriendly" content="true" />
+		<meta name="MobileOptimized" content="width" />
+		<link type="text/css" rel="Stylesheet" href="merged/cx.css" media="all" />
+		"+(style != null ? "<link type='text/css' rel='Stylesheet' href='cx_custom/"+style+".css' media='all' />" : "")+"
+		<!--[if gte IE 9]><!-->
+			<script src="merged/jquery-2.0.3.min.js"></script>
+		<!--<![endif]-->
+		<!--[if lt IE 9]>
+			<script src="merged/jquery-1.10.2.min.js"></script>
+			<script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"></script>
+			<script src="merged/oldIE.js"></script>
+		<![endif]-->
+		<script type="text/JavaScript" src="merged/base.js"></script>
+		<script type="text/javascript" src="/_ah/channel/jsapi"></script>
+		<script type="text/JavaScript" src="merged/cx.js"></script>
+		"+(debugUUID == null ? "" : "<script src='http://jsconsole.com/remote.js?"+debugUUID+"'></script>")+"
+		<script type="text/javascript">
+			if("+(errMsg)+" == null) {
+				socket.init(""+(token)+"");
+				mvc.init(""+(mobileKey)+"", ""+(clientID)+"", "+(items)+", "+(split)+", {}, null, ""+(email)+"", "+(cards)+", false, false);
+			} else
+				mvc.err("+(errMsg)+");
+		</script>
+	</head>
+	<body>
+		"+(header)+"
+		"+(askSplit)+"
+		"+(splitPage)+"
+		"+(receipt)+"
+		"+(login)+"
+		"+(pay)+"
+		"+(feedback)+"
+		"+(footer)+"
+		"+(noJS)+"
+	</body>
+</html>";
+	}
+}

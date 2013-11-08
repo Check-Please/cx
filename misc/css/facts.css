@@ -1,0 +1,13 @@
+body {
+  font-family: HelveticaNeueLTPro-Roman, HelveticaNeueLTPro-Md, "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; }
+
+table {
+  margin: 0px 2em; }
+
+td:first-child {
+  font-weight: bold;
+  padding-right: 2em;
+  vertical-align: top; }
+
+td:last-child {
+  padding-bottom: 1em; }

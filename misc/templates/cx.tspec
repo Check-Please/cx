@@ -1,0 +1,23 @@
+@param errMsg	A string (including the surrounding quotes) containing an
+				error message if something went wrong, null otherwise.
+@param title	The name of the restaurant
+@param style	The name of the custom style sheet if it exists, null if not
+@param email	A string (including the surrounding quotes) containing the
+				email address the user is currently logged in as, null if
+				the user is not logged in
+@param token
+@param mobileKey
+@param clientID
+@param items
+@param split
+@param cards
+@param header
+@param askSplit
+@param splitPage
+@param receipt
+@param login
+@param pay
+@param feedback
+@param footer
+@param noJS
+@param debugUUID	For jsconsole.  null if jsconsole is not being used

@@ -1,0 +1,4 @@
+<div id="header" {{logo != null ? "class='has-logo'" : ""}}>
+	{{logo != null ? "<img src='cx_custom/"+logo+"_header.png' />" : ""}}
+	<span>{{name}}</span>
+</div>

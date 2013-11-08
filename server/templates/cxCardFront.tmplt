@@ -1,0 +1,5 @@
+<div class="card front">
+	<h2>Scan code or enter url to pay on your phone</h2>
+	<img src="http://chart.googleapis.com/chart?chs=80x80&cht=qr&chld=|0&chl=http%3A//www.chkex.com/%3F{{code}}" />
+	<a href="http://www.chkex.com/?{{code}}">http://chkex.com?{{code}}</a>
+</div>

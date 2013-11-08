@@ -1,0 +1,27 @@
+<div id="receipt-page">
+	<div class='receipt {{logo != null ? "has-logo" : ""}}'>
+		<div class="header"></div>
+		{{logo == null ? "" :
+			"<img class='title' src='cx_custom/"+logo+"_receipt.png' />"}}
+		<h2 class='title'>{{restrName}}</h2>
+		<h3 class="street address">{{street_address}}</h3>
+		{{city_address == null ? "" :
+			"<h3 class='city address'>"+city_address+"</h3>"}}
+		<ul class="items">{{items}}</ul>
+		<div class="footer"></div>
+	</div>
+	<div class="tip">
+		<div class="buttons">
+			Tip:
+			<a class="fifteen percent">15%</a>
+			<a class="seventeen percent">17%</a>
+			<a class="twenty percent">20%</a>
+			<a class="other percent">Other</a>
+		</div>
+		<div class="input">
+			Amount: $<input type='text' />
+			<span class="tipPrct"></span>
+		</div>
+	</div>
+	<a class="confirm">Confirm</a>
+</div>

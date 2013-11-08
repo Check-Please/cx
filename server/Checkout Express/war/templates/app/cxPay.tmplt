@@ -1,0 +1,64 @@
+<div id="pay-page">
+	<h1>Payment Information <img class="ssl" /></h1>
+	<div class="login">
+		Logged in as <span class="username">{{username}}</span>
+		<a>Change login</a>
+	</div>
+	Pick Credit Card:
+	<select class="cards">
+		{{cards}}
+		<option>New Credit Card</option>
+	</select>
+
+	<form class="new-cc">
+		<div class="pan">
+			<label>Credit Card Number</label>
+			<input type="text" />
+		</div>
+		<div class="name">
+			<label>Name on card</label>
+			<input type="text" class="name"  maxlength="26" />
+		</div>
+		<div class="expr-month">
+			<label>Month</label>
+			<select>
+				<option>01 - January</option>
+				<option>02 - February</option>
+				<option>03 - March</option>
+				<option>04 - April</option>
+				<option>05 - May</option>
+				<option>06 - June</option>
+				<option>07 - July</option>
+				<option>08 - August</option>
+				<option>09 - September</option>
+				<option>10 - October</option>
+				<option>11 - November</option>
+				<option>12 - December</option>
+			</select>
+		</div>
+		<div class="expr-year">
+			<label>Year</label>
+			<input type="text" maxlength="4" />
+		</div>
+		<div class="cvv">
+			<label>Security Code</label>
+			<input type="text" />
+			<div class="explanation">
+				<a>(what's this?)</a>
+				<div class="popup">
+					<div>
+						<a>&times;</a>
+						Your security code can be found on your card
+						<img src="img/CSC_en_US.png" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="zip">
+			<label>Zip Code</label>
+			<input type="text" maxlength="5" />
+		</div>
+	</form>
+	<a class="confirm">Pay</a>
+	<p class="security-notice">Credit card storage and payments handled by SubtleData, Inc.</p>
+</div>

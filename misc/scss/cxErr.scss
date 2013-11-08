@@ -1,0 +1,11 @@
+@import "../sass-lib/main.scss";
+
+#err-page {
+	padding: 0px 1.5em;
+}
+
+#err-page .error {
+	padding-left: 1em;
+	font-family: monospace;
+	font-size: 1.2em;
+}

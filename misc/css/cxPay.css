@@ -1,0 +1,133 @@
+#pay-page {
+  padding: 0px 1em; }
+
+#pay-page h1 {
+  text-align: center; }
+  #pay-page h1 img {
+    height: 0.534em; }
+
+#pay-page .login {
+  text-align: center;
+  margin-bottom: 1em; }
+
+#pay-page .login a {
+  text-decoration: underline; }
+
+#pay-page .new-cc {
+  display: none;
+  margin-top: 1.5em;
+  position: relative; }
+
+#pay-page.new-cc-needed .new-cc {
+  display: block; }
+
+#pay-page .new-cc > * {
+  height: 3.5em;
+  position: relative; }
+
+#pay-page .new-cc .expr-year, #pay-page .new-cc .zip {
+  position: absolute;
+  right: -2px; }
+
+#pay-page .new-cc .expr-year {
+  top: 7em; }
+
+#pay-page .new-cc .zip {
+  top: 10.5em; }
+
+#pay-page label {
+  position: absolute;
+  bottom: 1.5em;
+  font-size: 0.6em;
+  text-transform: uppercase; }
+
+#pay-page .new-cc input, #pay-page .new-cc select {
+  width: 12.5em; }
+
+#pay-page .new-cc input {
+  width: calc(12.5em - 2px); }
+
+#pay-page .new-cc .pan input, #pay-page .new-cc .name input {
+  width: 100%; }
+
+#pay-page .confirm {
+  margin-top: 1em; }
+
+#pay-page .cvv {
+  display: inline-block; }
+
+#pay-page .new-cc select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -webkit-border-radius: 0px;
+  -khtml-border-radius: 0px;
+  -moz-border-radius: 0px;
+  -o-border-radius: 0px;
+  -ms-border-radius: 0px;
+  border-radius: 0px;
+  border: 1px solid #AAA; }
+
+#pay-page .cvv .explanation {
+  position: absolute;
+  bottom: 0.8em;
+  right: 0px; }
+
+#pay-page .cvv .explanation > a {
+  font-size: 0.5em;
+  text-decoration: underline; }
+
+#pay-page .cvv .popup {
+  position: fixed;
+  z-index: 1;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background: rgba(50, 50, 50, 0.5);
+  display: none; }
+
+#pay-page .cvv.help-needed .popup {
+  display: block; }
+
+#pay-page .cvv .popup > div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -10em;
+  margin-left: -12.2em;
+  height: 16.6em;
+  width: 24.4em;
+  padding: 1.7em 0px;
+  -webkit-border-radius: 1em;
+  -khtml-border-radius: 1em;
+  -moz-border-radius: 1em;
+  -o-border-radius: 1em;
+  -ms-border-radius: 1em;
+  border-radius: 1em;
+  background: #FFF;
+  text-align: center; }
+
+#pay-page .cvv .popup a {
+  position: absolute;
+  top: -0.5em;
+  right: -0.5em;
+  width: 1em;
+  height: 1em;
+  font-size: 2em;
+  text-align: center;
+  line-height: 0.8em;
+  -webkit-border-radius: 1em;
+  -khtml-border-radius: 1em;
+  -moz-border-radius: 1em;
+  -o-border-radius: 1em;
+  -ms-border-radius: 1em;
+  border-radius: 1em;
+  display: inline-block;
+  background: rgba(200, 200, 200, 0.5); }
+
+#pay-page .cvv .popup img {
+  margin-top: 1.7em;
+  height: 13.5em; }
+
+#pay-page .security-notice {
+  font-size: 0.7em; }

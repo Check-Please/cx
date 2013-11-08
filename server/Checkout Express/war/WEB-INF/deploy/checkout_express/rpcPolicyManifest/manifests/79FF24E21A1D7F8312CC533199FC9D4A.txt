@@ -1,0 +1,2 @@
+serviceClass: com.chkex.client.GreetingService
+path: 857134774CF8E6D1D2FF42527CA34092.gwt.rpc

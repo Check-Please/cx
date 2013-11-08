@@ -1,0 +1,37 @@
+package servlets.cx;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.http.HttpSession;
+
+import org.json.JSONException;
+
+import kinds.ClosedMobileClient;
+
+import com.google.appengine.api.datastore.DatastoreService;
+
+import utils.ParamWrapper;
+import utils.PostServletBase;
+
+public class ChannelDisconnectServlet extends PostServletBase
+{
+	/** A unique key for identifying something-or-other
+	 */
+	private static final long serialVersionUID = -6760144797550875144L;
+
+	private static Configuration config;
+	protected Configuration getConfig()
+	{
+		return config;
+	}
+	protected void configure() {
+		config = new Configuration();
+		config.txnXG = true;
+	}
+
+	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
+	{
+		CloseClientServlet.closeChannel(p.getClientID(), ClosedMobileClient.CloseCause.DISCONNECTED, ds);
+	}
+}

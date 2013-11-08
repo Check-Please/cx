@@ -1,0 +1,5 @@
+<li class="item {{custom_class}}">
+	<span class="name">{{name}}</span>
+	<span class="price">{{price}}</span>
+	<ul class="mods">{{mods}}</ul>
+</li>
