@@ -33,18 +33,18 @@ import utils.UnsupportedFeatureException;
 import static utils.MyUtils.a;
 
 import servlets.users.GetUserCreditCardsServlet;
-import templates.CxFooterTemplate;
-import templates.CxPrivacyPolicyTemplate;
-import templates.CxTemplate;
-import templates.CxHeaderTemplate;
-import templates.CxAskSplitTemplate;
-import templates.CxSplitTemplate;
-import templates.CxReceiptTemplate;
-import templates.CxLoginTemplate;
-import templates.CxPayTemplate;
-import templates.CxFeedbackTemplate;
-import templates.CxNoJSTemplate;
-import templates.CxTermsOfUseTemplate;
+import templates.CxFooter;
+import templates.CxPrivacyPolicy;
+import templates.Cx;
+import templates.CxHeader;
+import templates.CxAskSplit;
+import templates.CxSplit;
+import templates.CxReceipt;
+import templates.CxLogin;
+import templates.CxPay;
+import templates.CxFeedback;
+import templates.CxNoJS;
+import templates.CxTermsOfUse;
 
 
 public class GetMarkupServlet extends GetServletBase
@@ -71,7 +71,7 @@ public class GetMarkupServlet extends GetServletBase
 
 	private static String errPage(String msg)
 	{
-		return CxTemplate.run("\""+Escaper.dq(msg)+"\"", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		return Cx.run("\""+Escaper.dq(msg)+"\"", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	protected void doGet(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, HttpErrMsg
@@ -124,17 +124,17 @@ public class GetMarkupServlet extends GetServletBase
 					cityAddress = cityAddress.substring(1);
 				cityAddress = cityAddress.trim();
 			}
-			out.println(CxTemplate.run(null, restr.getName(), restr.getStyle(), email, token,
+			out.println(Cx.run(null, restr.getName(), restr.getStyle(), email, token,
 					mKey, clientID, items.toString(), mobile.getSplit(clientID, ds), cards,
-					CxHeaderTemplate.run(restr.getName(), restr.getStyle()),
-					CxAskSplitTemplate.run(),
-					CxSplitTemplate.run("<div class='REPLACE-ME'></div>"),
-					CxReceiptTemplate.run(restr.getName(), restr.getStyle(), streetAddress, cityAddress, "<div class='REPLACE-ME'></div>"),
-					CxLoginTemplate.run(true, CxTermsOfUseTemplate.run(), CxPrivacyPolicyTemplate.run()),
-					CxPayTemplate.run(email, "<option class='REPLACE-ME'></option>"),
-					CxFeedbackTemplate.run(),
-					CxFooterTemplate.run(),
-					CxNoJSTemplate.run(),
+					CxHeader.run(restr.getName(), restr.getStyle()),
+					CxAskSplit.run(),
+					CxSplit.run("<div class='REPLACE-ME'></div>"),
+					CxReceipt.run(restr.getName(), restr.getStyle(), streetAddress, cityAddress, "<div class='REPLACE-ME'></div>"),
+					CxLogin.run(true, CxTermsOfUse.run(), CxPrivacyPolicy.run()),
+					CxPay.run(email, "<option class='REPLACE-ME'></option>"),
+					CxFeedback.run(),
+					CxFooter.run(),
+					CxNoJS.run(),
 					debugUUID));
 		} catch (EntityNotFoundException e) {
 			out.println(errPage("The table you have specified does not exist.  There is probably a typo in the URL you entered or a problem with the QR code you scanned"));

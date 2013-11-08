@@ -1,11 +1,11 @@
 First, download the following:
 	(1)	The lastest JRE and JDK
 	(2)	Python
-	(3) UglifyJS (install node.js, run "npm install uglify-js -g")
+	(3)	UglifyJS (install node.js, run "npm install uglify-js -g")
 	(4)	SASS (install ruby, run "gem install sass")
 	(5)	Eclipse (if you need to work on or locally run the server)
 	(6)	The iPhone SDK (if you are going to work on the iPhone app)
-	(7) The Andriod SDK (if you are going to work on the Andriod app)
+	(7)	The Andriod SDK (if you are going to work on the Andriod app)
 	(8)	Microsoft Visual Studio (if you are going to work on the plugin)
 
 (9)	Run build.py

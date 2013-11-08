@@ -11,7 +11,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 
-import templates.CxFactsTemplate;
+import templates.CxFacts;
 import utils.GetServletBase;
 import utils.HttpErrMsg;
 import utils.ParamWrapper;
@@ -46,6 +46,6 @@ public class FactSheetServlet extends GetServletBase
 		} catch (EntityNotFoundException e) {
 			throw new HttpErrMsg(404, "No Such Restaurant");
 		}
-		out.println(CxFactsTemplate.run(name, mKey));
+		out.println(CxFacts.run(name, mKey));
 	}
 }

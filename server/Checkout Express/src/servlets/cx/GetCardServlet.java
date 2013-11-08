@@ -15,9 +15,9 @@ import utils.GetServletBase;
 import utils.HttpErrMsg;
 import utils.ParamWrapper;
 
-import templates.CxCardBackTemplate;
-import templates.CxCardFrontTemplate;
-import templates.CxCardTemplate;
+import templates.CxCardBack;
+import templates.CxCardFront;
+import templates.CxCard;
 
 public class GetCardServlet extends GetServletBase
 {
@@ -44,7 +44,7 @@ public class GetCardServlet extends GetServletBase
 			mKey = mKey.toUpperCase();
 			MobileTickKey mobile = new MobileTickKey(KeyFactory.createKey(MobileTickKey.getKind(), mKey), ds);
 			Restaurant restr = mobile.getRestr(ds);
-			out.println(CxCardTemplate.run(restr.getName(), restr.getStyle(), CxCardFrontTemplate.run(mKey), CxCardBackTemplate.run("Table", 2)));
+			out.println(CxCard.run(restr.getName(), restr.getStyle(), CxCardFront.run(mKey), CxCardBack.run("Table", 2)));
 		} catch (EntityNotFoundException e) {
 			throw new HttpErrMsg(404, "No Such Restaurant");
 		}

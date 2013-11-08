@@ -11,10 +11,10 @@ import utils.GetServletBase;
 import utils.HttpErrMsg;
 import utils.ParamWrapper;
 
-import templates.CxCardBlankTemplate;
-import templates.CxCardFrontTemplate;
-import templates.CxCardRowTemplate;
-import templates.CxCardsTemplate;
+import templates.CxCardBlank;
+import templates.CxCardFront;
+import templates.CxCardRow;
+import templates.CxCards;
 
 public class GetCardFrontsServlet extends GetServletBase
 {
@@ -39,11 +39,11 @@ public class GetCardFrontsServlet extends GetServletBase
 		StringBuffer cards = new StringBuffer();
 		String [] mKeys = p.getQueryString().split(",");
 		for(int i = 0; i < mKeys.length; i += 3)
-			cards.append(CxCardRowTemplate.run(CxCardFrontTemplate.run(mKeys[i]),
-					i+1 >= mKeys.length ? CxCardBlankTemplate.run() :
-						CxCardFrontTemplate.run(mKeys[i+1]),
-					i+2 >= mKeys.length ? CxCardBlankTemplate.run() :
-						CxCardFrontTemplate.run(mKeys[i+2])));
-		out.println(CxCardsTemplate.run("front", cards));
+			cards.append(CxCardRow.run(CxCardFront.run(mKeys[i]),
+					i+1 >= mKeys.length ? CxCardBlank.run() :
+						CxCardFront.run(mKeys[i+1]),
+					i+2 >= mKeys.length ? CxCardBlank.run() :
+						CxCardFront.run(mKeys[i+2])));
+		out.println(CxCards.run("front", cards));
 	}
 }
