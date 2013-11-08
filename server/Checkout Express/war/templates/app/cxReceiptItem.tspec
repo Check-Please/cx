@@ -1,4 +1,0 @@
-@param name The name of the item on the ticket
-@param price The price for the ticket item
-@param mods Markup for the modifiers of the ticket item
-@param custom_class

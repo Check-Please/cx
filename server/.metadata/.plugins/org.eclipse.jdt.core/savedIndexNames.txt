@@ -1,4 +1,0 @@
-INDEX VERSION 1.126+/Users/sjelin/Desktop/Work/Checkout Express/server/.metadata/.plugins/org.eclipse.jdt.core
-2224629331.index
-4167046194.index
-2307956861.index
