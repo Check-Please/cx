@@ -1,4 +1,8 @@
+*.swp
+*.swo
+*~
 .DS_Store
+.sass-cache
 iOS/Checkout Express/war/www
 server/Checkout Express/war/WEB-INF/appengine-generated
 server/Checkout Express/war/js

@@ -69,7 +69,7 @@ styleFolder = "_style"
 cssFolder = "_css"
 rawFolder = "_raw"
 templateFolder = "_template"
-ignoreFolders = set(["_ignore", "_skip", styleFolder])
+ignoreFolders = set(["_ignore", "_skip", styleFolder, templateFolder])
 mergeFolders = set([jsFolder, cssFolder])
 indexHTML = "index.html"
 uSet = type('', (), dict(__contains__ = lambda _,x: True))()
