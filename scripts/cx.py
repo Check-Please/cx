@@ -10,7 +10,7 @@ if len(sys.argv) < 2 or len(sys.argv) == 2 and sys.argv[1] == "help":
     print "\thome - go to the root of the project"
     print "\tpwd - print working directory relative to the project root"
 else:
-    home = os.path.relpath(os.path.join(os.path.dirname(__file__),".."))
+    home = os.path.realpath(os.path.join(os.path.dirname(__file__),".."))
 
     if sys.argv[1] == "build":
         call(["python", os.path.join(home,"build","build.py")]+sys.argv[2:])
@@ -29,11 +29,15 @@ else:
         else:
             print "No information on command \""+argv[2]+"\""
     elif sys.argv[1] == "home":
-        os.chdir(home);
+        print home
+        call(["cd", home]);
     elif sys.argv[1] == "pwd":
-        pwd = os.path.realpath(os.getcwd())[len(os.path.realpath(home)):]
-        if len(pwd) == 0:
-            pwd = "/"
-        print pwd
+        pwd = os.path.realpath(os.getcwd())
+        if len(pwd) < len(home):
+            sys.strerr.write("Not currently in the project");
+        if len(pwd) == len(home):
+            print "/"
+        else:
+            print pwd[len(home):]
     else:
         sys.stderr.write("Unknown command \""+sys.argv[1]+"\"\n");
