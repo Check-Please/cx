@@ -7,7 +7,7 @@ if len(sys.argv) < 2 or len(sys.argv) == 2 and sys.argv[1] == "help":
     print "The most commonly used commands are:"
     print "\tbuild - run the buold script"
     print "\thelp - get help with this tool" 
-    print "\thome - go to the root of the project"
+    print "\thome - print the path to the root of the project"
     print "\tpwd - print working directory relative to the project root"
 else:
     home = os.path.realpath(os.path.join(os.path.dirname(__file__),".."))
@@ -23,14 +23,15 @@ else:
             print "of command.  Run with an extra argument to get details "
             print "on that command"
         elif sys.argv[2] == "home":
-            print "Go to the root of the project"
+            print "Print the path of the root of the project"
+            print ""
+            print "A common command is \"cd `cx home`\" or \"cd $(cx home)\""
         elif sys.argv[2] == "pwd":
             print "Print working directory relative to the project root"
         else:
             print "No information on command \""+argv[2]+"\""
     elif sys.argv[1] == "home":
         print home
-        call(["cd", home]);
     elif sys.argv[1] == "pwd":
         pwd = os.path.realpath(os.getcwd())
         if len(pwd) < len(home):

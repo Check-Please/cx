@@ -526,8 +526,11 @@ if exists(tmpFolder):
 cp_r("webprojects", tmpFolder);
 compileFolder(tmpFolder, buildTemplate);
 for i in range(0, len(platforms)):
-    clearFolder(platformPaths[i],
-        "server/protected_war.csv" if i == 0 else None)
+    if exists(platformPaths[i]):
+        clearFolder(platformPaths[i],
+            "server/protected_war.csv" if i == 0 else None)
+    else:
+        mkdir(platformPaths[i])
     transferFiles(tmpFolder, platformPaths[i], platforms[i], debug,
                     uSet if i == 0 else projectsForApp);
 rm_r(tmpFolder);
