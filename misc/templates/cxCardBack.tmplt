@@ -1,5 +1,0 @@
-<div class="card back">
-	<h2>{{section}}</h2>
-	<h3>#{{num}}</h3>
-	<h4>Turn card over to pay with your phone</h4>
-</div>

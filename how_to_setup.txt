@@ -18,7 +18,8 @@ In order to get eclipse up and running, do the following:
 			https://developers.google.com/appengine/docs/java/tools/eclipse
 	(13)	Import the Checkout Express project from ./server
 
-	If there are error messages about the Google SDK missing, do as follows: 
+	You will be missing some JARs (you'll probably hear the SDK is missing).
+	To fix this, do the following: 
 		(14)	Make a new temporary App Engine project
 				(G > New Web Application Project)
 		(15)	Copy the .jar's inside the new project's war/WEB-INF/lib into

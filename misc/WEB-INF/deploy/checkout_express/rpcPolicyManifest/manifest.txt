@@ -1,2 +1,0 @@
-# Module checkout_express
-# RPC service class, partial path of RPC policy file
