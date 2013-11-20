@@ -1,0 +1,13 @@
+<div class="contract">
+	<div class="wrapper">
+		<div class="content">{{content}}</div>
+		<div class="buttons">
+			{{(readonly ? }}
+				<a class="confirm">Done</a>
+			{{:}}
+				<a class="confirm">Agree</a>
+				<a class="disagree">Disagree</a>
+			{{)}}}
+		</div>
+	</div>
+</div>

@@ -1,0 +1,16 @@
+<li class="item{{selected ? " selected":""}}{{others>0 ? " has-others":""}}">
+	<a itemID="{{id}}">
+		<span class="name">{{name}}</span>
+		<span class="price">{{price}}</span>
+		<ul class="mods">{{mods}}</ul>
+	</a>
+	<div class="others">
+		{{(selected ?}}
+			Splitting with {{others}} other{{(others != 1 ? "s" : "")}}
+		{{: others == 1 ?}}
+			Someone else is paying for this
+		{{:}}
+			{{others}} others are splitting this
+		{{)}}
+	</div>
+</li>

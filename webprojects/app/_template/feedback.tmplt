@@ -1,0 +1,16 @@
+<div id="feedback-page">
+	<h1>Thank you!</h1>
+	<div class="feedback">
+		<h3>Rate your experience:</h3>
+		<div class="ratings">
+			<a class="bad"><img src="img/thumbs-down.png" /></a>
+			<a class="ok">OK</a>
+			<a class="just good"><img src="img/thumbs-up.png" /></a>
+			<a class="very good"><img src="img/thumbs-up-up.png" /></a>
+		</div>
+	</div>
+	<div class="self-promotion">
+		<h3>Own a restaurant?</h3>
+		<p>Email <a href="mailto:sjelin@chkex.com">sjelin@chkex.com</a> to get this app at your restaurant</p>
+	</div>
+</div>

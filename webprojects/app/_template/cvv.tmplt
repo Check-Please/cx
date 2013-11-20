@@ -1,0 +1,13 @@
+<div class="cvv">
+	<label>Security Code</label>
+	<input type="text" />
+	<div class="explanation">
+		<a>(what's this?)</a>
+		<div class="popup-wrapper">
+			<div>
+				Your security code can be found on your card
+				<img src="img/CSC_en_US.png" />
+			</div>
+		</div>
+	</div>
+</div>
