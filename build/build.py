@@ -422,7 +422,7 @@ def compileFolder(path, buildTemplate, parents=[]):
                             None, everything is deleted
 """
 def clearFolder(path, protectedList=None):
-    protected = set([]);
+    protected = set(['.gitignore']);
     if protectedList != None:
         infil = readfile(protectedList);
         for row in csv.reader(infil):
