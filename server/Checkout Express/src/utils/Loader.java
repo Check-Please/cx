@@ -2,20 +2,14 @@ package utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import utils.ServletBase.LoginType;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kinds.AbstractAuthKey;
 import kinds.Globals;
-import kinds.UserAuthKey;
 
 import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
@@ -25,7 +19,6 @@ public class Loader implements ParamWrapper
 {
 	private HttpServletRequest req;
 	private DatastoreService ds;
-	private AbstractAuthKey authKey;
 
 	private List<String> strs;
 	private List<List<String>> strLists;
@@ -33,6 +26,9 @@ public class Loader implements ParamWrapper
 	private List<Long> longs;
 	private List<List<Long>> longLists;
 	private List<List<List<Long>>> long2DLists;
+	private List<Double> doubles;
+	private List<List<Double>> doubleLists;
+	private List<List<List<Double>>> double2DLists;
 	private List<Boolean> bools;
 	private List<List<Boolean>> boolLists;
 	private List<List<List<Boolean>>> bool2DLists;
@@ -95,6 +91,12 @@ public class Loader implements ParamWrapper
 		params(new LongParser(), longs, names);
 	}
 
+	public void doubles(String... names) throws HttpErrMsg
+	{
+		doubles = new ArrayList<Double>(names.length);
+		params(new DoubleParser(), doubles, names);
+	}
+
 	public void bools(String... names) throws HttpErrMsg
 	{
 		bools = new ArrayList<Boolean>(names.length);
@@ -147,6 +149,12 @@ public class Loader implements ParamWrapper
 	{
 		longLists = new ArrayList<List<Long>>(names.length);
 		paramLists(new LongParser(), longLists, names);
+	}
+
+	public void doubleLists(String... names) throws HttpErrMsg
+	{
+		doubleLists = new ArrayList<List<Double>>(names.length);
+		paramLists(new DoubleParser(), doubleLists, names);
 	}
 	
 	public void boolLists(String... names) throws HttpErrMsg
@@ -214,6 +222,12 @@ public class Loader implements ParamWrapper
 		long2DLists = new ArrayList<List<List<Long>>>(names.length);
 		param2DLists(new LongParser(), long2DLists, names);
 	}
+
+	public void double2DLists(String... names) throws HttpErrMsg
+	{
+		double2DLists = new ArrayList<List<List<Double>>>(names.length);
+		param2DLists(new DoubleParser(), double2DLists, names);
+	}
 	
 	public void bool2DLists(String... names) throws HttpErrMsg
 	{
@@ -244,7 +258,7 @@ public class Loader implements ParamWrapper
 
 	public void path(boolean verify, String... elems) throws HttpErrMsg
 	{
-		Key key = getAccountKey();
+		Key key = null;//In the future, we may make the initial path point something else (e.g. the root of an account)
 		int i = 0;
 		if(elems[0].equals("/")) {
 			key = null;
@@ -301,36 +315,6 @@ public class Loader implements ParamWrapper
 	  ///////////////////////////////////////////////////////////
 	 /////	Other Public Functions Additional Requirements	////
 	///////////////////////////////////////////////////////////
-
-	public void login(LoginType loginType) throws HttpErrMsg
-	{
-		String httpPN;
-		String authKeyKind;
-		switch(loginType) {
-			case USER:
-				httpPN = UserAuthKey.httpPN;
-				authKeyKind = UserAuthKey.getKind();
-				break;
-			default:
-				throw new HttpErrMsg(500, "Unknown Login Type");
-		}
-		String key = (String) req.getSession().getAttribute(httpPN);
-		if(key == null)
-			throw new HttpErrMsg(401, "Must be logged in");
-		else try {
-			authKey = AbstractAuthKey.build(
-						DatastoreServiceFactory.getDatastoreService().get(
-								KeyFactory.createKey(authKeyKind, key)));
-			if(authKey.getExprDate().before(new Date()))
-				throw new HttpErrMsg(401, "Login expired");
-			else {
-				authKey.updateExpr();
-				authKey.commit(DatastoreServiceFactory.getDatastoreService());
-			}
-		} catch (EntityNotFoundException e) {
-			throw new HttpErrMsg(401, "Login Invalid");
-		}
-	}
 
 	public void dne() throws HttpErrMsg {dne(0);}
 	public void dne(int i) throws HttpErrMsg
@@ -394,6 +378,21 @@ public class Loader implements ParamWrapper
 		return long2DLists.get(i);
 	}
 
+	public Double getDouble(int i)
+	{
+		return doubles.get(i);
+	}
+
+	public List<Double> getDoubleList(int i)
+	{
+		return doubleLists.get(i);
+	}
+
+	public List<List<Double>> getDouble2DList(int i)
+	{
+		return double2DLists.get(i);
+	}
+
 	public Boolean getBool(int i)
 	{
 		return bools.get(i);
@@ -451,18 +450,6 @@ public class Loader implements ParamWrapper
 		return entities.get(i);
 	}
 
-	public Key getAccountKey()
-	{
-		if(authKey == null)
-			return null;
-		return authKey.getAccountKey();
-	}
-
-	public AbstractAuthKey getAuthKey()
-	{
-		return authKey;
-	}
-
 	public String getQueryString()
 	{
 		return req.getQueryString();
@@ -504,6 +491,20 @@ public class Loader implements ParamWrapper
 				return Long.parseLong(val);
 			} catch(NumberFormatException e) {
 				throw new HttpErrMsg("Parameter \""+name+"\" cannot be parsed into a long");
+			}
+		}
+	}
+
+	private class DoubleParser implements Parser<Double>
+	{
+		public Double parse(String name, String val) throws HttpErrMsg
+		{
+			if(val == null)
+				throw new HttpErrMsg("Parameter \""+name+"\" is missing");
+			try {
+				return Double.parseDouble(val);
+			} catch(NumberFormatException e) {
+				throw new HttpErrMsg("Parameter \""+name+"\" cannot be parsed into a double");
 			}
 		}
 	}

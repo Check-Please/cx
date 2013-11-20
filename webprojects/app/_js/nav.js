@@ -1,24 +1,11 @@
-/*	The job of this module is to handle the navigation and basic
- *	functionality (i.e. responsiveness) of the app.  Is job is *not* to deal
- *	with any server communication, dynamic elements, or local state.  Any
- *	communication to the server, storage of information, or updating of
- *	dynamic elements should be handled by the MVC (see the "mvc" file).  Any
- *	communication from the server is handled by the socket module, which
- *	generally passes its results directly along to the MVC.
+/*	The job of this module is to handle the navigation, initialization, and
+ *	some basic responsiveness.
  *
  *	@owner sjelin
  */
 
-  ////////////////////
- /////  HEADER  /////
-////////////////////
-
 (function () {
 	"use strict";
-
-  /////////////////////////////////
- /////  CODE (IN NAMESPACE)  /////
-/////////////////////////////////
 
 	var inited = false;
 
@@ -53,128 +40,197 @@
 				Math.min($body.get(0).clientHeight,
 					$("html").get(0).clientHeight))
 			$body.addClass("tall");
-		//Popups have a special font size
-		$(".popup").css("font-size",
-				Math.min($win.width()/28.4, $win.height()/24)+"px");
 	}
 
 	window.onresize = resize;
+	var hashchangeSupport = "onhashchange" in window;
 
-	var pageNames = ["ask-split","split","receipt","login","pay","feedback"];
-	var feedbackIndex = pageNames.indexOf("feedback");
-	function goToPage(i, buildFun)
+	var currView = null;
+	var mutex = false;
+	/*	Goes to a specific view.  Really the core of the module
+	 *
+	 *	This function has a mutex so that any navigation it triggers (e.g.
+	 *	during a build() or unbuild() call) is ignored.  However, this mutex
+	 *	can be overridden via the stealMutex parameter.
+	 */
+	function goToView(view, stealMutex)
 	{
-		if((mvc.paid() || mvc.done()) && (i != feedbackIndex))
-			return goToFeedback();
-		if(window.location.hash != "#"+pageNames[i])
-			window.location.hash = "#"+pageNames[i];
-		if($("body").hasClass(pageNames[i]+"-page"))
-			return;
-		if(inited && (i != feedbackIndex))
-			ajax.send("cx", "log_pos", {position: i, mobileKey: mvc.key(),
-				clientID: mvc.clientID}, $.noop,
-				buildAjaxErrFun("contact the server"));
-		if(mvc.unbuild != null) {
-			mvc.unbuild();
-			mvc.unbuild = null;
+		//Everything other than true is false
+		stealMutex = stealMutex !== true;
+
+		//Mutex code
+		if(mutex)
+			if(!stealMutex)
+				return;
+		if(DEBUG)
+			assert(!mutex || stealMutex);
+		mutex = true;
+		try {
+
+			//Navigate to special pages
+			if((mvc.err() != null) && (view != mvc.views.error))
+				return goToView(mvc.views.error, true);
+			var isFeedback = view == mvc.views.feedback;
+			if((mvc.paid() || mvc.done()) && !isFeedback)
+				return goToView(mvc.views.feedback, true);
+
+			//Handle redirection
+			if(view.redirect) {
+				var redirect = view.redirect();
+				if(redirect != null)
+					return goToView(redirect, true);
+			}
+
+			//Ignore duplicate navigation
+			if(view == currView)
+				return;
+
+			//Spy
+			if(inited && !isFeedback)
+				ajax.send("cx", "log_pos", {position: pageName,
+					mobileKey: mvc.key(), clientID: mvc.clientID()}, $.noop,
+					buildAjaxErrFun("contact the server"));
+
+			//Actually transition from old view to new view
+			var $view = $("#view");
+			if((currView != null) && (currView.unbuild != null))
+				currView.unbuild($view, view);
+			if(DEBUG) {
+				assert($("#view > :visible").length == 0);
+				DEBUG.elems = $("#view > *");
+			}
+			window.location.hash = "#"+view.viewName;
+			$("body").removeClass(currView.viewName+"-page");
+			$("body").addClass(view.viewName+"-page");
+			if(view.build != null)
+				view.build($view, currView);
+			if(DEBUG) {
+				DEBUG.elems.each(function() {
+					assert($(this).parent("#view").length == 1);
+				});
+				delete DEBUG.elems;
+			}
+			currView = view;
+
+			//Hack
+			resize();
+
+			//Release mutex
+		} finally {
+			mutex = false;
 		}
-		for(var j = 0; j < pageNames.length; j++)
-			if(i == j)
-				$("body").addClass(pageNames[j]+"-page");
-			else
-				$("body").removeClass(pageNames[j]+"-page");
-		if(buildFun != null)
-			buildFun.apply(mvc);
-		resize();
-	}
-
-	function goToStart()
-	{
-		if(mvc.split() != null)
-			goToSplit();
-		else
-			goToPage(0);
-	}
-
-	function goToSplit()
-	{
-		goToPage(1, mvc.buildSplit);
-	}
-
-	function goToReceipt()
-	{
-		if((mvc.split() != null) && !mvc.validSplit())
-			goToStart()
-		else
-			goToPage(2, mvc.buildReceipt);
-	}
-
-	function goToLogin()
-	{
-		if((mvc.tip() == null) || ((mvc.split()!=null) && !mvc.validSplit()))
-			goToStart();
-		else
-			goToPage(3, mvc.buildLogin);
-	}
-
-	function goToPay()
-	{
-		if((mvc.tip() == null) || (mvc.username().length == 0) ||
-				((mvc.split() != null) && !mvc.validSplit()))
-			goToStart();
-		else
-			goToPage(4, mvc.buildPay);
-	}
-
-	function goToFeedback()
-	{
-		if(!mvc.paid() && !mvc.done())
-			goToStart();
-		else
-			goToPage(feedbackIndex, mvc.buildFeedback);
 	}
 
 	window.onload = function() {
-		$("body").addClass("has-js");
-		socket.load();
-		window.onhashchange();
+		inParallel([device.getTableKey, device.getPos], function(tKey, pos) {
+			ajax.load("cx", "init", {
+				isNative: device.isNative(),
+				tableKey: tKey,
+				clientID: device.getClientID(),
+				platform: device.getPlatform(),
+				lat: pos[0],
+				"long": pos[1],
+				accuracy: pos[2]
+			}, function(data) {
+				data = JSON.parse(data);
+				if(data.errCode != null) {
+					mvc.init({err:	data.errCode == 0 ? "NoKey" :
+									data.errCode == 1 ? "InvalidKey" :
+									data.errCode == 2 ? "Empty" :
+														"500"});
+					mvc.err.notify();
+					return;
+				}
+				mvc.init({
+					restrName: data.restrName,
+					restrAddress: data.restrAddress,
+					restrStyle: data.restrStyle,
+					channelID: data.channelID,
+					items: data.items,
+					split: data.split,
+					selection: {},
+				});
+				socket.open(data.channelToken);
+				$("title").text("Pay your ticket at "+data.restrName);
+				if(data.restrStyle == null) {
+					var $name = $("<span>");
+					$name.text(data.restrName);
+					$("#header").append($name);
+				} else {
+					var $css = $("<link>");
+					$css.attr("type", "text/css");
+					$css.attr("rel", "Stylesheet");
+					$css.attr("media", "all");
+					$css.attr("href", "cx_custom/"+data.restrStyle+".css");
+					$("head").append($css);
+					var $img = $("<img>");
+					$img.attr("src",
+								"cx_custom/"+data.restrStyle+"_header.png");
+					$("#header").append($img);
+				}
+				loading.init();
+				window.onhashchange();
+			}, buildAjaxErrFun("establish connection with the server"));
+		});
+		if(device.getDebugID() != null) {
+			var $script = $("<script>");
+			$script.attr("src",
+					"http://jsconsole.com/remote.js?"+device.getDebugID());
+			$("head").append($script);
+		}
 
-		//Navigation related functions are attached here.  Other functions
-		//are attached by the MVC
-		$("#ask-split-page a.yes").click(goToSplit);
-		$("#ask-split-page a.no").click(goToReceipt);
-		$("#split-page a.confirm").click(function() {
-			if(mvc.validSplit())
-				goToReceipt();
-			else {
-				if((mvc.selection()==null)||$.isEmptyObject(mvc.selection()))
-					alert("Tap on the items you which to pay for");
-				else
-					alert("Before you can proceed, everyone must select the items they are paying for.  This means that your friends need to take out their phone and scan the code or enter the URL just as you have done");
+		mvc.split.listen(function(oldSplit) {
+			if(!mvc.done() && (mvc.split() != null) &&
+					((oldSplit == null) || !mvc.views.split.valid())) {
+				mvc.tip(null);
+				goToView(mvc.views.split);
 			}
 		});
-		$("#receipt-page a.confirm").click(function() {
-			if(mvc.tip() != null) {
-				if(mvc.username().length == 0)
-					goToLogin();
-				else
-					goToPay();
-			} else
-				alert("Please enter a tip");
+		mvc.contract.listen(function() {
+			var contract = mvc.contract();
+			if(contract != null)
+				goToView(mvc.views[contract]);
 		});
-		$("#login-page a.confirm").click(function() {
-			if(mvc.completeLogin())
-				mvc.login(goToPay);
-			else
-				alert("The login/register information you entered is incomplete");
+		mvc.paid.listen(function() {
+			if(mvc.paid())
+				goToView(mvc.views.feedback);
 		});
-		$("#pay-page .login a").click(goToLogin);
-		$("#pay-page a.confirm").click(function() {
-			if(mvc.completePayment())
-				mvc.pay(goToFeedback);
-			else
-				alert("The payment information you entered is incomplete");
+		mvc.done.listen(function() {
+			if(mvc.done())
+				goToView(mvc.views.feedback);
 		});
+		mvc.items.listen(function() {
+			if(mvc.items().length == 0) {
+				mvc.done(true);
+				goToView(mvc.views.feedback);
+			}
+		});
+		mvc.err.listen(function() {
+			function putErr() {
+				goToPage(mvc.views.error);
+				ajax.send("cx", "close", {clientID:mvc.clientID(),error:err},
+					$.noop);
+			}
+			if($("body").size() == 0)
+				window.onload = putErr;
+			else {
+				putErr();
+				socket.close();
+			}
+		});
+
+		$("#view").on("click", "a.confirm", function() {
+			nextView = currView.nextView && currView.nextView();
+			if(nextView)
+				goToView(nextView);
+		});
+		if(!hashchangeSupport) {
+			$("#view").on("click", "a", function() {
+				var href = $(this).attr("href");
+				if(href && href[0] == "#")
+					window.onhashchange();
+			});
+		}
 		window.onkeydown = function(x) {
 			if(x.keyCode == 13)
 				$(".confirm:visible").click();
@@ -191,61 +247,7 @@
 	};
 
 	window.onhashchange = function() {
-		var hash = window.location.hash;
-		if(hash.length > 0)
-			hash = hash.slice(1);
-		switch(pageNames.indexOf(hash)) {
-			case 1: goToSplit(); break;
-			case 2: goToReceipt(); break;
-			case 3: goToLogin(); break;
-			case 4: goToPay(); break;
-			case 5: goToFeedback(); break;
-			default: goToStart(); break;
-		}
+		goToView(mvc.views[location.hash.slice(1)] || mvc.views.askSplit);
 	}
 
-	mvc.addSplitListener(function(oldSplit) {
-		if(!mvc.done() && (mvc.split() != null) &&
-				((oldSplit == null) || !mvc.validSplit())) {
-			mvc.tip(null);
-			goToSplit();
-		}
-	});
-	mvc.addPaidListener(function () {
-		if(mvc.paid())
-			goToFeedback();
-	});
-	mvc.addDoneListener(function () {
-		if(mvc.done())
-			goToFeedback();
-	});
-	mvc.addItemsListener(function() {
-		if(mvc.items().length == 0) {
-			mvc.done(true);
-			goToFeedback();
-		}
-	});
-	mvc.addErrListener(function() {
-		function putErr() {
-			$("body").addClass("error-page");
-			var err = mvc.err();
-			$("body").html(template["cxErr__"+err] != null ?
-							template["cxErr__"+err]() :
-							template.cxErr(err));
-			document.title = "Checkout Express - Error: "+err;
-			window.onhashchange = function() {
-				if(window.location.hash.length > 0)
-					window.location.hash = "";
-			};
-			window.onhashchange();
-			ajax.send("cx", "close", {clientID: mvc.clientID(), error: err},
-				$.noop);
-		}
-		if($("body").size() == 0)
-			window.onload = putErr;
-		else {
-			putErr();
-			socket.close();
-		}
-	});
 })();

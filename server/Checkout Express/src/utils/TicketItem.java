@@ -11,6 +11,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import servlets.oz.Data;
+
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.KeyFactory;
+
 public class TicketItem {
 	private String id;//Must be unique among all items ever ordered at that table, not necessarily all items everywhere
 	private String name;
@@ -138,26 +143,21 @@ public class TicketItem {
 				paidNum + 31*(
 				paidDenom)))))))))));
 	}
-	public static List<TicketItem> getItems(String query, Map<String, Frac> paid) throws JSONException, UnsupportedFeatureException, HttpErrMsg
+	public static List<TicketItem> getItems(String query, String restr, Map<String, Frac> paid, DatastoreService ds) throws JSONException, UnsupportedFeatureException, HttpErrMsg
 	{
 		JSONObject q = new JSONObject(query);
 		String method = q.getString("method");
 		if(method.equals("preloaded"))
 			return Preloaded.getTicketItems(q.getLong("id"), paid);
-		else if(method.equals("subtle_data")) {
-			String submethod = q.getString("submethod");
-			if(submethod.equals("table_id"))
-				return SubtleUtils.getTicketsByTableID(q.getLong("loc"), q.getLong("id"), paid);
-			else if(submethod.equals("table_name"))
-				return SubtleUtils.getTicketsByTableName(q.getLong("loc"), q.getString("name"), paid);
-			else
-				throw new IllegalArgumentException("Unknown method for querying SubtleData");
+		if(method.equals("oz")) {
+			Data d = new Data(MyUtils.get_NoFail(KeyFactory.createKey(Data.getKind(), restr), ds));
+			return SubtleUtils.processTickets(new JSONObject(d.getData().get(q.getInt("i"))), paid);
 		} else
 			throw new IllegalArgumentException("Unknown system for query");
 	}
 
-	public static List<TicketItem> getItems(MobileTickKey mobile) throws JSONException, UnsupportedFeatureException, HttpErrMsg
+	public static List<TicketItem> getItems(MobileTickKey mobile, DatastoreService ds) throws JSONException, UnsupportedFeatureException, HttpErrMsg
 	{
-		return getItems(mobile.getQuery(), mobile.getPaidMap());
+		return getItems(mobile.getQuery(), mobile.getRestrUsername(), mobile.getPaidMap(), ds);
 	}
 }

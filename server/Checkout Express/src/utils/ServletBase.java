@@ -33,7 +33,6 @@ public abstract class ServletBase extends HttpServlet
 		public SecurityType securityType = null;
 
 		public boolean adminReq = false;
-		public LoginType loginType = null;
 		public boolean dsReq = true;
 		public boolean txnReq = true;
 		public boolean txnXG = false;
@@ -47,6 +46,9 @@ public abstract class ServletBase extends HttpServlet
 		public String[] longs = null;
 		public String[] longLists = null;
 		public String[] long2DLists = null;
+		public String[] doubles = null;
+		public String[] doubleLists = null;
+		public String[] double2DLists = null;
 		public String[] bools = null;
 		public String[] boolLists = null;
 		public String[] bool2DLists = null;
@@ -85,8 +87,6 @@ public abstract class ServletBase extends HttpServlet
 			throw new IllegalStateException("Item has path2 but no path");
 		if(config.exists2 != null && config.path2 == null)
 			throw new IllegalStateException("Item has existence2 requirement, but there is no path2");
-		if((config.loginType != null) && !config.dsReq)
-			throw new IllegalStateException("Login required, but no database");
 		if(config.txnReq && !config.dsReq)
 			throw new IllegalStateException("Transaction required, but no database");
 		if(config.txnXG && !config.txnReq)
@@ -145,8 +145,6 @@ public abstract class ServletBase extends HttpServlet
 				retry = false;
 
 				//Load shit...
-				if(config.loginType != null)
-					l.login(config.loginType);
 				if(config.strs != null)
 					l.strs(config.strs);
 				if(config.strLists != null)
@@ -159,6 +157,12 @@ public abstract class ServletBase extends HttpServlet
 					l.longLists(config.longLists);
 				if(config.long2DLists != null)
 					l.long2DLists(config.long2DLists);
+				if(config.doubles != null)
+					l.doubles(config.doubles);
+				if(config.doubleLists != null)
+					l.doubleLists(config.doubleLists);
+				if(config.double2DLists != null)
+					l.double2DLists(config.double2DLists);
 				if(config.bools != null)
 					l.bools(config.bools);
 				if(config.boolLists != null)

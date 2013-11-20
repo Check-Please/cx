@@ -2,8 +2,6 @@ package utils;
 import java.io.IOException;
 import java.util.List;
 
-import kinds.AbstractAuthKey;
-
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
@@ -16,6 +14,10 @@ public interface ParamWrapper
 	public Long getLong(int i);
 	public List<Long> getLongList(int i);
 	public List<List<Long>> getLong2DList(int i);
+
+	public Double getDouble(int i);
+	public List<Double> getDoubleList(int i);
+	public List<List<Double>> getDouble2DList(int i);
 
 	public Boolean getBool(int i);
 	public List<Boolean> getBoolList(int i);
@@ -32,8 +34,6 @@ public interface ParamWrapper
 	public Key getKey(int i);
 	public Entity getEntity();
 	public Entity getEntity(int i);
-	public Key getAccountKey();
-	public AbstractAuthKey getAuthKey();
 	public String getQueryString();
 	public String getClientID() throws IOException;
 }

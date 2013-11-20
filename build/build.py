@@ -1,5 +1,4 @@
-import os, shutil, errno, re, csv, getopt, sys
-from subprocess import call
+import os, shutil, errno, re, csv, getopt, sys, subprocess
 
 #############################################################################
 # FILE UTILS
@@ -50,11 +49,22 @@ def appendfile(path):
     return open(expandPath(path), "a")
 
 def sass(src, dest):
-    return call(["sass", "--update", expandPath(src)+":"+expandPath(dest)])
+    return subprocess.call(["sass", "--update",
+                            expandPath(src)+":"+expandPath(dest)])
 
 def compressJS(path):
     path = expandPath(path)
-    return call(["uglifyjs", path, "-o", path, "-c", "-m"]);
+    proc = subprocess.Popen(["uglifyjs", path, "-o", path, "-c", "-m",
+                "--define", "DEBUG=false"], stderr=subprocess.PIPE);
+    ignoreNext = False;
+    for line in proc.stderr:
+        if line.strip() == "WARN: Condition always false [null:1,6]":
+            ignoreNext = True;
+        elif ignoreNext:
+            ignoreNext = False;
+        else:
+            sys.stderr.write(line);
+    return proc.returncode;
 
 #############################################################################
 # Helper Methods
@@ -69,6 +79,7 @@ styleFolder = "_style"
 cssFolder = "_css"
 rawFolder = "_raw"
 templateFolder = "_template"
+debugFolder = "_debug"
 ignoreFolders = set(["_ignore", "_skip", styleFolder, templateFolder])
 mergeFolders = set([jsFolder, cssFolder])
 indexHTML = "index.html"
@@ -99,11 +110,6 @@ def makeWebXML(src, dest):
                 "\t\t<mime-type>font/opentype</mime-type>\n" +
                 "\t</mime-mapping>\n" +
                 "\n" +
-                "\t<!-- Default page to serve -->\n" +
-                "\t<welcome-file-list>\n" +
-                "\t\t<welcome-file>pay</welcome-file>\n" +
-                "\t</welcome-file-list>\n" +
-                "\n" +
                 "\t<!-- Google Endpoint API Stuff -->\n" +
                 "\t<servlet>\n" +
                 "\t\t<servlet-name>SystemServiceServlet</servlet-name>\n" +
@@ -120,9 +126,9 @@ def makeWebXML(src, dest):
                 "\t\t<url-pattern>/_ah/spi/*</url-pattern>\n" +
                 "\t</servlet-mapping>\n" +
                 "\n" +
-                "\t<!-- - - - - - - - - - - - -->\n" +
-                "\t<!--        Servlets       -->\n" +
-                "\t<!-- - - - - - - - - - - - -->\n\n");
+                "\t<!-- - - - - - - - - - - - - - - - - - -->\n" +
+                "\t<!--        Servlets (mostly)          -->\n" +
+                "\t<!-- - - - - - - - - - - - - - - - - - -->\n\n");
 
     prefix = "servlets"
     for line in infil:
@@ -158,7 +164,14 @@ def makeWebXML(src, dest):
                         "\t</servlet-mapping>\n");
         else:
             line = line.strip()
-            if len(line) > 0:
+            if line.startswith("WELCOME:"):
+                line = line[8:].strip();
+                outfl.write("\t<!-- Default page to serve -->\n" +
+                            "\t<welcome-file-list>\n" +
+                            "\t\t<welcome-file>"+line+"</welcome-file>\n" +
+                            "\t</welcome-file-list>\n" +
+                            "\n")
+            elif len(line) > 0:
                 outfl.write("\n\t<!-- "+line+" -->\n");
                 prefix = "servlets."+ re.sub(r' ', r'_',
                         re.sub(r'\s*-\s+', r'.', line.lower()))
@@ -200,7 +213,7 @@ def runBuildTemplate(path, buildTemplate):
     # The following loop takes time proportional to the number of keys.  This
     # could be made more efficent by searching for r'{{.*?}}' and seeing if
     # any key was matched
-    for i in range(0, len(keys)):
+    for i in xrange(0, len(keys)):
         content = content.replace("{{"+keys[i]+"}}", vals[i])
     outfil = writefile(path);
     outfil.write(content);
@@ -239,29 +252,36 @@ def compileTemplateInner(src):
                         types.append(None);
         sfil.close();
 
-        content = "\"";
+        content = "";
         tfil = readfile(src+tmpltExt);
         tmplt = tfil.read().rstrip();
         tfil.close();
         tokens = re.split(r'(?:\{\{|\}\})', tmplt);
-        for i in range(0, len(tokens)):
+        for i in xrange(0, len(tokens)):
             token = tokens[i];
             if i % 2 == 0:
-                content +=  token.replace("\\", "\\\\"
-                                ).replace("\t", "\\t"
-                                ).replace("\r", ""
-                                ).replace("\f", "\\f"
-                                ).replace("\'", "\\\'"
-                                ).replace("\"", "\\\"'"
-                                ).replace("\n", "\"+\n\t\t\t\"");
+                content +=  "\""+token.replace( "\\", "\\\\"
+                                    ).replace(  "\t", "\\t"
+                                    ).replace(  "\r", ""
+                                    ).replace(  "\f", "\\f"
+                                    ).replace(  "\'", "\\\'"
+                                    ).replace(  "\"", "\\\"'"
+                                    ).replace(  "\n", "\"+\n\t\t\t\"")+"\"";
             else:
-                token.strip();
+                token = token.strip();
+                char = token[len(token)-1];
+                if (char != "?" and char != ":" and
+                                    token.count("(") == token.count(")")):
+                    token = "("+token+")";
+                if char != "?" and char != ":" and char != "(":
+                    token = token+"+";
                 if '\n' in token:
-                    token = re.sub(r'\s+', ' ', token);
-                    content += "\"+\n\t\t\t\t("+token+")+\n\t\t\t\"";
-                else:
-                    content += "\"+("+token+")+\"";
-        content += "\"";
+                    token="\n\t\t\t\t"+re.sub(r'\s+',' ',token)+"\n\t\t\t";
+                char = token[0];
+                if char != "?" and char != ":" and char != ")":
+                    token = "+"+token;
+                content += token;
+        content = re.sub(r'([^\\])""\s*\+', r'\1', content);
         return types, params, content;
 
 
@@ -289,7 +309,7 @@ def compileTemplateToJava(src, package):
     outfil.write(   "package "+packageName+";\n\n"+
                     "public class "+className+" {\n"+
                     "\tpublic static String run(");
-    for i in range(0, len(types)):
+    for i in xrange(0, len(types)):
         if i > 0:
             outfil.write(", ");
         outfil.write(("Object" if types[i] == None else types[i]) + " " +
@@ -365,7 +385,7 @@ def compileWebTemplates(path, parentsOfT, parentsInT=[]):
         elif fil.endswith(tmpltExt):
             fil = fil[:len(fil)-len(tmpltExt)];
             compileTemplateToJava(path+"/"+fil,["web"]+parentsOfT+parentsInT)
-            compileTemplateToJS(path+"/"+fil, jsPath + "/" +
+            compileTemplateToJS(path+"/"+fil, jsPath + "/templates." +
                 ".".join(parentsInT) + ("." if len(parentsInT) > 0 else "") +
                 fil + ".js", parentsInT);
 
@@ -439,26 +459,40 @@ def transferLeaf(src, dest, plat, debug, parents, merge):
         mkdir(outPath);
 
     if isDir:
-        fils = ls(src) + ([] if not exists(src+"/_"+plat) else
-                    map(lambda fil: "/_"+plat+"/"+fil, ls(src+"/_"+plat)))
+        # Get list of files to transfer 
+        baseFolders = ["",  "/_"+plat] + (["/"+debugFolder,
+                            "/_"+plat+"/"+debugFolder] if debug else []);
+
+        # Actually transfer
         if merge:
             ofpath = outPath+"."+ext;
             outfil = writefile(ofpath);
-            for fil in fils:
-                fname = src+"/"+fil
-                if not isdir(fname) and fil.endswith(ext):
-                    infil = readfile(fname);
-                    outfil.write(infil.read()+"\n");
-                    infil.close()
+            i = 0;
+            while i < len(baseFolders):
+                baseFolder = src+baseFolders[i];
+                if exists(baseFolder):
+                    for fil in ls(baseFolder):
+                        fname = baseFolder+"/"+fil;
+                        if isdir(fname):
+                            if fil[0] != '_':
+                                baseFolders.insert(i+1, fname[len(src):]);
+                        elif fil.endswith(ext):
+                            infil = readfile(fname);
+                            outfil.write(infil.read()+"\n");
+                            infil.close()
+                i += 1;
             outfil.close();
             if not debug and ext == "js":
                 print "\tCompressing \""+ofpath+"\"..."
                 compressJS(ofpath);
         else:
-            for fil in fils:
-                fname = src+"/"+fil
-                if fil[0] != '_' or not isdir(fname):
-                    cp_r(fname, outPath+"/"+fil);
+            for baseFolder in baseFolders:
+                baseFolder = src+baseFolder;
+                if exists(baseFolder):
+                    for fil in ls(baseFolder):
+                        fname = baseFolder+"/"+fil;
+                        if fil[0] != '_' or not isdir(fname):
+                            cp_r(fname, outPath+"/"+fil);
     else:
         cp_r(src, outPath + ("."+ext if merge else ""));
 
@@ -525,7 +559,7 @@ if exists(tmpFolder):
     rm_r(tmpFolder);
 cp_r("webprojects", tmpFolder);
 compileFolder(tmpFolder, buildTemplate);
-for i in range(0, len(platforms)):
+for i in xrange(0, len(platforms)):
     if exists(platformPaths[i]):
         clearFolder(platformPaths[i],
             "server/protected_war.csv" if i == 0 else None)

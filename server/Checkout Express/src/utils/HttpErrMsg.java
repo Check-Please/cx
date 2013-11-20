@@ -4,8 +4,6 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.subtledata.client.ApiException;
-
 public class HttpErrMsg extends Exception
 {
 	/** A unique key for identifying something-or-other
@@ -14,6 +12,7 @@ public class HttpErrMsg extends Exception
 
 	private int code;
 	private String msg;
+	public static final HttpErrMsg ROLLBACK_DB = new HttpErrMsg(200, "This isn't actually an error, I just want the database to be rolled back.  If you are seeing this, something went very wrong.");
 
 	public HttpErrMsg(String msg)
 	{
@@ -25,11 +24,6 @@ public class HttpErrMsg extends Exception
 		this.code = code;
 		this.msg = msg;
 	}
-	public HttpErrMsg(ApiException e)
-	{
-		this.code = e.getCode();
-		this.msg = "SUBTLE DATA ERROR: "+e.getMessage();
-	}
 	public int getCode()
 	{
 		return code;
@@ -40,9 +34,11 @@ public class HttpErrMsg extends Exception
 	}
 	public void apply(HttpServletResponse resp) throws IOException
 	{
-		resp.setStatus(code);
-		resp.setContentType("text/plain");
-		resp.setCharacterEncoding("UTF-8");
-		resp.getWriter().println(msg);
+		if(this != ROLLBACK_DB) {//Note that I'm using actual equality here, not the equals() method
+			resp.setStatus(code);
+			resp.setContentType("text/plain");
+			resp.setCharacterEncoding("UTF-8");
+			resp.getWriter().println(msg);
+		}
 	}
 }

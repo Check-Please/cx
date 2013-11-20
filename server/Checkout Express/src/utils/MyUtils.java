@@ -107,12 +107,6 @@ public class MyUtils
 			return new kinds.MobileClient(e);
 		else if(e.getKind().equals(kinds.Restaurant.getKind()))
 			return new kinds.Restaurant(e);
-		else if(e.getKind().equals(kinds.User.getKind()))
-			return new kinds.User(e);
-		else if(e.getKind().equals(kinds.UserAuthKey.getKind()))
-			return new kinds.UserAuthKey(e);
-		else if(e.getKind().equals(kinds.UserCC.getKind()))
-			return new kinds.UserCC(e);
 		else
 			throw new IllegalArgumentException("Unknown entity kind");
 	}

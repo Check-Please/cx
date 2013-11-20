@@ -84,7 +84,7 @@ public class MobileTickKey extends AbstractKind
 
 	public void sendItemsUpdateAndRemoveSplit(String splitID, DatastoreService ds) throws JSONException, UnsupportedFeatureException, HttpErrMsg
 	{
-		sendItemsUpdateAndRemoveSplit(TicketItem.getItems(this), splitID, getKey(), ds);
+		sendItemsUpdateAndRemoveSplit(TicketItem.getItems(this, ds), splitID, getKey(), ds);
 	}
 
 
@@ -160,7 +160,7 @@ public class MobileTickKey extends AbstractKind
 				for(String item : c.getItems())
 					if(!ids.contains(item)) {
 						MobileClient.sendCloseMessage(c.getKey(), channelService);
-						new ClosedMobileClient(restr, c, ClosedMobileClient.CloseCause.TICKET_CLOSED).commit(ds);
+						new ClosedMobileClient(restr, c, ClosedMobileClient.CLOSE_CAUSE__TICKET_CLOSED).commit(ds);
 						c.rmv(ds);
 						break;
 					}

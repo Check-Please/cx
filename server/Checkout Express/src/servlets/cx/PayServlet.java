@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,21 +19,18 @@ import kinds.BasicPointer;
 import kinds.ClosedMobileClient;
 import kinds.MobileClient;
 import kinds.MobileTickKey;
-import kinds.User;
-import kinds.UserCC;
 
-
+import com.google.appengine.api.channel.ChannelMessage;
+import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.subtledata.api.LocationsApi;
-import com.subtledata.client.ApiException;
 
+import servlets.oz.Data;
 import utils.Frac;
 import utils.HttpErrMsg;
 import utils.MyUtils;
 import utils.ParamWrapper;
 import utils.PostServletBase;
-import utils.SubtleUtils;
 import utils.TicketItem;
 import utils.UnsupportedFeatureException;
 import static utils.MyUtils.a;
@@ -50,26 +48,43 @@ public class PayServlet extends PostServletBase
 	}
 	protected void configure() {
 		config = new Configuration();
-		config.loginType = LoginType.USER;
 		config.contentType = ContentType.JSON;
 		config.txnXG = true;
 		config.path = a("/", MobileTickKey.getKind(), "mobileKey");
 		config.exists = true;
-		config.path2 = a(UserCC.getKind(), "cardUUID");
 		config.exists2 = true;
+		config.strs = a("pan", "name", "expr", "zip", "?cvv");
 		config.strLists = a("items");
 		config.longLists = a("nums", "denoms");
-		config.longs = a("total", "tip");//NOTE: total does not include tip
+		config.longs = a("total", "tip", "pan", "expr", "zip", "?cvv");//NOTE: total does not include tip
 		config.keyNames = a("clientID");
 	}
-	private static void validateInput(UserCC cc, List<String> itemsToPay, List<Frac> payFracs) throws HttpErrMsg
+	//pre: pan, cvv ~= /^\d+$/
+	private static void validateInput(String pan, String expr, List<String> itemsToPay, List<Frac> payFracs) throws HttpErrMsg
 	{
+		if(pan.length() < 8)
+			throw new HttpErrMsg("The card number is too short");
+		if(!pan.matches("(?:62|88|2014|2149)\\d+")) {
+			//Luhn Algorithm
+			int sum = 0;
+			for(int i = 0; i < pan.length(); i++) {
+				int d = Integer.parseInt(pan.substring(i, 1));
+				sum += (i == 0) ? (d*2)%9 : d;
+			}
+			if(sum != 0)
+				throw new HttpErrMsg("The card number is incorrect");
+		}
+		if(expr.length() != 4)
+			throw new HttpErrMsg("The expration date must be in YYMM format");
+
 		Calendar date = new GregorianCalendar();
 		//TODO: The following will have Y2.1K bugs and I'm not totally sure
 		//how to deal with them
-		if((date.get(Calendar.YEAR) % 100 > cc.getExprYear()) ||
-				((date.get(Calendar.YEAR) % 100 == cc.getExprYear()) &&
-					(date.get(Calendar.MONTH)+1 > cc.getExprMonth())))
+		int exprYear = Integer.parseInt(expr.substring(0, 2));
+		int exprMonth = Integer.parseInt(expr.substring(2, 4));
+		if((date.get(Calendar.YEAR) % 100 > exprYear) ||
+				((date.get(Calendar.YEAR) % 100 == exprYear) &&
+					(date.get(Calendar.MONTH)+1 > exprMonth)))
 			throw new HttpErrMsg("You are trying to pay with a credit card which has expired");
 		if(payFracs.size() != itemsToPay.size())
 			throw new HttpErrMsg("The number of fractions does not match the number of items");
@@ -101,52 +116,32 @@ public class PayServlet extends PostServletBase
 		}
 		return true;
 	}
-	private static void pay(JSONObject query, List<TicketItem> items, User user, UserCC cc, long total, long tip) throws JSONException, HttpErrMsg
+	private static void pay(JSONObject query, String restr, String pan, String name, String expr, String zip, String cvv, List<TicketItem> items, long total, long tip, DatastoreService ds) throws JSONException, HttpErrMsg
 	{
-		if(query.getString("method").equals("subtle_data")) {
-			//Note: rather than dividing the payments among the tickets,
-			//we just put the entire payment on the first one.  Not only
-			//is this easier, but it saves the restaurant money because it
-			//lowers the number of transactions.
-			if(items.size() == 0)
-				throw new HttpErrMsg("You cannot pay for an empty ticket");
-			else {
-				JSONObject paymentInfo = new JSONObject();
-				paymentInfo.put("tip_amount", tip/100.0);
-				paymentInfo.put("amount_before_tip", total/100.0);
-				paymentInfo.put("user_id", user.getSubtleID());
-				paymentInfo.put("card_id", cc.getSubtleID());
-				try {
-					LocationsApi.addPaymentToTicket((int)query.getLong("loc"), SubtleUtils.getTickID(items.get(0).getID()), paymentInfo);
-				} catch (ApiException e) {
-					throw new HttpErrMsg(e);
-				}
-			}
+		if(query.getString("method").equals("oz")) {
+			Data d = new Data(MyUtils.get_NoFail(KeyFactory.createKey(Data.getKind(), restr), ds));
+			JSONObject msg = new JSONObject();
+			msg.put("items", new JSONArray(items.toString()));
+			msg.put("total", total);
+			msg.put("tip", tip);
+			msg.put("pan", pan);
+			msg.put("name", name);
+			msg.put("expr", expr);
+			msg.put("zip", zip);
+			if(cvv != null)
+				msg.put("cvv", cvv);
+			ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(d.getClient(), msg.toString()));
 		}
 	}
-	private static void updateDS(MobileTickKey mobile, JSONObject query, Set<String> itemsOnTicket, String clientID, UserCC cc, boolean ticketPaid, DatastoreService ds) throws JSONException, HttpErrMsg
+	private static void updateDS(MobileTickKey mobile, JSONObject query, Set<String> itemsOnTicket, String clientID, boolean ticketPaid, DatastoreService ds) throws JSONException, HttpErrMsg
 	{
-		cc.updateLastUse();
-		cc.commit(ds);
 		ds.delete(KeyFactory.createKey(BasicPointer.getKind(), clientID));
 		MobileClient mc = new MobileClient(MyUtils.get_NoFail(mobile.getKey().getChild(MobileClient.getKind(), clientID), ds));
-		new ClosedMobileClient(mobile.getRestrUsername(), mc, ClosedMobileClient.CloseCause.PAID).commit(ds);
+		new ClosedMobileClient(mobile.getRestrUsername(), mc, ClosedMobileClient.CLOSE_CAUSE__PAID).commit(ds);
 		mc.rmv(ds);
 		if(ticketPaid) {
 			if(mobile.clearTickMetadata(ds))
 				mobile.commit(ds);
-			//Delete Ticket
-			if(query.getString("method").equals("subtle_data")) {
-				Set<Integer> subtleIDs = new HashSet<Integer>();
-				for(String id : itemsOnTicket)
-					subtleIDs.add(SubtleUtils.getTickID(id));
-				for(Integer id : subtleIDs)
-					try {
-						LocationsApi.voidTicket((int)query.getLong("loc"), id, 0);
-					} catch (ApiException e) {
-						throw new HttpErrMsg(e);
-					}
-			}
 		} else {
 			try {
 				mobile.sendItemsUpdateAndRemoveSplit(clientID, ds);
@@ -160,7 +155,11 @@ public class PayServlet extends PostServletBase
 	{
 		//Get params
 		MobileTickKey mobile = new MobileTickKey(p.getEntity());
-		UserCC cc = new UserCC(p.getEntity(1));
+		String pan = p.getStr(0);
+		String name = p.getStr(1);
+		String expr = p.getStr(2);
+		String zip = p.getStr(3);
+		String cvv = p.getStr(4);
 		List<String> itemsToPay = p.getStrList(0);
 		List<Frac> payFracs;
 		try {
@@ -170,14 +169,13 @@ public class PayServlet extends PostServletBase
 		}
 		long total = p.getLong(0);
 		long tip = p.getLong(1);
-		User user = new User(MyUtils.get_NoFail(p.getAccountKey(), ds));
 		String clientID = p.getKeyName(0);
-		validateInput(cc, itemsToPay, payFracs);
+		validateInput(pan, expr, itemsToPay, payFracs);
 
 		//Get/set internal payment info
 		List<TicketItem> items;
 		try {
-			items = TicketItem.getItems(mobile);
+			items = TicketItem.getItems(mobile, ds);
 		} catch (UnsupportedFeatureException e) {
 			throw new HttpErrMsg(e.getMessage());
 		}
@@ -190,8 +188,8 @@ public class PayServlet extends PostServletBase
 
 		//Pay & update DS
 		JSONObject query = new JSONObject(mobile.getQuery());
-		pay(query, items, user, cc, total, tip);
-		updateDS(mobile, query, itemsOnTicket, clientID, cc, ticketPaid, ds);
+		pay(query, mobile.getRestrUsername(), pan, name, expr, zip, cvv, items, total, tip, ds);
+		updateDS(mobile, query, itemsOnTicket, clientID, ticketPaid, ds);
 
 		//Return
 		JSONObject ret = new JSONObject();

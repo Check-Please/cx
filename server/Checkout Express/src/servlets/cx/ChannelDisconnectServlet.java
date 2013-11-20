@@ -32,6 +32,6 @@ public class ChannelDisconnectServlet extends PostServletBase
 
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
 	{
-		CloseClientServlet.closeChannel(p.getClientID(), ClosedMobileClient.CloseCause.DISCONNECTED, ds);
+		CloseClientServlet.closeChannel(p.getClientID(), ClosedMobileClient.CLOSE_CAUSE__DISCONNECTED, ds);
 	}
 }

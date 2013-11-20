@@ -1,32 +1,18 @@
 /*	The job of this module is to handle communications from the server.  The
  *	module should try to pass this information along as quickly as possible
- *	to another module (generally the MVC) rather than doing any processing
+ *	to another module (generally models.js) rather than doing any processing
  *	itself.
  *
  *	@owner sjelin
  */
-
-  ////////////////////
- /////  HEADER  /////
-////////////////////
 
 var socket = socket || {};
 
 (function () {
 	"use strict";
 
-  /////////////////////////////////
- /////  CODE (IN NAMESPACE)  /////
-/////////////////////////////////
-
-	var token;
-	function init(t)
-	{
-		token = t;
-	}
-
 	var skt = null;
-	function load()
+	socket.open = function(token)
 	{
     	skt = (new goog.appengine.Channel(token)).open({
 			'onopen': onOpen,
@@ -47,7 +33,7 @@ var socket = socket || {};
 			mvc.items(JSON.parse(items));
 			if(mvc.split() != null) {
 				delete mvc.split()[splitID];
-				mvc.notifySplit();
+				mvc.split.notify();
 			}
 		},
 		SPLIT: function(splitID, splitVal) {
@@ -60,13 +46,13 @@ var socket = socket || {};
 					mvc.split({});
 				mvc.split()[splitID] = val;
 			}
-			mvc.notifySplit();
+			mvc.split.notify();
 		},
 		START_SPLIT: function() {
 			if(mvc.split() == null)
 				mvc.split({});
 			else
-				mvc.notifySplit();
+				mvc.split.notify();
 		},
 		ERR: function() {
 			mvc.err(Array.prototype.join.call(arguments, "\n"));
@@ -97,19 +83,11 @@ var socket = socket || {};
 
 	function onClose() {}
 
-	function close()
+	socket.close = function()
 	{
 		if(skt != null) {
 			skt.close();
 			skt = null;
 		}
 	}
-
-  ////////////////////
- /////  FOOTER  /////
-////////////////////
-
-	socket.init = init;
-	socket.load = load;
-	socket.close = close;
 })();

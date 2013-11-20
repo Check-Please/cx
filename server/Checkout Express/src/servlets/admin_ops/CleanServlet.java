@@ -7,9 +7,6 @@ import javax.servlet.http.HttpSession;
 
 import kinds.BasicPointer;
 import kinds.MobileTickKey;
-import kinds.User;
-import kinds.UserAuthKey;
-import kinds.UserCC;
 
 import utils.GetServletBase;
 import utils.ParamWrapper;
@@ -47,12 +44,6 @@ public class CleanServlet extends GetServletBase
 			m.clearTickMetadata(ds);
 			m.commit(ds);
 			for(Entity e : ds.prepare(new Query(BasicPointer.getKind())).asIterable(FetchOptions.Builder.withLimit(1000)))
-				ds.delete(e.getKey());
-			for(Entity e : ds.prepare(new Query(User.getKind())).asIterable(FetchOptions.Builder.withLimit(1000)))
-				ds.delete(e.getKey());
-			for(Entity e : ds.prepare(new Query(UserCC.getKind())).asIterable(FetchOptions.Builder.withLimit(1000)))
-				ds.delete(e.getKey());
-			for(Entity e : ds.prepare(new Query(UserAuthKey.getKind())).asIterable(FetchOptions.Builder.withLimit(1000)))
 				ds.delete(e.getKey());
 		} catch (EntityNotFoundException e) {}
 	}

@@ -128,7 +128,7 @@ ajax.send = function(base, cmd, data, callback, failFun, boringUpdate)
  *			functions fails.  Gets passed the index of the function which
  *			failed.
  */
-function aRun(funs, callback, failfun)
+function inSequence(funs, callback, failfun)
 {
 	function myARun(i) {
 		if(i == funs.length)
@@ -137,6 +137,39 @@ function aRun(funs, callback, failfun)
 			funs[i](myARun.c(i+1), failfun.c(i));
 	}
 	myARun(0);
+}
+/**	Runs some asynchronous functions in parallel.
+ *	
+ *	@param	funs {Function[]} The functions to be executed.  Each function
+ *			must take a callback function as it's first parameter and a
+ *			failure function as it's second.  Each function should call its
+ *			callback function exactly once.  If a function does not call its
+ *			callback function then the squence of calls ends, and the final
+ *			final callback function is never called.  If a function calls its
+ *			callback function multiple times, then all future function will
+ *			be called multiple times.
+ *	@param	callback {Function} A callback final function, to be called upon
+ *			the success of all the functions passed into this function
+ *	@param	failfun {Function} The failure function.  Called if any of the
+ *			functions fails.  Gets passed the index of the function which
+ *			failed.
+ */
+function inParallel(funs, callback, failFun)
+{
+	if(funs.length == 0) {
+		callback([]);
+	} else {
+		var rets = new Array(funs.length);
+		var finished = Array.tabulate(funs.length, op.id.c(false));
+		function success(i) {
+			rets[i] = Array.prototype.slice.call(arguments, 1);
+			finished[i] = true;
+			if(finished.reduce(op.and))
+				callback.apply(this, rets);
+		}
+		for(var i = 0; i < funs.length; i++)
+			funs[i](success.c(i), failFun.c(i));
+	}
 }
 
 function randStr()
@@ -229,3 +262,14 @@ if(!window.isEmail)
 		//Source: http://maximeparmentier.com/2012/04/09/javascript-rfc2822-email-validation/
 		return /^([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22))*\x40([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d))*$/.test(email);
 	}
+
+if(!String.prototype.hashCode)
+	String.prototype.hashCode = function(){
+		var hash = 0;
+		var l = this.length;
+		for(var i = 0; i < l; i++) {
+			hash  = (hash<<5)-hash+this.charCodeAt(i);
+			hash |= 0; // Convert to 32bit integer
+		}
+		return hash;
+	};

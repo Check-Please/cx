@@ -83,9 +83,7 @@ public abstract class AbstractAccount extends AbstractKind
 
 	public static AbstractAccount build(Entity e)
 	{
-		if(e.getKind().equals(User.getKind()))
-			return new User(e);
-		else if(e.getKind().equals(Restaurant.getKind()))
+		if(e.getKind().equals(Restaurant.getKind()))
 			return new Restaurant(e);
 		else
 			throw new IllegalArgumentException("Unknown account type");

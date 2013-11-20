@@ -41,15 +41,15 @@ public class CloseClientServlet extends PostServletBase
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
 	{
 		if(p.getStr(0) == null)
-			closeChannel(p.getKeyName(0), ClosedMobileClient.CloseCause.CLIENT_CLOSE, ds);
+			closeChannel(p.getKeyName(0), ClosedMobileClient.CLOSE_CAUSE__CLIENT_CLOSE, ds);
 		else 
-			closeChannel(p.getKeyName(0), ClosedMobileClient.CloseCause.ERROR, p.getStr(0), ds);
+			closeChannel(p.getKeyName(0), ClosedMobileClient.CLOSE_CAUSE__ERROR, p.getStr(0), ds);
 	}
-	public static boolean closeChannel(String cID, ClosedMobileClient.CloseCause cause, DatastoreService ds)
+	public static boolean closeChannel(String cID, long cause, DatastoreService ds)
 	{
 		return closeChannel(cID, cause, null, ds);
 	}
-	private static boolean closeChannel(String cID, ClosedMobileClient.CloseCause cause, String errMsg, DatastoreService ds)
+	private static boolean closeChannel(String cID, long cause, String errMsg, DatastoreService ds)
 	{
 		try {
 			BasicPointer ptr = new BasicPointer(KeyFactory.createKey(BasicPointer.getKind(), cID), ds);

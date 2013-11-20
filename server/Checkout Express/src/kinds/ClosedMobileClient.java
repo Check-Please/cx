@@ -12,18 +12,28 @@ public class ClosedMobileClient extends MobileClient
 	public static String getKind() { return "closed_mobile_client"; }
 	private Long rating;
 	private Long tip;
-	public enum CloseCause { PAID, DISCONNECTED, TICKET_CLOSED, CLIENT_CLOSE, ERROR }
-	private CloseCause closeCause;
+	public static final long CLOSE_CAUSE__PAID = 1L;
+	public static final long CLOSE_CAUSE__DISCONNECTED = 2L;
+	public static final long CLOSE_CAUSE__TICKET_CLOSED = 3L;
+	public static final long CLOSE_CAUSE__CLIENT_CLOSE = 4L;
+	public static final long CLOSE_CAUSE__ERROR = 5L;
+	private Long closeCause;
 	private String errMsg;
+
+
+	//Define list of possible close causes
+	//We do not use an enum because we don't want the ordinal value to change if some causes are 
+	//added and some are removed.  This would make results previously stored in the database
+	//incorrect
 	public ClosedMobileClient(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
 	public ClosedMobileClient(Entity e) { super(e); }
 
-	public ClosedMobileClient(String restr, MobileClient mc, CloseCause c)
+	public ClosedMobileClient(String restr, MobileClient mc, Long c)
 	{
 		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), mc.getKey().getName()), mc.itemsToPay, mc.username, mc.startTimes, mc.ticketLogID);
 		init(restr, mc, c, null);
 	}
-	public ClosedMobileClient(String restr, MobileClient mc, CloseCause c, String errMsg)
+	public ClosedMobileClient(String restr, MobileClient mc, Long c, String errMsg)
 	{
 		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), mc.getKey().getName()), mc.itemsToPay, mc.username, mc.startTimes, mc.ticketLogID);
 		init(restr, mc, c, errMsg);
@@ -31,9 +41,9 @@ public class ClosedMobileClient extends MobileClient
 	public ClosedMobileClient(String restr, MobileClient mc, String errMsg)
 	{
 		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), mc.getKey().getName()), mc.itemsToPay, mc.username, mc.startTimes, mc.ticketLogID);
-		init(restr, mc, CloseCause.ERROR, errMsg);
+		init(restr, mc, CLOSE_CAUSE__ERROR, errMsg);
 	}
-	private void init(String restr, MobileClient mc, CloseCause c, String err)
+	private void init(String restr, MobileClient mc, Long c, String err)
 	{
 		rating = null;
 		tip = null;
@@ -57,7 +67,7 @@ public class ClosedMobileClient extends MobileClient
 		Entity e = super.toEntity();
 		e.setProperty("rating", rating);
 		e.setProperty("tip", tip);
-		e.setProperty("closeCause", (long) closeCause.ordinal());
+		e.setProperty("closeCause", closeCause);
 		e.setProperty("errMsg", errMsg);
 		return e;
 	}
@@ -66,7 +76,7 @@ public class ClosedMobileClient extends MobileClient
 		super.fromEntity(e);
 		rating = (Long) e.getProperty("rating");
 		tip = (Long) e.getProperty("tip");
-		closeCause = CloseCause.values()[((Long) e.getProperty("closeCause")).intValue()];
+		closeCause = (Long) e.getProperty("closeCause");
 		errMsg = (String) e.getProperty("errMsg");
 	}
 }
