@@ -1,0 +1,13 @@
+*
+!.gitignore
+!favicon.ico
+!Checkout_Express.css
+!Checkout_Express.html
+!checkout_express/
+!checkout_express/*
+!checkout_express/**
+!checkout_express/**/*
+!WEB-INF/
+!WEB-INF/*
+!WEB-INF/**
+!WEB-INF/**/*

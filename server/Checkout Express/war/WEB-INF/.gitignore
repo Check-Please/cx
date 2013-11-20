@@ -1,0 +1,10 @@
+*
+!.gitignore
+!appengine-web.xml
+!logging.properties
+!lib/
+!lib/*
+!lib/**
+!lib/**/*
+lib/*appengine*
+lib/*gwt*
