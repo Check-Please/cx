@@ -171,18 +171,18 @@ This would compile to the following within the server's war/ folder:
 
 The following steps would be done to create these files:
 
-1.	All the files in the war/ directory not listed in
-	/server/protected_war.csv
-2.	The children of any "_raw" folder would be copied directly over
+1.	All the files in the `war/` directory not listed in
+	`/server/protected_war.csv`
+2.	The children of any `_raw` folder would be copied directly over
 3.	The remaining files would app be copied to a temporary directory to avoid
 	altering the origonals
 4.	In the temporary files, the builder would search for the strings
-	"{{_JQUERY_MODERN_VERSION__}}" and "{{_JQUERY_OLD_IE_VERSION__}}" and
+	`{{\_JQUERY_MODERN_VERSION__}}` and `{{_JQUERY_OLD_IE_VERSION__}}` and
 	replace them with "2.0.3" and "1.10.2" (respectively).
-5.	SASS would be run over the files in the "_style" folders and the results
-	will be placed into corresponding "_css" folders.
-6.	The contents of app/_templates would be compiled and the results placed
-	into app/_js
+5.	SASS would be run over the files in the `_style` folders and the results
+	will be placed into corresponding `_css` folders.
+6.	The contents of `app/_templates` would be compiled and the results placed
+	into `app/_js`
 7.	The final files would be created by merging files according to the
 	following rules:
 
