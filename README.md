@@ -44,7 +44,7 @@ Markdown Style Guide
 ====================
 
 *	We use GFM (https://help.github.com/articles/github-flavored-markdown)
-*	Please use ````` aggressively
+*	Please use `` ` `` aggressively
 *	Please write some sort of spec before writing code
 	(http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
 *	Please have fun :D
