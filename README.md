@@ -39,3 +39,12 @@ How to set up
 	shells are not yet supported, but you can be a hero and add them
 	yourself!  The actual work is done in python, you'll just need to write
 	a wrapper file
+
+Markdown Style Guide
+====================
+
+*	We use GFM (https://help.github.com/articles/github-flavored-markdown)
+*	Please use `\`` aggressively
+*	Please write some sort of spec before writing code
+	(http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
+*	Please have fun :D
