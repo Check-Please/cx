@@ -29,7 +29,7 @@ else:
         elif sys.argv[2] == "pwd":
             print "Print working directory relative to the project root"
         else:
-            print "No information on command \""+argv[2]+"\""
+            print "No information on command \""+sys.argv[2]+"\""
     elif sys.argv[1] == "home":
         print home
     elif sys.argv[1] == "pwd":

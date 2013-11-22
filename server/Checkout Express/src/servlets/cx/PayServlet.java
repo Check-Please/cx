@@ -2,6 +2,7 @@ package servlets.cx;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -16,9 +17,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import kinds.BasicPointer;
-import kinds.ClosedMobileClient;
-import kinds.MobileClient;
-import kinds.MobileTickKey;
+import kinds.ClosedUserConnection;
+import kinds.UserConnection;
+import kinds.TableKey;
 
 import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelServiceFactory;
@@ -50,17 +51,27 @@ public class PayServlet extends PostServletBase
 		config = new Configuration();
 		config.contentType = ContentType.JSON;
 		config.txnXG = true;
-		config.path = a("/", MobileTickKey.getKind(), "mobileKey");
+		config.path = a("/", TableKey.getKind(), "tableKey");
 		config.exists = true;
 		config.exists2 = true;
 		config.strs = a("pan", "name", "expr", "zip", "?cvv");
 		config.strLists = a("items");
 		config.longLists = a("nums", "denoms");
 		config.longs = a("total", "tip", "pan", "expr", "zip", "?cvv");//NOTE: total does not include tip
-		config.keyNames = a("clientID");
+		config.keyNames = a("connectionID");
 	}
-	//pre: pan, cvv ~= /^\d+$/
-	private static void validateInput(String pan, String expr, List<String> itemsToPay, List<Frac> payFracs) throws HttpErrMsg
+
+	/*	Validates various parts of the input.
+	 *
+	 *	@pre:	The pan, cvv, expr, and zip match /^\d+$/
+	 *	@param	pan Checked for length and that it follows Luhn's Algorithm
+	 *	@param	expr Checked for proper length
+	 *	@param	zip Checked for proper length
+	 *	@param	itemsToPay Checked for matching length against payFracs
+	 *	@param	payFracs Checked for matching length against itemsToPay.
+	 *	@throws	HttpErrMsg if the input wasn't valid
+	 */
+	private static void validateInput(String pan, String expr, String zip, List<String> itemsToPay, List<Frac> payFracs) throws HttpErrMsg
 	{
 		if(pan.length() < 8)
 			throw new HttpErrMsg("The card number is too short");
@@ -76,6 +87,8 @@ public class PayServlet extends PostServletBase
 		}
 		if(expr.length() != 4)
 			throw new HttpErrMsg("The expration date must be in YYMM format");
+		if(zip.length() != 5)
+			throw new HttpErrMsg("The zip code should be five digits");
 
 		Calendar date = new GregorianCalendar();
 		//TODO: The following will have Y2.1K bugs and I'm not totally sure
@@ -89,24 +102,54 @@ public class PayServlet extends PostServletBase
 		if(payFracs.size() != itemsToPay.size())
 			throw new HttpErrMsg("The number of fractions does not match the number of items");
 	}
-	private static void updatePaymentInfo(Map<String, Frac> paidMap, Set<String> itemsOnTicket, List<String> itemsToPay, List<Frac> payFracs) throws HttpErrMsg
+
+	/*	Validates that a payment is only targeting items on a ticket and isn't overpaying anything
+	 *
+	 *	@param	paidPart A map from item IDs to what fraction has already been paid
+	 *	@param	outstandingPayments A map from item IDs to the fraction which has outstanding payments associated with it
+	 *	@param	itemsOnTicket The set of all item IDs for items on the ticks
+	 *	@param	itemsToPay A list of the items which will be paid, at least in part, this time
+	 *	@param	payFracs A list of what fraction of each corresponding item will be paid
+	 *	@throws	HttpErrMsg if an item to be paid isn't on the ticket or would be over paid
+	 */
+	private static void validatePaymentFracs(Map<String, Frac> paidPart, Map<String, Frac> outstandingPayments, Set<String> itemsOnTicket, List<String> itemsToPay, List<Frac> payFracs) throws HttpErrMsg
 	{
 		for(int i = 0; i < itemsToPay.size(); i++) {
 			String itemID = itemsToPay.get(i);
 			if(!itemsOnTicket.contains(itemID))
 				throw new HttpErrMsg("You are trying to pay for an item which isn't on the ticket anymore");
-			Frac oldPaid = paidMap.get(itemID);
+			Frac oldPaid = paidPart.get(itemID);
 			if(oldPaid == null)
 				oldPaid = Frac.ZERO;
+			if(outstandingPayments.containsKey(itemID))
+				oldPaid.add(outstandingPayments.get(itemID));
 			Frac currentPay = payFracs.get(i);
 			Frac newPaid = oldPaid.add(currentPay);
 			if(newPaid.compareTo(Frac.ONE) > 0)
 				throw new HttpErrMsg("You are trying to pay for " + 
 								currentPay + " of an item that only has " +
 								Frac.ONE.sub(oldPaid) + " left");
-			paidMap.put(itemID, newPaid);
 		}
 	}
+
+	private static void addOrSubToMap(Map<String, Frac> m, List<String> keys, List<Frac> vals, boolean add)
+	{
+		for(int i = 0; i < keys.size(); i++) {
+			String k = keys.get(i);
+			Frac old = m.get(k);
+			if(old == null)
+				old = Frac.ZERO;
+			old = old.add(vals.get(i).mult(add ? 1 : -1));
+			m.put(k, old);
+		}
+	}
+
+	/*	Figures out if the ticket has been paid in full
+	 *
+	 *	@param	itemsOnTicket The set item IDs for all the items on the ticket
+	 *	@param	paidMap A map from item IDs to the fraction which is already paid
+	 *	@return	true iff the ticket has been paid in full
+	 */
 	private static boolean isPaid(Set<String> itemsOnTicket, Map<String, Frac> paidMap)
 	{
 		for(String id : itemsOnTicket) {
@@ -116,9 +159,31 @@ public class PayServlet extends PostServletBase
 		}
 		return true;
 	}
-	private static void pay(JSONObject query, String restr, String pan, String name, String expr, String zip, String cvv, List<TicketItem> items, long total, long tip, DatastoreService ds) throws JSONException, HttpErrMsg
+
+	/*	Pays the ticket
+	 *
+	 *	@param	query The query to find the ticket with
+	 *	@param	restr The username for the restaurant
+	 *	@param	pan The principle account number
+	 *	@param	name The name on the card
+	 *	@param	expr The expiration date on the card
+	 *	@param	zip The zip code for the card
+	 *	@param	cvv The security code for the card
+	 *	@param	itemsToPay A list of the items which will be paid, at least in part, this time
+	 *	@param	payFracs A list of what fraction of each corresponding item will be paid
+	 *	@param	items The items on the ticket
+	 *	@param	total The total being paid (not including tip)
+	 *	@param	tip The tip being paid
+	 *	@param	ds The datastore
+	 *
+	 *	@throws	HttpErrMsg If for some reason the payment cannot happen
+	 *	@return true iff the payment is synchronous (i.e. true = the ticket has now been paid,
+	 *			false = the ticket as merely been set up to be paid later)
+	 */
+	private static boolean pay(JSONObject query, String restr, String pan, String name, String expr, String zip, String cvv, List<String> itemsToPay, List<Frac> paidFracs, List<TicketItem> items, long total, long tip, DatastoreService ds) throws JSONException, HttpErrMsg
 	{
-		if(query.getString("method").equals("oz")) {
+		String method = query.getString("method");
+		if(method.equals("oz")) {
 			Data d = new Data(MyUtils.get_NoFail(KeyFactory.createKey(Data.getKind(), restr), ds));
 			JSONObject msg = new JSONObject();
 			msg.put("items", new JSONArray(items.toString()));
@@ -128,33 +193,80 @@ public class PayServlet extends PostServletBase
 			msg.put("name", name);
 			msg.put("expr", expr);
 			msg.put("zip", zip);
+			msg.put("itemsToPay", new JSONArray(itemsToPay.toString()));
+			msg.put("paidFracNums", new JSONArray(Frac.getNums(paidFracs).toString()));
+			msg.put("paidFracDenoms", new JSONArray(Frac.getDenoms(paidFracs).toString()));
 			if(cvv != null)
 				msg.put("cvv", cvv);
 			ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(d.getClient(), msg.toString()));
-		}
+			return false;
+		} else if(method.equals("preloaded"))
+			return true;
+		else
+			throw new HttpErrMsg("Unknown query method");
 	}
-	private static void updateDS(MobileTickKey mobile, JSONObject query, Set<String> itemsOnTicket, String clientID, boolean ticketPaid, DatastoreService ds) throws JSONException, HttpErrMsg
+
+	/*	Closes the connection without sending a split update
+	 *
+	 *	@param	table The table key
+	 *	@param	connectionID The ID for the connection of the user who made this payment
+	 *	@param	tip	The tip the client paid
+	 *	@param	ds The datastore
+	 */
+	private static void closeConnection(TableKey table, String connectionID, long tip, DatastoreService ds) throws JSONException, HttpErrMsg
 	{
-		ds.delete(KeyFactory.createKey(BasicPointer.getKind(), clientID));
-		MobileClient mc = new MobileClient(MyUtils.get_NoFail(mobile.getKey().getChild(MobileClient.getKind(), clientID), ds));
-		new ClosedMobileClient(mobile.getRestrUsername(), mc, ClosedMobileClient.CLOSE_CAUSE__PAID).commit(ds);
-		mc.rmv(ds);
+		ds.delete(KeyFactory.createKey(BasicPointer.getKind(), connectionID));
+		UserConnection uc = new UserConnection(MyUtils.get_NoFail(table.getKey().getChild(UserConnection.getKind(), connectionID), ds));
+		ClosedUserConnection cuc = new ClosedUserConnection(table.getRestrUsername(), uc, ClosedUserConnection.CLOSE_CAUSE__PAID);
+		cuc.setTip(tip);
+		cuc.commit(ds);
+		uc.rmv(ds);
+	}
+
+	/*	Reopens a connection
+	 *
+	 *	This is called in case the client was closed for an asyncronous payment which later failed.
+	 *
+	 *	@param	table The table key
+	 *	@param	connectionID The ID for the connection of the user who made the failed payment
+	 *	@param	ds The datastore
+	 */
+	private static void reopenConnection(TableKey table, String connectionID, DatastoreService ds)
+	{
+		new BasicPointer(KeyFactory.createKey(BasicPointer.getKind(), connectionID), table.getKey().getName()).commit(ds);
+		ClosedUserConnection cuc = new ClosedUserConnection(MyUtils.get_NoFail(table.getKey().getChild(UserConnection.getKind(), connectionID), ds));
+		new UserConnection(cuc).commit(ds);
+		cuc.rmv(ds);
+
+	}
+
+	/*	Finalizes the metadata in the ticket and sends updates.  This entails clearing the meta-
+	 *	data if the ticket was just paid in full, sending channel messages if not, and actually
+	 *	commiting to the datastore
+	 *
+	 *	@param	table The table key
+	 *	@param	connectionID The ID for the connection of the user who made this payment
+	 *	@param	ticketPaid Whether or not the ticket has just been paid in full
+	 *	@param	ds The datastore
+	 */
+	private void finalizeMetadata(TableKey table, String connectionID, boolean ticketPaid, DatastoreService ds) throws JSONException, HttpErrMsg
+	{
 		if(ticketPaid) {
-			if(mobile.clearTickMetadata(ds))
-				mobile.commit(ds);
+			if(table.clearTickMetadata(ds))
+				table.commit(ds);
 		} else {
 			try {
-				mobile.sendItemsUpdateAndRemoveSplit(clientID, ds);
+				table.sendItemsUpdateAndRemoveSplit(connectionID, ds);
 			} catch (UnsupportedFeatureException e) {
-				mobile.sendErrMsg(e.getMessage(), ds);
+				table.sendErrMsg(e.getMessage(), ds);
 			}
-			mobile.commit(ds);
+			table.commit(ds);
 		}
 	}
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException, HttpErrMsg
 	{
 		//Get params
-		MobileTickKey mobile = new MobileTickKey(p.getEntity());
+		TableKey table = new TableKey(p.getEntity());
 		String pan = p.getStr(0);
 		String name = p.getStr(1);
 		String expr = p.getStr(2);
@@ -169,31 +281,114 @@ public class PayServlet extends PostServletBase
 		}
 		long total = p.getLong(0);
 		long tip = p.getLong(1);
-		String clientID = p.getKeyName(0);
-		validateInput(pan, expr, itemsToPay, payFracs);
+		String connectionID = p.getKeyName(0);
+		validateInput(pan, expr, zip, itemsToPay, payFracs);
+
 
 		//Get/set internal payment info
 		List<TicketItem> items;
 		try {
-			items = TicketItem.getItems(mobile, ds);
+			items = TicketItem.getItems(table, ds);
 		} catch (UnsupportedFeatureException e) {
 			throw new HttpErrMsg(e.getMessage());
 		}
 		Set<String> itemsOnTicket = new HashSet<String>();
 		for(TicketItem item : items)
 			itemsOnTicket.add(item.getID());
-		Map<String, Frac> paidMap = mobile.getPaidMap();
-		updatePaymentInfo(paidMap, itemsOnTicket, itemsToPay, payFracs);
-		boolean ticketPaid = isPaid(itemsOnTicket, paidMap);
+		Map<String, Frac> paidPart = table.getPaidPart();
+		Map<String, Frac> outstandingPayments = table.getOutstandingPart();
+		validatePaymentFracs(paidPart, outstandingPayments, itemsOnTicket, itemsToPay, payFracs);
 
-		//Pay & update DS
-		JSONObject query = new JSONObject(mobile.getQuery());
-		pay(query, mobile.getRestrUsername(), pan, name, expr, zip, cvv, items, total, tip, ds);
-		updateDS(mobile, query, itemsOnTicket, clientID, ticketPaid, ds);
+		//Pay
+		JSONObject query = new JSONObject(table.getQuery());
+		JSONObject ret = new JSONObject();
+		boolean sync = pay(query, table.getRestrUsername(), pan, name, expr, zip, cvv, itemsToPay, payFracs, items, total, tip, ds);
+		
+		closeConnection(table, connectionID, tip, ds);
+		boolean ticketPaid;
+		if(sync) {
+			addOrSubToMap(paidPart, itemsToPay, payFracs, true);
+			ticketPaid = isPaid(itemsOnTicket, paidPart);
+			ret.put("done", ticketPaid);
+		} else {
+			addOrSubToMap(outstandingPayments, itemsToPay, payFracs, true);
+			ticketPaid = false;
+			ret.put("loadMsg", query.get("method").equals("oz") ? "Accessing terminal" :
+							"Processing credit card");
+		}
+		finalizeMetadata(table, connectionID, ticketPaid, ds);
 
 		//Return
-		JSONObject ret = new JSONObject();
-		ret.put("done", ticketPaid);
 		out.println(ret);
+	}
+
+	/**	If a payment was asyncronus, this function should be called when the payment is
+	 *	completed.
+	 *
+	 *	The client is told to stop waiting and its connection is closed, the ticket's metadata is
+	 *	updated, and everyone is happy :D
+	 *
+	 *	@param	table The table where the payment occured
+	 *	@param	itemsOnTicket	A set of item IDs for the ticket.  Can be null, in which case it
+	 *							will be calculated using the datastore
+	 *	@param	connectionID The ID for the connection from which the payment was made
+	 *	@param	itemsPaid A list of IDs of items which were in part paid
+	 *	@param	ammountPaid The fraction which the corresponding item was paid by
+	 *	@param	ds The datastore
+	 */
+	public static void paymentSuccessCallback(TableKey table, Set<String> itemsOnTicket, String connectionID, List<String> itemsPaid, List<Frac> ammountPaid, DatastoreService ds) throws JSONException, HttpErrMsg
+	{
+		//Tell the client that they've paid
+		ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(connectionID, "load_update\n1"));
+
+		//Manage internal stuff
+		Map<String, Frac> paidPart = table.getPaidPart();
+		addOrSubToMap(paidPart, itemsPaid, ammountPaid, true);
+		if(itemsOnTicket == null) {
+			List<TicketItem> items;
+			try {
+				items = TicketItem.getItems(table, ds);
+			} catch (UnsupportedFeatureException e) {
+				table.sendErrMsg(e.getMessage(), ds);
+				items = new ArrayList<TicketItem>();
+			}
+			itemsOnTicket = new HashSet<String>();
+			for(TicketItem item : items)
+				itemsOnTicket.add(item.getID());
+		}
+		boolean ticketPaid = isPaid(itemsOnTicket, paidPart);
+		if(ticketPaid)
+			table.clearTickMetadata(ds);
+		else
+			addOrSubToMap(table.getOutstandingPart(), itemsPaid, ammountPaid, false);
+		table.commit(ds);
+	}
+
+	/**	If a payment was asyncronus, this function should be called when the payment fails to
+	 *	be completed
+	 *
+	 *	The client is informed and the outstanding payment ammount is reduced
+	 *
+	 *	@param	table The table where the payment occured
+	 *	@param	connectionID The ID for the connection from which the payment was made
+	 *	@param	itemsPaid A list of IDs of items which were in part paid
+	 *	@param	ammountPaid The fraction which the corresponding item was paid by
+	 *	@param	ds The datastore
+	 *	@param	msg A message for the client telling them why their payment failed
+	 */
+	public static void paymentFailureCallback(TableKey table, String connectionID, List<String> itemsPaid, List<Frac> ammountPaid, DatastoreService ds, String msg) throws JSONException, HttpErrMsg
+	{
+		//Manage internal stuff
+		reopenConnection(table, connectionID, ds);
+		addOrSubToMap(table.getOutstandingPart(), itemsPaid, ammountPaid, false);
+		try {
+			table.sendItemsUpdateAndRestoreSplit(connectionID, itemsPaid, ds);
+		} catch (UnsupportedFeatureException e) {
+			table.sendErrMsg(e.getMessage(), ds);
+		}
+		table.commit(ds);
+
+		//Tell the client that they they haven't paid
+		ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(connectionID, "load_update\n-1"+(msg == null ? "" : "\n"+msg)));
 	}
 }

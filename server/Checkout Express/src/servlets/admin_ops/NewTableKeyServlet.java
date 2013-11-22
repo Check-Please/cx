@@ -12,7 +12,7 @@ import static utils.MyUtils.a;
 
 import com.google.appengine.api.datastore.*;
 
-public class NewMobileKeyServlet extends GetServletBase {
+public class NewTableKeyServlet extends GetServletBase {
 	/** A unique key for identifying something-or-other
 	 */
 	private static final long serialVersionUID = -668194174579512772L;
@@ -46,6 +46,6 @@ public class NewMobileKeyServlet extends GetServletBase {
 			code =  g.getNextTicketKey(ds);
 			g.commit(ds);
 		}
-		(new MobileTickKey(KeyFactory.createKey(MobileTickKey.getKind(), code), p.getKeyName(0), p.getStr(0))).commit(ds);
+		(new TableKey(KeyFactory.createKey(TableKey.getKind(), code), p.getKeyName(0), p.getStr(0))).commit(ds);
 	}
 }

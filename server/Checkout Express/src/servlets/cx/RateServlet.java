@@ -5,8 +5,8 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import kinds.ClosedMobileClient;
-import kinds.MobileTickKey;
+import kinds.ClosedUserConnection;
+import kinds.TableKey;
 import kinds.Restaurant;
 
 import org.json.JSONException;
@@ -32,18 +32,18 @@ public class RateServlet extends PostServletBase
 	}
 	protected void configure() {
 		config = new Configuration();
-		config.path = a("/", MobileTickKey.getKind(), "mobileKey");
+		config.path = a("/", TableKey.getKind(), "tableKey");
 		config.exists = true;
-		config.keyNames = a("clientID");
+		config.keyNames = a("connectionID");
 		config.longs = a("rating");
 		config.txnXG = true;
 	}
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
 	{
-		MobileTickKey mobile = new MobileTickKey(p.getEntity());
-		ClosedMobileClient c = new ClosedMobileClient(MyUtils.get_NoFail(
+		TableKey table = new TableKey(p.getEntity());
+		ClosedUserConnection c = new ClosedUserConnection(MyUtils.get_NoFail(
 			KeyFactory.createKey(Restaurant.getKind(),
-				mobile.getRestrUsername()).getChild(ClosedMobileClient.getKind(),
+				table.getRestrUsername()).getChild(ClosedUserConnection.getKind(),
 					p.getKeyName(0)), ds));
 		c.setRating(p.getLong(0));
 		c.commit(ds);

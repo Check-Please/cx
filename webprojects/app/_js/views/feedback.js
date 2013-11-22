@@ -31,8 +31,8 @@ mvc.views = mvc.views || {};
 					$view.find(".ratings a").addClass("not-picked");
 					$this.removeClass("not-picked");
 					ajax.send("cx", "rate", {
-						mobileKey: mvc.key(),
-						clientID: mvc.clientID(),
+						tableKey: mvc.key(),
+						connectionID: mvc.connectionID(),
 						rating: rating
 					}, $.noop, buildAjaxErrFun("send rating"));
 				});

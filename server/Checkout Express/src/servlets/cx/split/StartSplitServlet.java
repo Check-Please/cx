@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 
 import org.json.JSONException;
 
-import kinds.MobileTickKey;
+import kinds.TableKey;
 
 import com.google.appengine.api.datastore.DatastoreService;
 
@@ -28,15 +28,15 @@ public class StartSplitServlet extends PostServletBase
 	}
 	protected void configure() {
 		config = new Configuration();
-		config.path = a("/", MobileTickKey.getKind(), "mobileKey");
+		config.path = a("/", TableKey.getKind(), "tableKey");
 		config.exists = true;
-		config.keyNames = a("clientID");
+		config.keyNames = a("connectionID");
 	}
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
 	{
-		MobileTickKey m = new MobileTickKey(p.getEntity());
-		m.startSplit();
-		m.sendStartSplit(p.getKeyName(0), ds);
-		m.commit(ds);
+		TableKey t = new TableKey(p.getEntity());
+		t.startSplit();
+		t.sendStartSplit(p.getKeyName(0), ds);
+		t.commit(ds);
 	}
 }

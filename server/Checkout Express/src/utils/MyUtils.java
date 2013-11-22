@@ -101,10 +101,10 @@ public class MyUtils
 			return new kinds.BasicPointer(e);
 		else if(e.getKind().equals(kinds.Globals.getKind()))
 			return new kinds.Globals(e);
-		else if(e.getKind().equals(kinds.MobileTickKey.getKind()))
-			return new kinds.MobileTickKey(e);
-		else if(e.getKind().equals(kinds.MobileClient.getKind()))
-			return new kinds.MobileClient(e);
+		else if(e.getKind().equals(kinds.TableKey.getKind()))
+			return new kinds.TableKey(e);
+		else if(e.getKind().equals(kinds.UserConnection.getKind()))
+			return new kinds.UserConnection(e);
 		else if(e.getKind().equals(kinds.Restaurant.getKind()))
 			return new kinds.Restaurant(e);
 		else

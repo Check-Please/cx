@@ -17,7 +17,7 @@ public class Data extends AbstractKind
 	public static String getKind() { return "oz_data"; }
 
 	List<String> data;
-	String clientID;
+	String channelID;
 
 	public Data(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
 	public Data(Entity e) { super(e); }
@@ -27,7 +27,7 @@ public class Data extends AbstractKind
 		data = new ArrayList<String>(len);
 		for(int i = 0; i < len; i++)
 			data.set(i, "{}");
-		clientID = null;
+		channelID = null;
 	}
 
 	public List<String> getData()
@@ -37,12 +37,12 @@ public class Data extends AbstractKind
 
 	public String getClient()
 	{
-		return clientID;
+		return channelID;
 	}
 
 	public void setClient(String clientID)
 	{
-		this.clientID = clientID;
+		this.channelID = clientID;
 	}
 
 	public void setData(int i, String datum)
@@ -54,13 +54,13 @@ public class Data extends AbstractKind
 	{
 		Entity e = new Entity(getKey());
 		DSConverter.setList(e, "data", data);
-		e.setProperty("clientID", clientID);
+		e.setProperty("clientID", channelID);
 		return e;
 	}
 
 	public void fromEntity(Entity e)
 	{
 		data = DSConverter.getList(e, "data");
-		clientID = (String) e.getProperty("clientID");
+		channelID = (String) e.getProperty("clientID");
 	}
 }

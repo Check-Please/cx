@@ -102,14 +102,14 @@ public abstract class ServletBase extends HttpServlet
 			Configuration config = getConfig();
 			if((config.securityType != null) && !req.isSecure() && !MyUtils.isDevServer()) {
 				switch(config.securityType) {
-				case REDIRECT:
-					StringBuffer requestURL = req.getRequestURL();
-					String queryString = req.getQueryString();
-					resp.sendRedirect((queryString == null ? requestURL : 
-						requestURL.append('?').append(queryString)
-							).toString().replaceFirst("http", "https"));
-					break;
-				case REJECT: throw new HttpErrMsg("SSL Required");
+					case REDIRECT:
+						StringBuffer requestURL = req.getRequestURL();
+						String queryString = req.getQueryString();
+						resp.sendRedirect((queryString == null ? requestURL : 
+							requestURL.append('?').append(queryString)
+								).toString().replaceFirst("http", "https"));
+						break;
+				  case REJECT: throw new HttpErrMsg("SSL Required");
 				}
 				return;
 			}

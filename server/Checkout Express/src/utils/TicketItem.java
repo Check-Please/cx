@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import kinds.MobileTickKey;
+import kinds.TableKey;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -156,8 +156,8 @@ public class TicketItem {
 			throw new IllegalArgumentException("Unknown system for query");
 	}
 
-	public static List<TicketItem> getItems(MobileTickKey mobile, DatastoreService ds) throws JSONException, UnsupportedFeatureException, HttpErrMsg
+	public static List<TicketItem> getItems(TableKey table, DatastoreService ds) throws JSONException, UnsupportedFeatureException, HttpErrMsg
 	{
-		return getItems(mobile.getQuery(), mobile.getRestrUsername(), mobile.getPaidMap(), ds);
+		return getItems(table.getQuery(), table.getRestrUsername(), table.getAccountedForPart(), ds);
 	}
 }

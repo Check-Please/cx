@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 
 import org.json.JSONException;
 
-import kinds.ClosedMobileClient;
+import kinds.ClosedUserConnection;
 
 import com.google.appengine.api.datastore.DatastoreService;
 
@@ -32,6 +32,6 @@ public class ChannelDisconnectServlet extends PostServletBase
 
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
 	{
-		CloseClientServlet.closeChannel(p.getClientID(), ClosedMobileClient.CLOSE_CAUSE__DISCONNECTED, ds);
+		CloseClientServlet.closeChannel(p.getChannelID(), ClosedUserConnection.CLOSE_CAUSE__DISCONNECTED, ds);
 	}
 }

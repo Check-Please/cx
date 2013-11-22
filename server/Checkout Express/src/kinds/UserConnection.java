@@ -20,33 +20,42 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 
-public class MobileClient extends AbstractKind
+public class UserConnection extends AbstractKind
 {
 	protected String kindName() { return getKind(); }
-	public static String getKind() { return "mobile_client"; }
+	public static String getKind() { return "user_connection"; }
 	protected Set<String> itemsToPay;
 	protected String username;
-	protected Map<Long, Date> startTimes;
+	protected Map<String, Date> startTimes;
 	protected String ticketLogID;
-	public MobileClient(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
-	public MobileClient(Entity e) { super(e); }
+	public UserConnection(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
+	public UserConnection(Entity e) { super(e); }
 
-	public MobileClient(Key k, String ticketLogID)
+	public UserConnection(Key k, String ticketLogID)
 	{
 		setKey(k);
 		itemsToPay = new HashSet<String>();
 		username = null;
-		startTimes = new HashMap<Long, Date>();
+		startTimes = new HashMap<String, Date>();
 		this.ticketLogID = ticketLogID;
 	}
 	
-	protected MobileClient(Key k, Set<String> itemsToPay, String username, Map<Long, Date> startTimes, String ticketLogID)
+	protected UserConnection(Key k, Set<String> itemsToPay, String username, Map<String, Date> startTimes, String ticketLogID)
 	{
 		setKey(k);
 		this.itemsToPay = itemsToPay;
 		this.username = username;
 		this.startTimes = startTimes;
 		this.ticketLogID = ticketLogID;
+	}
+
+	public UserConnection(ClosedUserConnection cuc)
+	{
+		setKey(cuc.getKey().getParent().getChild(getKind(), cuc.getKey().getName()));
+		this.itemsToPay = cuc.itemsToPay;
+		this.username = cuc.username;
+		this.startTimes = cuc.startTimes;
+		this.ticketLogID = cuc.ticketLogID;
 	}
 
 	public void addItem(String id)
@@ -74,9 +83,9 @@ public class MobileClient extends AbstractKind
 		username = u;
 	}
 
-	public void logPosition(long position)
+	public void logPosition(String pos)
 	{
-		startTimes.put(position, new Date());
+		startTimes.put(pos, new Date());
 	}
 
 	private static void sendMsg(String cmd, String param, Key k, ChannelService channelService)
@@ -89,6 +98,11 @@ public class MobileClient extends AbstractKind
 	public static void sendItemsUpdateAndRemoveSplit(List<TicketItem> items, String splitID, Key k, ChannelService channelService)
 	{
 		sendMsg("items_and_remove_split", items+"\n"+splitID, k, channelService);
+	}
+
+	public static void sendItemsUpdateAndRestoreSplit(List<TicketItem> items, String splitID, List<String> splitItems, Key k, ChannelService channelService)
+	{
+		sendMsg("items_and_restore_split", items+"\n"+splitID+"\n"+splitItems, k, channelService);
 	}
 
 	public static void sendSplitUpdate(String splitID, JSONArray splitItems, Key k, ChannelService channelService)
@@ -125,7 +139,7 @@ public class MobileClient extends AbstractKind
 	{
 		itemsToPay = (Set<String>) DSConverter.get(e, "itemsToPay", DSConverter.DataTypes.SET);
 		username = (String) e.getProperty("username");
-		startTimes = (Map<Long, Date>) DSConverter.get(e, "startTimes", DSConverter.DataTypes.MAP);
+		startTimes = (Map<String, Date>) DSConverter.get(e, "startTimes", DSConverter.DataTypes.MAP);
 		ticketLogID = (String) e.getProperty("ticketLogID");
 	}
 }

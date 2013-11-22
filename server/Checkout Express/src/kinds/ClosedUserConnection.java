@@ -6,10 +6,10 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
-public class ClosedMobileClient extends MobileClient
+public class ClosedUserConnection extends UserConnection
 {
 	protected String kindName() { return getKind(); }
-	public static String getKind() { return "closed_mobile_client"; }
+	public static String getKind() { return "closed_user_connection"; }
 	private Long rating;
 	private Long tip;
 	public static final long CLOSE_CAUSE__PAID = 1L;
@@ -25,31 +25,31 @@ public class ClosedMobileClient extends MobileClient
 	//We do not use an enum because we don't want the ordinal value to change if some causes are 
 	//added and some are removed.  This would make results previously stored in the database
 	//incorrect
-	public ClosedMobileClient(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
-	public ClosedMobileClient(Entity e) { super(e); }
+	public ClosedUserConnection(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
+	public ClosedUserConnection(Entity e) { super(e); }
 
-	public ClosedMobileClient(String restr, MobileClient mc, Long c)
+	public ClosedUserConnection(String restr, UserConnection uc, Long c)
 	{
-		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), mc.getKey().getName()), mc.itemsToPay, mc.username, mc.startTimes, mc.ticketLogID);
-		init(restr, mc, c, null);
+		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), uc.getKey().getName()), uc.itemsToPay, uc.username, uc.startTimes, uc.ticketLogID);
+		init(restr, uc, c, null);
 	}
-	public ClosedMobileClient(String restr, MobileClient mc, Long c, String errMsg)
+	public ClosedUserConnection(String restr, UserConnection uc, Long c, String errMsg)
 	{
-		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), mc.getKey().getName()), mc.itemsToPay, mc.username, mc.startTimes, mc.ticketLogID);
-		init(restr, mc, c, errMsg);
+		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), uc.getKey().getName()), uc.itemsToPay, uc.username, uc.startTimes, uc.ticketLogID);
+		init(restr, uc, c, errMsg);
 	}
-	public ClosedMobileClient(String restr, MobileClient mc, String errMsg)
+	public ClosedUserConnection(String restr, UserConnection uc, String errMsg)
 	{
-		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), mc.getKey().getName()), mc.itemsToPay, mc.username, mc.startTimes, mc.ticketLogID);
-		init(restr, mc, CLOSE_CAUSE__ERROR, errMsg);
+		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), uc.getKey().getName()), uc.itemsToPay, uc.username, uc.startTimes, uc.ticketLogID);
+		init(restr, uc, CLOSE_CAUSE__ERROR, errMsg);
 	}
-	private void init(String restr, MobileClient mc, Long c, String err)
+	private void init(String restr, UserConnection uc, Long c, String err)
 	{
 		rating = null;
 		tip = null;
 		closeCause = c;
 		errMsg = err;
-		logPosition(-1);
+		logPosition("CLOSE");
 	}
 
 	public void setRating(long r)

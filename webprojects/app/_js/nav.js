@@ -20,7 +20,7 @@
 		//Use different logo images for each small size
 		var $logo = $("#footer img");
 		var logoH = fSz < 8 || fSz > 24 ? null : Math.ceil(fSz*2.5);
-		$logo.attr("src", "img/cx" + (fSz>24 ? "":"_"+(logoH||20)) + ".png");
+		$logo.attr("src", "img/app/cx"+(fSz>24?"":"_"+(logoH||20)) + ".png");
 		if(logoH == null)
 			$logo.removeAttr("style");
 		else
@@ -87,9 +87,9 @@
 
 			//Spy
 			if(inited && !isFeedback)
-				ajax.send("cx", "log_pos", {position: pageName,
-					mobileKey: mvc.key(), clientID: mvc.clientID()}, $.noop,
-					buildAjaxErrFun("contact the server"));
+				ajax.send("cx", "log_pos", {position: view.viewName,
+					tableKey: mvc.key(), connectionID: mvc.connectionID()},
+					$.noop, buildAjaxErrFun("contact the server"));
 
 			//Actually transition from old view to new view
 			var $view = $("#view");
@@ -97,18 +97,20 @@
 				currView.unbuild($view, view);
 			if(DEBUG) {
 				assert($("#view > :visible").length == 0);
-				DEBUG.elems = $("#view > *");
+				window.DEBUG_VAR = $("#view > *");
 			}
 			window.location.hash = "#"+view.viewName;
-			$("body").removeClass(currView.viewName+"-page");
+			if(currView != null)
+				$("body").removeClass(currView.viewName+"-page");
 			$("body").addClass(view.viewName+"-page");
 			if(view.build != null)
 				view.build($view, currView);
 			if(DEBUG) {
-				DEBUG.elems.each(function() {
+				window.DEBUG_VAR.each(function() {
 					assert($(this).parent("#view").length == 1);
 				});
-				delete DEBUG.elems;
+				window.DEBUG_VAR = undefined;
+				delete window.DEBUG_VAR;
 			}
 			currView = view;
 
@@ -123,7 +125,11 @@
 
 	window.onload = function() {
 		inParallel([device.getTableKey, device.getPos], function(tKey, pos) {
-			ajax.load("cx", "init", {
+			tKey = tKey[0] || "";
+			if(tKey == "" && !device.isNative())
+				return(window.location = window.location.hostname
+														+ "/splash.html");
+			ajax.send("cx", "init", {
 				isNative: device.isNative(),
 				tableKey: tKey,
 				clientID: device.getClientID(),
@@ -142,10 +148,11 @@
 					return;
 				}
 				mvc.init({
+					key: tKey,
 					restrName: data.restrName,
 					restrAddress: data.restrAddress,
 					restrStyle: data.restrStyle,
-					channelID: data.channelID,
+					connectionID: data.connectionID,
 					items: data.items,
 					split: data.split,
 					selection: {},
@@ -169,6 +176,7 @@
 					$("#header").append($img);
 				}
 				loading.init();
+				inited = true;
 				window.onhashchange();
 			}, buildAjaxErrFun("establish connection with the server"));
 		});
@@ -180,7 +188,7 @@
 		}
 
 		mvc.split.listen(function(oldSplit) {
-			if(!mvc.done() && (mvc.split() != null) &&
+			if(!mvc.done() && (mvc.split()!=null) && (mvc.loading()==null) && 
 					((oldSplit == null) || !mvc.views.split.valid())) {
 				mvc.tip(null);
 				goToView(mvc.views.split);
@@ -192,30 +200,31 @@
 				goToView(mvc.views[contract]);
 		});
 		mvc.paid.listen(function() {
-			if(mvc.paid())
+			if(mvc.paid()) {
+				mvc.loading(null);
 				goToView(mvc.views.feedback);
+			}
 		});
 		mvc.done.listen(function() {
-			if(mvc.done())
+			if(mvc.done()) {
+				mvc.loading(null);
 				goToView(mvc.views.feedback);
+			}
 		});
 		mvc.items.listen(function() {
 			if(mvc.items().length == 0) {
+				mvc.loading(null);
 				mvc.done(true);
 				goToView(mvc.views.feedback);
 			}
 		});
 		mvc.err.listen(function() {
-			function putErr() {
-				goToPage(mvc.views.error);
-				ajax.send("cx", "close", {clientID:mvc.clientID(),error:err},
-					$.noop);
-			}
-			if($("body").size() == 0)
-				window.onload = putErr;
-			else {
-				putErr();
-				socket.close();
+			if(mvc.err() != null) {
+				mvc.loading(null);
+				if($("body").size() == 0)
+					window.onload = goToView.c(mvc.views.error);
+				else
+					goToView(mvc.views.error);
 			}
 		});
 
@@ -232,17 +241,16 @@
 			});
 		}
 		window.onkeydown = function(x) {
-			if(x.keyCode == 13)
+			if((x.keyCode == 13) && (mvc.loading() == null))
 				$(".confirm:visible").click();
 		}
-		inited = true;
 	};
 
 	var unloading = false;
 	window.onunload = window.onbeforeunload = function() {
-		if((mvc.err() == null) && !unloading) {
+		if(mvc.inited() && (mvc.err() == null) && !unloading) {
 			unloading = true;
-			ajax.send("cx", "close", {clientID: mvc.clientID()});
+			ajax.send("cx", "close", {connectionID: mvc.connectionID()});
 		}
 	};
 

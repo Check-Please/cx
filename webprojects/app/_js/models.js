@@ -1,14 +1,15 @@
 /*	This model defines all the models.  Those are:
  *		inited - true iff the models have been initialized
+ *		key - The table key
  *		restrName - The name of the restaurant
  *		restrAddress - The address of the restaurant
  *		restrStyle -	The name of a custom stylesheet for the restaurant,
  *						if one exists
- *		channelID - Used to tell the server who changed something
+ *		connectionID - Used to tell the server who changed something
  *		items -	The items on the ticket.  Stored as an array of objects.
  *				Objects follow more or less the format in TicketItem.java
  *		split -	The way the items are split between the payers
- *				Map from clientIDs to arrays of item ids
+ *				Map from connectionIDs to arrays of item ids
  *		selection -	The items this user has picked.
  *					Map from item ids to booleans.  Null is false
  *		tip - How much the user has tipped
@@ -53,9 +54,9 @@ var mvc = {};
 	}
 
 	var vals;
-	[	'restrName', 'restrAddress', 'restrStyle', 'channelID', 'items',
-		'split', 'selection', 'tip', 'contract', 'loadMsg', 'paid', 'done',
-		'err'].forEach(function(name) {
+	[	'key', 'restrName', 'restrAddress', 'restrStyle', 'connectionID',
+		'items', 'split', 'selection', 'tip', 'contract', 'loadMsg', 'paid',
+		'done', 'err'].forEach(function(name) {
 		function myNotify(old) {
 			if(DEBUG)
 				assert(inited);
@@ -75,11 +76,7 @@ var mvc = {};
 			return vals[name];
 		};
 		mvc[name].notify = op.call.c(myNotify);
-		mvc[name].listen = function(f) {
-			if(DEBUG)
-				assert(inited);
-			ls.push(f);
-		};
+		mvc[name].listen = function(f) { ls.push(f); };
 	});
 
 	mvc.init = function(v)
@@ -90,7 +87,7 @@ var mvc = {};
 			assert(!v.hasOwnProperty("inited"));
 		}
 		vals = v;
-		for(view in mvc.views)
+		for(var view in mvc.views)
 			mvc.views[view].viewName = view;
 		inited = true;
 	};

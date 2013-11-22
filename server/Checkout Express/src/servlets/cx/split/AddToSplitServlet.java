@@ -8,8 +8,8 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import kinds.MobileClient;
-import kinds.MobileTickKey;
+import kinds.UserConnection;
+import kinds.TableKey;
 
 import com.google.appengine.api.datastore.DatastoreService;
 
@@ -30,7 +30,7 @@ public class AddToSplitServlet extends PostServletBase
 	}
 	protected void configure() {
 		config = new Configuration();
-		config.path = a("/", MobileTickKey.getKind(), "mobileKey", MobileClient.getKind(), "clientID");
+		config.path = a("/", TableKey.getKind(), "tableKey", UserConnection.getKind(), "connectionID");
 		config.exists = true;
 		config.strs = a("itemID");
 //		If for some reason the update has the old data, uncomment the following:
@@ -38,9 +38,9 @@ public class AddToSplitServlet extends PostServletBase
 	}
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
 	{
-		MobileClient c = new MobileClient(p.getEntity());
+		UserConnection c = new UserConnection(p.getEntity());
 		c.addItem(p.getStr(0));
 		c.commit(ds);
-		MobileTickKey.sendSplitUpdate(c.getKey().getName(), new JSONArray(c.getItems()), c.getKey().getParent(), ds);
+		TableKey.sendSplitUpdate(c.getKey().getName(), new JSONArray(c.getItems()), c.getKey().getParent(), ds);
 	}
 }

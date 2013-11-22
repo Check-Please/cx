@@ -6,9 +6,9 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpSession;
 
 import kinds.BasicPointer;
-import kinds.ClosedMobileClient;
-import kinds.MobileClient;
-import kinds.MobileTickKey;
+import kinds.ClosedUserConnection;
+import kinds.UserConnection;
+import kinds.TableKey;
 
 import org.json.JSONException;
 
@@ -35,15 +35,15 @@ public class CloseClientServlet extends PostServletBase
 	protected void configure() {
 		config = new Configuration();
 		config.txnXG = true;
-		config.keyNames = a("clientID");
+		config.keyNames = a("connectionID");
 		config.strs = a("?error");
 	}
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
 	{
 		if(p.getStr(0) == null)
-			closeChannel(p.getKeyName(0), ClosedMobileClient.CLOSE_CAUSE__CLIENT_CLOSE, ds);
+			closeChannel(p.getKeyName(0), ClosedUserConnection.CLOSE_CAUSE__CLIENT_CLOSE, ds);
 		else 
-			closeChannel(p.getKeyName(0), ClosedMobileClient.CLOSE_CAUSE__ERROR, p.getStr(0), ds);
+			closeChannel(p.getKeyName(0), ClosedUserConnection.CLOSE_CAUSE__ERROR, p.getStr(0), ds);
 	}
 	public static boolean closeChannel(String cID, long cause, DatastoreService ds)
 	{
@@ -53,11 +53,11 @@ public class CloseClientServlet extends PostServletBase
 	{
 		try {
 			BasicPointer ptr = new BasicPointer(KeyFactory.createKey(BasicPointer.getKind(), cID), ds);
-			Key mKey = KeyFactory.createKey(MobileTickKey.getKind(), ptr.getKeyName());
-			MobileClient mc = new MobileClient(mKey.getChild(MobileClient.getKind(), cID), ds);
-			new ClosedMobileClient(new MobileTickKey(mKey, ds).getRestrUsername(), mc, cause, errMsg).commit(ds);
-			mc.rmv(ds);
-			MobileTickKey.sendSplitUpdate(cID, null, mKey, ds);
+			Key tKey = KeyFactory.createKey(TableKey.getKind(), ptr.getKeyName());
+			UserConnection uc = new UserConnection(tKey.getChild(UserConnection.getKind(), cID), ds);
+			new ClosedUserConnection(new TableKey(tKey, ds).getRestrUsername(), uc, cause, errMsg).commit(ds);
+			uc.rmv(ds);
+			TableKey.sendSplitUpdate(cID, null, tKey, ds);
 			ds.delete(ptr.getKey());
 			return true;
 		} catch (EntityNotFoundException e) {

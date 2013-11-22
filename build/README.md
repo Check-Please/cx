@@ -8,8 +8,7 @@ The goals of the builder are as follows:
 	- Push files for all websites to the server
 	- Push files for webapp to any smartphone apps
 
------------------------------------------------------------------------------
-| Building the web.xml file
+Building the web.xml file
 -----------------------------------------------------------------------------
 
 The file /server/servlet-list.csv dictates what is put in the web.xml file.
@@ -51,8 +50,7 @@ they undergo the following transfermations (in order):
 	(4) The result is prepended with "servlets."
 Thus, "Parent Folder - Kid" becomes "servlets.parent_folder.kid"
 
------------------------------------------------------------------------------
-| Example of what happens to the files /webprojects/
+Example of what happens to the files /webprojects/
 -----------------------------------------------------------------------------
 
 Suppose the contents were as follows:
@@ -170,19 +168,19 @@ This would compile to the following within the server's war/ folder:
 	|--	helvetica.js
 
 The following steps would be done to create these files:
-(1)	All the files in the war/ directory not listed in
+1.	All the files in the war/ directory not listed in
 	/server/protected_war.csv
-(2)	The children of any "_raw" folder would be copied directly over
-(3) The remaining files would app be copied to a temporary directory to avoid
+2.	The children of any "_raw" folder would be copied directly over
+3.	The remaining files would app be copied to a temporary directory to avoid
 	altering the origonals
-(4)	In the temporary files, the builder would search for the strings
+4.	In the temporary files, the builder would search for the strings
 	"{{_JQUERY_MODERN_VERSION__}}" and "{{_JQUERY_OLD_IE_VERSION__}}" and
 	replace them with "2.0.3" and "1.10.2" (respectively).
-(5)	SASS would be run over the files in the "_style" folders and the results
+5.	SASS would be run over the files in the "_style" folders and the results
 	will be placed into corresponding "_css" folders.
-(6)	The contents of app/_templates would be compiled and the results placed
+6.	The contents of app/_templates would be compiled and the results placed
 	into app/_js
-(7)	The final files would be created by merging files according to the
+7.	The final files would be created by merging files according to the
 	following rules:
 		app/index.html					=>	app.html
 		website/faq/index.html			=>	website/faq.html
@@ -192,7 +190,7 @@ The following steps would be done to create these files:
 		website/_css/*					=>	css/website.css
 		website/faq/_css/*				=>	css/website/faq.css
 	Note that the "*" refers only to direct children.
-(8)	The temporary directory would be deleted.
+8.	The temporary directory would be deleted.
 
 In the www/ of the smartphone apps, you'd find the following:
 
@@ -225,16 +223,15 @@ merged into css/app.css, the iPhone's version of the file would have files
 app/_css/_iOS/* merged into it, and other smartphone apps would have nothing
 merged into them.
 
------------------------------------------------------------------------------
-| Compiling templates for the server
+Compiling templates for the server
 -----------------------------------------------------------------------------
 
 Templates described in server/templates/ are placed in the "templates"
 package.  Templates which are in sub folders are put into corresponding
 subpackages.
 
-Templates described in webprojects/ are placed in the "templates.web" package.
-Subpackages are used for templates of specific website.
+Templates described in webprojects/ are placed in the "templates.web"
+package.  Subpackages are used for templates of specific website.
 
 So, if server/templates/ had the content:
 

@@ -1,1 +1,38 @@
-If you just cloned this, you should probably read how_to_setup.txt
+How to set up
+===============================
+
+## First, download the following:
+	1.	The lastest JRE and JDK
+	2.	Python
+	3.	UglifyJS (install node.js, run "npm install uglify-js -g")
+	4.	SASS (install ruby, run "gem install sass")
+	5.	Eclipse (if you need to work on or locally run the server)
+	6.	The iPhone SDK (if you are going to work on the iPhone app)
+	7.	The Andriod SDK (if you are going to work on the Andriod app)
+	8.	Microsoft Visual Studio (if you are going to work on the plugin)
+
+9.	Run build.py
+
+## In order to get eclipse up and running, do the following:
+	10.	Open eclipse, and make its workspace ./server
+	11.	Make sure eclipse is using the latest JDK for your JRE
+			(Preferences > Java > Installed JREs)
+	12.	Install the Google App Engine Plugin
+			https://developers.google.com/appengine/docs/java/tools/eclipse
+	13.	Import the Checkout Express project from ./server
+
+##	You will be missing some JARs (you'll probably hear the SDK is missing).
+##	To fix this, do the following: 
+		14.	Make a new temporary App Engine project
+				(G > New Web Application Project)
+		15.	Copy the .jar's inside the new project's war/WEB-INF/lib into
+				the corresponding folder in checkout express's project.
+		16.	Delete the temporary project
+
+17.	Optionally, you can install our commandline tool "cx".  This makes
+	various common tasks slighly easier (e.g. "cx build").  You can run
+	"cx help" (after installing the script) for details.
+	With bash, just add the folder at ./scripts/bash to your $PATH.  Other
+	shells are not yet supported, but you can be a hero and add them
+	yourself!  The actual work is done in python, you'll just need to write
+	a wrapper file

@@ -5,8 +5,8 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import kinds.MobileClient;
-import kinds.MobileTickKey;
+import kinds.UserConnection;
+import kinds.TableKey;
 
 import org.json.JSONException;
 
@@ -29,14 +29,14 @@ public class LogPositionServlet extends PostServletBase
 	}
 	protected void configure() {
 		config = new Configuration();
-		config.path = a("/", MobileTickKey.getKind(), "mobileKey", MobileClient.getKind(), "clientID");
+		config.path = a("/", TableKey.getKind(), "tableKey", UserConnection.getKind(), "connectionID");
 		config.exists = true;
-		config.longs = a("position");
+		config.strs = a("position");
 	}
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
 	{
-		MobileClient c = new MobileClient(p.getEntity());
-		c.logPosition(p.getLong(0));
+		UserConnection c = new UserConnection(p.getEntity());
+		c.logPosition(p.getStr(0));
 		c.commit(ds);
 	}
 }

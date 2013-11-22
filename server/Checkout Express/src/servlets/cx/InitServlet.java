@@ -13,8 +13,8 @@ import org.json.JSONObject;
 
 import kinds.BasicPointer;
 import kinds.BasicTickLog;
-import kinds.MobileClient;
-import kinds.MobileTickKey;
+import kinds.UserConnection;
+import kinds.TableKey;
 import kinds.Restaurant;
 
 import com.google.appengine.api.channel.ChannelServiceFactory;
@@ -83,34 +83,34 @@ public class InitServlet extends PostServletBase
 			err(ERR__NO_TABLE_KEY, out);
 		else try {
 			tableKey = tableKey.toUpperCase();
-			MobileTickKey mobile = new MobileTickKey(KeyFactory.createKey(MobileTickKey.getKind(), tableKey), ds);
-			Restaurant restr = mobile.getRestr(ds);
-			List<TicketItem> items = TicketItem.getItems(mobile, ds);
+			TableKey table = new TableKey(KeyFactory.createKey(TableKey.getKind(), tableKey), ds);
+			Restaurant restr = table.getRestr(ds);
+			List<TicketItem> items = TicketItem.getItems(table, ds);
 			if(items == null || items.size() == 0) {
 				err(ERR__EMPTY_TICKET, out);
 				return;
 			}
-			if(mobile.clearOldMetadata(items, ds))
-				mobile.commit(ds);
-			String clientID = UUID.randomUUID().toString();
-			new BasicPointer(KeyFactory.createKey(BasicPointer.getKind(), clientID), tableKey).commit(ds);
-			String token = ChannelServiceFactory.getChannelService().createChannel(clientID);
+			if(table.clearOldMetadata(items, ds))
+				table.commit(ds);
+			String connectionID = UUID.randomUUID().toString();
+			new BasicPointer(KeyFactory.createKey(BasicPointer.getKind(), connectionID), tableKey).commit(ds);
+			String token = ChannelServiceFactory.getChannelService().createChannel(connectionID);
 			Key logKey = BasicTickLog.makeKey(restr.getKey().getName(), tableKey, items);
 			try {
 				ds.get(logKey);
 			} catch(EntityNotFoundException e) {
 				new BasicTickLog(logKey, items).commit(ds);
 			}
-			new MobileClient(mobile.getKey().getChild(MobileClient.getKind(), clientID), logKey.getName()).commit(ds);
+			new UserConnection(table.getKey().getChild(UserConnection.getKind(), connectionID), logKey.getName()).commit(ds);
 
 			JSONObject ret = new JSONObject();
 			ret.put("restrName", restr.getName());
 			ret.put("restrAddress", restr.getAddress());
 			ret.put("restrStyle", restr.getStyle());
 			ret.put("channelToken", token);
-			ret.put("channelID", clientID);
+			ret.put("connectionID", connectionID);
 			ret.put("items", new JSONArray(items.toString()));
-			ret.put("split", mobile.getSplit(clientID, ds));
+			ret.put("split", table.getSplit(connectionID, ds));
 		} catch (EntityNotFoundException e) {
 			err(ERR__INVALID_TABLE_KEY, out);
 		} catch (JSONException e) {

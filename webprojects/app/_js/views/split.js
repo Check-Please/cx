@@ -15,8 +15,8 @@ mvc.views = mvc.views || {};
 	 */
 	function send(cmd, params, f1, f2, f3) {
 		params = params || {};
-		params.mobileKey = mvc.key();
-		params.clientID = mvc.clientID();
+		params.tableKey = mvc.key();
+		params.connectionID = mvc.connectionID();
 		ajax.send("cx/split", cmd, params, f1, f2, f3);
 	};
 

@@ -44,7 +44,7 @@ public class Globals extends AbstractKind
 			for(int i = 0; i < sfxLen; i++)
 				key += Character.toString((char)(asciiA+rnd.nextInt(numChars)));
 			try {
-				ds.get(KeyFactory.createKey(MobileTickKey.getKind(), key));
+				ds.get(KeyFactory.createKey(TableKey.getKind(), key));
 				inDS = true;
 			} catch (EntityNotFoundException e) {
 				inDS = false;

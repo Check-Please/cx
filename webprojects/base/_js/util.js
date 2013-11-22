@@ -124,17 +124,18 @@ ajax.send = function(base, cmd, data, callback, failFun, boringUpdate)
  *			be called multiple times.
  *	@param	callback {Function} A callback final function, to be called upon
  *			the success of all the functions passed into this function
- *	@param	failfun {Function} The failure function.  Called if any of the
+ *	@param	failFun {Function} The failure function.  Called if any of the
  *			functions fails.  Gets passed the index of the function which
  *			failed.
  */
-function inSequence(funs, callback, failfun)
+function inSequence(funs, callback, failFun)
 {
+	failFun = failFun || $.noop;
 	function myARun(i) {
 		if(i == funs.length)
 			callback();
 		else
-			funs[i](myARun.c(i+1), failfun.c(i));
+			funs[i](myARun.c(i+1), failFun.c(i));
 	}
 	myARun(0);
 }
@@ -150,7 +151,7 @@ function inSequence(funs, callback, failfun)
  *			be called multiple times.
  *	@param	callback {Function} A callback final function, to be called upon
  *			the success of all the functions passed into this function
- *	@param	failfun {Function} The failure function.  Called if any of the
+ *	@param	failFun {Function} The failure function.  Called if any of the
  *			functions fails.  Gets passed the index of the function which
  *			failed.
  */
@@ -159,6 +160,7 @@ function inParallel(funs, callback, failFun)
 	if(funs.length == 0) {
 		callback([]);
 	} else {
+		failFun = failFun || $.noop;
 		var rets = new Array(funs.length);
 		var finished = Array.tabulate(funs.length, op.id.c(false));
 		function success(i) {

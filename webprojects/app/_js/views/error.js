@@ -8,10 +8,12 @@ mvc.views = mvc.views || {};
 	mvc.views.error = {
 		build: function($trgt) {
 			var err = mvc.err();
-			$trgt.append($((template["err__"+err] ||
-												template.cxErr.c(err))()));
-			ajax.send("cx", "close", {clientID: mvc.clientID(), error: err},
-				$.noop);
+			$trgt.append($((templates["err__"+err] ||
+												templates.err.c(err))()));
+			if(mvc.connectionID() != null)
+				ajax.send("cx", "close", {connectionID: mvc.connectionID(),
+										error: err}, $.noop);
+			socket.close();
 		}
 	};
 })();

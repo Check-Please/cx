@@ -182,4 +182,18 @@ public class Frac implements Comparable<Frac>
 			fs.add(new Frac(ns.get(i), ds.get(i)));
 		return fs;
 	}
+
+	public static Object getNums(List<Frac> fs) {
+		List<Long> ns = new ArrayList<Long>(fs.size());
+		for(Frac f : fs)
+			ns.add(f.getNum());
+		return ns;
+	}
+
+	public static Object getDenoms(List<Frac> fs) {
+		List<Long> ds = new ArrayList<Long>(fs.size());
+		for(Frac f : fs)
+			ds.add(f.getDenom());
+		return ds;
+	}
 }

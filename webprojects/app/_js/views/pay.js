@@ -224,8 +224,8 @@ mvc.views = mvc.views || {};
 			denoms.push(item.denom);
 		}
 		ajax.send("cx", "pay", {
-			mobileKey: mvc.key(),
-			clientID: mvc.clientID(),
+			tableKey: mvc.key(),
+			connectionID: mvc.connectionID(),
 			pan: pan,
 			name: name,
 			expr: expr,
@@ -239,8 +239,12 @@ mvc.views = mvc.views || {};
 			tip: mvc.tip()
 		}, function(resp) {
 			resp = JSON.parse(resp);
-			mvc.done(resp.done);
-			mvc.paid(true);
+			if(resp.loadMsg == null) {
+				mvc.done(resp.done);
+				mvc.paid(true);
+			} else {
+				mvc.loading(resp.loadMsg);
+			}
 			$(".loading").removeClass("loading");
 		}, buildAjaxErrFun("pay"));
 	}

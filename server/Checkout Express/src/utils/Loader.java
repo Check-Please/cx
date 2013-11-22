@@ -455,7 +455,7 @@ public class Loader implements ParamWrapper
 		return req.getQueryString();
 	}
 
-	public String getClientID() throws IOException
+	public String getChannelID() throws IOException
 	{
 		return ChannelServiceFactory.getChannelService().parsePresence(req).clientId();
 	}

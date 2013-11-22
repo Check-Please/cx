@@ -101,26 +101,33 @@ var device = device || {};
 			return q;
 	}
 
-	/**	Gets the location of the user
+	/**	Gets the location of the user.
 	 *
-	 *	@param	callback A callback function.  The parameters are, in order:
- 	 *						latitude, longitude, accuracy[, errCode, errMsg]
-	 *					 If no location should be found, the first three
-	 *					 will be null.  The error codes follow those of
-	 *					 PositionError.code 
+	 *	Must call the callback function within about 1000 ms
+	 *
+	 *	@param	callback	A callback function.  The parameters are:
+	 *							latitude, longitude, accuracy, errCode,errMsg
+	 *						If no location should be found, the first three
+	 *						will be undefined.  If a location is found, the
+	 *						last two will be.  The error codes follow those
+	 *					 	of PositionError.code
 	 */
 	device.getPos = function(callback)
 	{
-		if(navigator.geolocation)
+		if(navigator.geolocation) {
+			var ret = {code: 3, message: "Still waiting for user decision"};
 			navigator.geolocation.getCurrentPosition(function(pos) {
-				callback(	pos.coords.latitude, pos.coords.longitude,
-							pos.coords.accuracy); 
+				ret = pos.coords;
 			}, function(err) {
-				callback(null, null, null, err.code, err.message);
-			}, {enableHighAccuracy: true, timeout: 5000, maximumAge: 0});
-		else
-			callback(null, null, null, 2, "No geolocation available.  "+
-										"Please upgrade your browser");
+				ret = err;
+			}, {enableHighAccuracy: true, maximumAge: 0});
+			setTimeout(function() {
+				callback(	ret.latitude, ret.longitude, ret.accuracy,
+							ret.code, ret.message);
+			}, 1000);
+		} else
+			callback(undefined, undefined, undefined, 2,
+				"No geolocation available.  Please upgrade your browser");
 	};
 
 	/**	Gets some sort of hash identifying the device/user

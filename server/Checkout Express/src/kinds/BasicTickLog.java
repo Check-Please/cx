@@ -49,18 +49,18 @@ public class BasicTickLog extends AbstractKind
 				items.add(null);
 			}
 	}
-	public static String makeUniqueKeyName(String mobileKey, List<TicketItem> items)
+	public static String makeUniqueKeyName(String tableKey, List<TicketItem> items)
 	{
 		long startTime = Long.MAX_VALUE;
 		for(int i = 0; i < items.size(); i++)
 			startTime = Math.min(startTime, items.get(i).getOrderDate().getTime());
-		return mobileKey + "," + 
+		return tableKey + "," + 
 				MyUtils.encode64(Math.abs(items.hashCode())) + "," +
 				MyUtils.encode64(startTime);
 	}
-	public static Key makeKey(String restr, String mobileKey, List<TicketItem> items)
+	public static Key makeKey(String restr, String tableKey, List<TicketItem> items)
 	{
 		return KeyFactory.createKey(Restaurant.getKind(),
-			restr).getChild(getKind(), makeUniqueKeyName(mobileKey, items));
+			restr).getChild(getKind(), makeUniqueKeyName(tableKey, items));
 	}
 }

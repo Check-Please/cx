@@ -8,7 +8,7 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import kinds.MobileTickKey;
+import kinds.TableKey;
 import kinds.Restaurant;
 import utils.GetServletBase;
 import utils.HttpErrMsg;
@@ -54,7 +54,7 @@ public class InitServlet extends GetServletBase
 		query.put("restr", restr);
 		for(int i = 0; i < len; i++) {
 			query.put("i", i);
-			(new MobileTickKey(KeyFactory.createKey(MobileTickKey.getKind(), "OZ"+i), restr, query.toString())).commit(ds);
+			(new TableKey(KeyFactory.createKey(TableKey.getKind(), "OZ"+i), restr, query.toString())).commit(ds);
 		}
 	}
 }

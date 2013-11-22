@@ -35,5 +35,5 @@ public interface ParamWrapper
 	public Entity getEntity();
 	public Entity getEntity(int i);
 	public String getQueryString();
-	public String getClientID() throws IOException;
+	public String getChannelID() throws IOException;
 }

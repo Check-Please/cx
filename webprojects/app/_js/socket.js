@@ -59,6 +59,15 @@ var socket = socket || {};
 		},
 		DONE: function() {
 			mvc.done(true);
+		},
+		/*	type = 0 for msg update, -1 for error, 1 for paid
+		 */
+		LOAD_UPDATE: function(type, msg) {
+			switch(type) {
+				case 0: mvc.loading(msg); break;
+				case -1: if(msg!=null) alert(msg); mvc.loading(null); break;
+				case 1: mvc.loading(null); mvc.paid(true); break;
+			}
 		}
 	}
 

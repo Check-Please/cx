@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpSession;
 
 import kinds.BasicPointer;
-import kinds.MobileTickKey;
+import kinds.TableKey;
 
 import utils.GetServletBase;
 import utils.ParamWrapper;
@@ -38,9 +38,9 @@ public class CleanServlet extends GetServletBase
 	/*NOTE:  Never EVER do this shit with a get request.  This is a HACK. */
 	protected void doGet(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException
 	{
-		MobileTickKey m;
+		TableKey m;
 		try {
-			m = new MobileTickKey(KeyFactory.createKey(MobileTickKey.getKind(), "IKA"),ds);
+			m = new TableKey(KeyFactory.createKey(TableKey.getKind(), "IKA"),ds);
 			m.clearTickMetadata(ds);
 			m.commit(ds);
 			for(Entity e : ds.prepare(new Query(BasicPointer.getKind())).asIterable(FetchOptions.Builder.withLimit(1000)))

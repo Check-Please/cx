@@ -3,6 +3,8 @@
  *	@owner sjelin
  */
 
+var loading = loading || {};
+
 (function () {
 	"use strict";
 
@@ -21,4 +23,4 @@
 		mvc.loadMsg.listen(update);
 		update();
 	}
-})()
+})();

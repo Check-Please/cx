@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 
 import org.json.JSONException;
 
-import kinds.MobileTickKey;
+import kinds.TableKey;
 
 import utils.GetServletBase;
 import utils.ParamWrapper;
@@ -37,6 +37,6 @@ public class TmpServlet extends GetServletBase
 	{
 		String [] x = {"CVQ", "DSB", "KJQ", "KTF", "LKV", "YBQ", "YNA"};
 		for(String k : x)
-			ds.delete(KeyFactory.createKey(MobileTickKey.getKind(), k));
+			ds.delete(KeyFactory.createKey(TableKey.getKind(), k));
 	}
 }

@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import kinds.MobileTickKey;
+import kinds.TableKey;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.EntityNotFoundException;
@@ -41,8 +41,8 @@ public class FactSheetServlet extends GetServletBase
 			name = null;
 		} else try {
 			mKey = mKey.toUpperCase();
-			MobileTickKey mobile = new MobileTickKey(KeyFactory.createKey(MobileTickKey.getKind(), mKey), ds);
-			name = mobile.getRestr(ds).getName();
+			TableKey table = new TableKey(KeyFactory.createKey(TableKey.getKind(), mKey), ds);
+			name = table.getRestr(ds).getName();
 		} catch (EntityNotFoundException e) {
 			throw new HttpErrMsg(404, "No Such Restaurant");
 		}

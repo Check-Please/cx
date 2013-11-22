@@ -8,7 +8,7 @@ Admin Ops
 .CleanServlet, /admin/clean/
 .ClearDbServlet, /admin/clear_db/
 .DumpServlet, /admin/dump/
-.NewMobileKeyServlet, /admin/new_mobile/
+.NewTableKeyServlet, /admin/new_table/
 .NewRestrServlet, /admin/new_restr/
 .TmpServlet, /admin/tmp/
 
@@ -30,4 +30,7 @@ CX - Split
 Oz
 .ConnectServlet, /oz/connect/
 .InitServlet, /oz/init/
-.UpdateTickServlet, /oz/update/
+.PayerFailureServlet, /oz/failure/
+.PayerSuccessServlet, /oz/success/
+.UpdateTickServlet, /oz/tick/
+.UpdatePayerServlet, /oz/update/

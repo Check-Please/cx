@@ -131,6 +131,7 @@ def makeWebXML(src, dest):
                 "\t<!-- - - - - - - - - - - - - - - - - - -->\n\n");
 
     prefix = "servlets"
+    usedServlets = set([]);
     for line in infil:
         if "," in line:
             elems = line.split(",")
@@ -148,6 +149,12 @@ def makeWebXML(src, dest):
                 else:
                     servlet = re.sub(r'^.*\.(.*)$', r'\1', fname);
                 servlet = servlet[0].lower() + servlet[1:];
+                if servlet in usedServlets:
+                    i = 0;
+                    while (servlet+"_"+str(i)) in usedServlets:
+                        i += 1;
+                    servlet += "_"+str(i);
+                usedServlets.add(servlet);
             else:
                 servlet = elems[2].strip();
             outfl.write("\t<servlet>\n" +

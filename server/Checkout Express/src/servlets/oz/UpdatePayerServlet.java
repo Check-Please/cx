@@ -5,19 +5,18 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import utils.PostServletBase;
 import utils.HttpErrMsg;
 import utils.ParamWrapper;
 import static utils.MyUtils.a;
 
+import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 
-public class ConnectServlet extends PostServletBase
+public class UpdatePayerServlet extends PostServletBase
 {
 	/** A unique key for identifying something-or-other
 	 */
@@ -32,21 +31,12 @@ public class ConnectServlet extends PostServletBase
 		config = new Configuration();
 		config.adminReq = true;
 		config.txnReq = false;
-		config.path = a(Data.getKind(), "restr");
-		config.exists = true;
+		config.strs = a("channelID", "msg");
 	}
-
-	public static final String channelID = "the_wizard";
 
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, HttpErrMsg, JSONException
 	{
-		Data d = new Data(p.getEntity());
-		JSONObject ret = new JSONObject();
-		ret.put("channelID", channelID);
-		ret.put("token", ChannelServiceFactory.getChannelService().createChannel(channelID));
-		d.setClient(channelID);
-		ret.put("ticks", new JSONArray(d.getData().toString()));
-		d.commit(ds);
-		out.println(ret);
+		ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(p.getStr(0),
+				"load_update\n0\n"+p.getStr(1)));
 	}
 }
