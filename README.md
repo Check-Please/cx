@@ -1,7 +1,7 @@
 How to set up
 ===============================
 
-## First, download the following:
+### First, download the following:
 	1.	The lastest JRE and JDK
 	2.	Python
 	3.	UglifyJS (install node.js, run "npm install uglify-js -g")
