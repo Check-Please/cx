@@ -44,10 +44,12 @@ The format for servlet-list.csv is as follows:
 In order in increase readability, source packages listed servlet-list.csv are
 reformatted slightly before being put into the web.xml file.  Specifically,
 they undergo the following transfermations (in order):
+
 1.	Anything matching /\s*-\s+/ is replaced with a .
 2.	Spaces are replaced with underscores
 3.	Uppercase letters are made lowercase
 4.	The result is prepended with "servlets."
+
 Thus, "Parent Folder - Kid" becomes "servlets.parent_folder.kid"
 
 Example of what happens to the files /webprojects/
