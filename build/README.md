@@ -170,6 +170,7 @@ This would compile to the following within the server's war/ folder:
 	|--	helvetica.js
 
 The following steps would be done to create these files:
+
 1.	All the files in the war/ directory not listed in
 	/server/protected_war.csv
 2.	The children of any "_raw" folder would be copied directly over
