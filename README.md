@@ -35,7 +35,7 @@ How to set up
 4.	Optionally, you can install our commandline tool `cx`.  This makes
 	various common tasks slighly easier (e.g. `cx build`).  You can run
 	`cx help` (after installing the script) for details.
-	With bash, just add the folder at `./scripts/bash` to your `$PATH`.  Other
+	With bash, just add the folder at `./scripts/bash` to your `$PATH`. Other
 	shells are not yet supported, but you can be a hero and add them
 	yourself!  The actual work is done in python, you'll just need to write
 	a wrapper file
@@ -48,3 +48,11 @@ Markdown Style Guide
 *	Please write some sort of spec before writing code
 	(http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
 *	Please have fun :D
+
+License
+=======
+
+I mean, the code isn't really valuable without the team.  Honestly this
+should probably be a private repo, I'm just cheap.  So you can just assume
+that this has as restrictive a license as possible within the confines of
+being a public github project.  Also, it probably won't be public for long :(
