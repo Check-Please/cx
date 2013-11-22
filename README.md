@@ -20,7 +20,7 @@ How to set up
 	2.	Make sure eclipse is using the latest JDK for your JRE
 			(Preferences > Java > Installed JREs)
 	3.	Install the Google App Engine Plugin
-			https://developers.google.com/appengine/docs/java/tools/eclipse
+			(https://developers.google.com/appengine/docs/java/tools/eclipse)
 	4.	Import the Checkout Express project from `./server`
 
 	5.	You will be missing some JARs (you'll probably hear the SDK is
