@@ -1,12 +1,12 @@
 The goals of the builder are as follows:
-	- Build the web.xml file for the server
-	- Run some basic templating over all web files
-	- Compile .scss files into .css files
-	- Compress js files, unless the "--debug" flag is specified
-	- Compile template files
-	- Merge js and css files to reduce the number of requests to the server
-	- Push files for all websites to the server
-	- Push files for webapp to any smartphone apps
+- Build the web.xml file for the server
+- Run some basic templating over all web files
+- Compile .scss files into .css files
+- Compress js files, unless the "--debug" flag is specified
+- Compile template files
+- Merge js and css files to reduce the number of requests to the server
+- Push files for all websites to the server
+- Push files for webapp to any smartphone apps
 
 Building the web.xml file
 -----------------------------------------------------------------------------
@@ -44,10 +44,10 @@ The format for servlet-list.csv is as follows:
 In order in increase readability, source packages listed servlet-list.csv are
 reformatted slightly before being put into the web.xml file.  Specifically,
 they undergo the following transfermations (in order):
-	(1)	Anything matching /\s*-\s+/ is replaced with a .
-	(2) Spaces are replaced with underscores
-	(3) Uppercase letters are made lowercase
-	(4) The result is prepended with "servlets."
+1.	Anything matching /\s*-\s+/ is replaced with a .
+2.	Spaces are replaced with underscores
+3.	Uppercase letters are made lowercase
+4.	The result is prepended with "servlets."
 Thus, "Parent Folder - Kid" becomes "servlets.parent_folder.kid"
 
 Example of what happens to the files /webprojects/
@@ -182,6 +182,7 @@ The following steps would be done to create these files:
 	into app/_js
 7.	The final files would be created by merging files according to the
 	following rules:
+
 		app/index.html					=>	app.html
 		website/faq/index.html			=>	website/faq.html
 		app/_js/*						=>	js/app.js
@@ -189,6 +190,7 @@ The following steps would be done to create these files:
 		website/_js/*					=>	js/website.js
 		website/_css/*					=>	css/website.css
 		website/faq/_css/*				=>	css/website/faq.css
+
 	Note that the "*" refers only to direct children.
 8.	The temporary directory would be deleted.
 
