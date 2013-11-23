@@ -9,6 +9,7 @@ if len(sys.argv) < 2 or len(sys.argv) == 2 and sys.argv[1] == "help":
     print "\thelp - get help with this tool" 
     print "\thome - print the path to the root of the project"
     print "\tpwd - print working directory relative to the project root"
+    print "\tuntracked - print untracked files"
 else:
     home = os.path.realpath(os.path.join(os.path.dirname(__file__),".."))
 
@@ -26,10 +27,8 @@ else:
             print "Print the path of the root of the project"
             print ""
             print "A common command is \"cd `cx home`\" or \"cd $(cx home)\""
-        elif sys.argv[2] == "pwd":
-            print "Print working directory relative to the project root"
         else:
-            print "No information on command \""+sys.argv[2]+"\""
+            print "No extra information on command \""+sys.argv[2]+"\""
     elif sys.argv[1] == "home":
         print home
     elif sys.argv[1] == "pwd":
@@ -40,5 +39,7 @@ else:
             print "/"
         else:
             print pwd[len(home):]
+    elif sys.argv[1] == "untracked":
+        call(["git", "ls-files", "--other", "--exclude-standard"]);
     else:
         sys.stderr.write("Unknown command \""+sys.argv[1]+"\"\n");

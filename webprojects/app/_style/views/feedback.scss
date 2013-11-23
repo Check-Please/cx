@@ -1,0 +1,129 @@
+@import "../../../_ignore/main.scss";
+
+#feedback {
+	padding: 0px 1em;
+}
+
+#feedback * {
+	margin: 0px;
+}
+
+#feedback  h1 {
+	text-align: center;
+}
+#feedback .feedback {
+	padding: 1em 0px;
+}
+
+.tall #feedback .feedback {
+	position: absolute;
+	top: 50%;
+	left: 0px;
+	margin: -3.9em 0px 0px 0px;
+	width: 100%;
+	padding: 0px 0px 3.6em 0px;
+}
+
+#feedback .feedback h3 {
+	padding-bottom: 0.4em;
+	text-align: center;
+}
+
+.tall #feedback .feedback h3 {
+	height: 0px;
+	padding-bottom: 0em;
+	position: relative;
+	top: -1.6em;
+}
+
+#feedback .feedback .ratings {
+	color: #FFF;
+	height: 4.8em;
+}
+
+#feedback .feedback .ratings a {
+	display: inline-block;
+	position: absolute;
+	width: 4em;
+	height: 4em;
+	padding: 0.4em;
+	@include border-radius(0.8em);
+	cursor: pointer;
+}
+
+#feedback .feedback .ratings a.not-picked {
+	@include opacity(0.50); 
+}
+
+#feedback .feedback .ratings a.bad {
+	left: 20%;
+	margin: 0px 0px 0px -3.84em;
+	background: #C33333;
+	@include background-gradient(top, "D44", 0, "A22", 100);
+	img {
+		position: relative;
+		left: 1px;
+	}
+}
+
+#feedback .feedback .ratings a.ok {
+	left: 40%;
+	font-size: 2.5em;
+	height: 1.6em;
+	width: 1.6em;
+	padding: 0.16em;
+	@include border-radius(0.32em);
+	line-height: 1.6em;
+	margin: 0px 0px 0px -1.152em;
+	text-align: center;
+	background: #7F7F7F;
+	@include background-gradient(top, "999", 0, "666", 100);
+}
+
+#feedback .feedback .ratings a.good {
+	left: 60%;
+	margin: 0px 0px 0px -1.92em;
+	background: #7BAC41;
+	@include background-gradient(top, "91BE56", 0, "659B2C", 100);
+	img {
+		position: relative;
+		left: -1px;
+	}
+}
+
+#feedback .feedback .ratings a.very.good {
+	left: 80%;
+	margin: 0px 0px 0px -.96em;
+}
+
+#feedback .feedback .ratings a img {
+	display: block;
+	margin: .24px auto;
+	height: 3.48em;
+}
+
+#feedback .feedback > p {
+	text-align: center;
+	margin-top: 0.5em;
+}
+
+#feedback .feedback > p > a {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+#feedback .self-promotion {
+	text-align: center;
+	a {
+		color: #000;
+		@include user-select(text, default);
+	}
+	margin-bottom: 1em;
+}
+
+.tall #feedback .self-promotion {
+	position: absolute;
+	bottom: 3.1em;/*Footer height*/
+	left: 0px;
+	padding: 0px 1em;
+}

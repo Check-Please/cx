@@ -1,0 +1,145 @@
+@import "../../../_ignore/main.scss";
+
+#pay {
+	padding: 0px 1em;
+}
+
+#pay h1 {
+	text-align: center;
+	img  {
+		height: 0.534em;
+	}
+}
+
+#pay .login {
+	text-align: center;
+	margin-bottom: 1em;
+}
+
+#pay .login a {
+	text-decoration: underline;
+}
+
+#pay .new-cc {
+	display: none;
+	margin-top: 1.5em;
+	position: relative;
+}
+
+#pay.new-cc-needed .new-cc {
+	display: block;
+}
+
+#pay .new-cc > * {
+	height: 3.5em;
+	position: relative;
+}
+
+#pay .new-cc .expr-year, #pay .new-cc .zip {
+	position: absolute;
+	right: -2px;
+}
+
+#pay .new-cc .expr-year {
+	top: 7em;
+}
+
+#pay .new-cc .zip {
+	top: 10.5em;
+}
+
+#pay label {
+	position: absolute;
+	bottom: 1.5em;
+	font-size: 0.6em;
+	text-transform: uppercase;
+}
+
+#pay .new-cc input, #pay .new-cc select {
+	width: 12.5em;
+}
+
+#pay .new-cc input {
+	width: calc(12.5em - 2px);
+}
+
+#pay .new-cc .pan input, #pay .new-cc .name input {
+	width: 100%;
+}
+
+#pay .confirm {
+	margin-top: 1em;
+}
+
+#pay .cvv {
+	display: inline-block;
+}
+
+#pay .new-cc select {
+	@include no-extra-style;
+	@include border-radius(0px);
+	border: 1px solid #AAA;
+}
+
+#pay .cvv .explanation {
+	position: absolute;
+	bottom: 0.8em;
+	right: 0px;
+}
+
+#pay .cvv .explanation > a {
+	font-size: 0.5em;
+	text-decoration: underline;
+}
+
+#pay .cvv .popup {
+	position: fixed;
+	z-index: 1;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	background: rgba(50,50,50,0.5);
+	display: none;
+}
+
+#pay .cvv.help-needed .popup {
+	display: block;
+}
+
+#pay .cvv .popup > div {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -10em;
+	margin-left: -12.2em;
+	height: 16.6em;
+	width: 24.4em;
+	padding: 1.7em 0px;
+	@include border-radius(1em);
+	background: #FFF;
+	text-align: center;
+}
+
+#pay .cvv .popup a {
+	position: absolute;
+	top: -0.5em;
+	right: -0.5em;
+	width: 1em;
+	height: 1em;
+	font-size: 2em;
+	text-align: center;
+	line-height: 0.8em;
+	@include border-radius(1em);
+	display: inline-block;
+	background: rgba(200,200,200,0.5);
+}
+
+#pay .cvv .popup img {
+	margin-top: 1.7em;
+	height: 13.5em;
+}
+
+#pay .security-notice {
+	font-size: 0.7em;
+}
