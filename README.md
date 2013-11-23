@@ -65,4 +65,4 @@ License
 =======
 
 Copyright (C) 2013 Martin Jelin.  See the LICENSE file for license rights and
-limitations (closed source). 
+limitations. 
