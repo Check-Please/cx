@@ -64,7 +64,5 @@ How to Set Up
 License
 =======
 
-I mean, the code isn't really valuable without the team.  Honestly this
-should probably be a private repo, I'm just cheap.  So you can just assume
-that this has as restrictive a license as possible within the confines of
-being a public github project.  Also, it probably won't be public for long :(
+Copyright (C) 2013 Martin Jelin.  See the LICENSE file for license rights and
+limitations (closed source). 
