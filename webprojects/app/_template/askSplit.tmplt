@@ -1,4 +1,4 @@
-<div id="ask-split-page">
+<div id="askSplit">
 	<h2>Are you splitting the bill?</h2>
 	<a class="yes" href="#split">Yes</a>
 	<a class="no" href="#receipt">No</a>

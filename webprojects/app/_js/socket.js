@@ -36,6 +36,16 @@ var socket = socket || {};
 				mvc.split.notify();
 			}
 		},
+		ITEMS_AND_RESTORE_SPLIT: function(items, splitID, splitItems)
+		{
+			mvc.items(JSON.parse(items));
+			splitItems = JSON.parse(splitItems);
+			if(mvc.split() != null) {
+				mvc.split()[splitID] = splitItems;
+				mvc.split.notify();
+			} else
+				mvc.split({splitID: splitItems});
+		},
 		SPLIT: function(splitID, splitVal) {
 			var val = JSON.parse(splitVal);
 			if(val == null) {

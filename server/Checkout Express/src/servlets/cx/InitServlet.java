@@ -111,6 +111,7 @@ public class InitServlet extends PostServletBase
 			ret.put("connectionID", connectionID);
 			ret.put("items", new JSONArray(items.toString()));
 			ret.put("split", table.getSplit(connectionID, ds));
+			out.println(ret);
 		} catch (EntityNotFoundException e) {
 			err(ERR__INVALID_TABLE_KEY, out);
 		} catch (JSONException e) {

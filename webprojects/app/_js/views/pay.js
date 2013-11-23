@@ -166,6 +166,13 @@ mvc.views = mvc.views || {};
 				return mvc.views.split;
 			else if(mvc.tip() == null)
 				return mvc.views.receipt;
+		},
+		onResize: function() {
+			//Use different images for the SSL logo when possible
+			var $ssl = $view.find("img.ssl");
+			var sslH = $ssl.height();
+			$ssl.attr("src", "img/ssl_" + (sslH >= 55 ? "58" : sslH >= 37 ?
+						"52" : "22") + ".png");
 		}
 	}
 

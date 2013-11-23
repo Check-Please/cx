@@ -1,4 +1,4 @@
-<div id="pay-page">
+<div id="pay">
 	<h1>Payment Information <img class="ssl" /></h1>
 	Pick Credit Card:
 	<select class="cards">

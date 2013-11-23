@@ -8,8 +8,10 @@
 	"use strict";
 
 	var inited = false;
+	var currView = null;
+	var hashchangeSupport = "onhashchange" in window;
 
-	function resize()
+	window.onresize = function()
 	{
 		var $win = $(window);
 		var fSz = Math.floor($win.width()*.92/26);
@@ -26,12 +28,6 @@
 		else
 			$logo.css("height", logoH+"px");
 
-		//Use different images for the SSL logo when possible
-		var $ssl = $("#pay-page img.ssl");
-		var sslH = $ssl.height();
-		$ssl.attr("src", "img/ssl_" + (sslH >= 55 ? "58" : sslH >= 37 ?
-					"52" : "22") + ".png");
-
 		//The following is inefficient but works 100% of the time
 		//All the min and max stuff is to deal with browser inconsistency
 		$body.removeClass("tall");
@@ -40,12 +36,11 @@
 				Math.min($body.get(0).clientHeight,
 					$("html").get(0).clientHeight))
 			$body.addClass("tall");
-	}
 
-	window.onresize = resize;
-	var hashchangeSupport = "onhashchange" in window;
+		if(currView && currView.onResize)
+			currView.onResize();
+	};
 
-	var currView = null;
 	var mutex = false;
 	/*	Goes to a specific view.  Really the core of the module
 	 *
@@ -101,8 +96,8 @@
 			}
 			window.location.hash = "#"+view.viewName;
 			if(currView != null)
-				$("body").removeClass(currView.viewName+"-page");
-			$("body").addClass(view.viewName+"-page");
+				$("body").removeClass(currView.viewName);
+			$("body").addClass(view.viewName);
 			if(view.build != null)
 				view.build($view, currView);
 			if(DEBUG) {
@@ -115,7 +110,7 @@
 			currView = view;
 
 			//Hack
-			resize();
+			window.onresize();
 
 			//Release mutex
 		} finally {
@@ -188,7 +183,7 @@
 		}
 
 		mvc.split.listen(function(oldSplit) {
-			if(!mvc.done() && (mvc.split()!=null) && (mvc.loading()==null) && 
+			if(!mvc.done() && (mvc.split()!=null) && (mvc.loadMsg()==null) && 
 					((oldSplit == null) || !mvc.views.split.valid())) {
 				mvc.tip(null);
 				goToView(mvc.views.split);
@@ -201,26 +196,26 @@
 		});
 		mvc.paid.listen(function() {
 			if(mvc.paid()) {
-				mvc.loading(null);
+				mvc.loadMsg(null);
 				goToView(mvc.views.feedback);
 			}
 		});
 		mvc.done.listen(function() {
 			if(mvc.done()) {
-				mvc.loading(null);
+				mvc.loadMsg(null);
 				goToView(mvc.views.feedback);
 			}
 		});
 		mvc.items.listen(function() {
 			if(mvc.items().length == 0) {
-				mvc.loading(null);
+				mvc.loadMsg(null);
 				mvc.done(true);
 				goToView(mvc.views.feedback);
 			}
 		});
 		mvc.err.listen(function() {
 			if(mvc.err() != null) {
-				mvc.loading(null);
+				mvc.loadMsg(null);
 				if($("body").size() == 0)
 					window.onload = goToView.c(mvc.views.error);
 				else
@@ -241,7 +236,7 @@
 			});
 		}
 		window.onkeydown = function(x) {
-			if((x.keyCode == 13) && (mvc.loading() == null))
+			if((x.keyCode == 13) && (mvc.loadMsg() == null))
 				$(".confirm:visible").click();
 		}
 	};

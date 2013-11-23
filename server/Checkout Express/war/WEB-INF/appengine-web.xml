@@ -19,29 +19,12 @@
 
     <include path="**.cache.*" expiration="365d" />
     <exclude path="**.gwt.rpc" ></exclude>
-    <exclude path="/war/build-files/**" /><exclude path="/war/css/**" />
-    <exclude path="/war/fonts/**.css" ></exclude>
-    <exclude path="/war/img-full/**" ></exclude>
-    <exclude path="/war/js/**" />
-    <exclude path="/war/.sass-cache/**" ></exclude>
-    <exclude path="/war/sass-lib/**" />
-    <exclude path="/war/sass/**" />
-    <exclude path="/war/templates/**" />
-    <exclude path="/war/build.pl" /><exclude path="/war/**.swp" ></exclude>
-    
+    <exclude path="**.gitignore" ></exclude>    
     
   </static-files>
   <resource-files>
     
-    <exclude path="/war/build-files/**" /><exclude path="/war/css/**" ></exclude><exclude path="/war/fonts/**.css" />
-    <exclude path="/war/img-full/**" />
-    <exclude path="/war/js/**" />
-    <exclude path="/war/.sass-cache/**" />
-    <exclude path="/war/sass-lib/**" />
-    <exclude path="/war/sass/**" />
-    <exclude path="/war/templates/**" />
-    <exclude path="/war/build.pl" ></exclude><exclude path="/war/**.swp" />
-    
+    <exclude path="**.gitignore" />    
     
   </resource-files>
 

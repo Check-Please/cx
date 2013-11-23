@@ -1,16 +1,37 @@
-How to set up
-===============================
+Getting Started
+===============
 
-1.	First, download the following:
+The next section ("How to Set Up") tells you how to set up your computer/
+directory for doing work.
 
-	1.	The lastest JRE and JDK
-	2.	Python
-	3.	UglifyJS (install node.js, run `npm install uglify-js -g`)
-	4.	SASS (install ruby, run `gem install sass`)
-	5.	Eclipse (if you need to work on or locally run the server)
-	6.	The iPhone SDK (if you are going to work on the iPhone app)
-	7.	The Andriod SDK (if you are going to work on the Andriod app)
-	8.	Microsoft Visual Studio (if you are going to work on the plugin)
+As for information, you should probably check out the wiki.  These READMEs
+are for information you'll want close by while you code.  The wiki is more
+designed to bring someone up to speed on how something works in a general
+sense in case they've forgotten or are new to the project/team.  It contains
+information about the major design decisions and how various pieces of the
+software interact.  It also contains non-technical things, like Style Guides.
+
+We also might have a chat room (depending on how far in the future you are).
+It will probably be at http://chkex.hipchat.com.  Feel free to ask questions
+there.  Helping people is a priority.  If we don't have a chat room, feel
+free to get in contact with sjelin directly.  He's friendly.
+
+How to Set Up
+=============
+
+1.	Download the following:
+
+	1.	Git
+	2.	The lastest JRE and JDK
+	3.	Python
+	4.	UglifyJS (install node.js, run `npm install uglify-js -g`)
+	5.	SASS (install ruby, run `gem install sass`)
+	6.	Eclipse (if you need to work on or locally run the server)
+	7.	The iPhone SDK (if you are going to work on the iPhone app)
+	8.	The Andriod SDK (if you are going to work on the Andriod app)
+	9.	Microsoft Visual Studio (if you are going to work on the plugin)
+
+3.	Clone this project to your machine
 
 2.	Run build.py
 
@@ -39,15 +60,6 @@ How to set up
 	shells are not yet supported, but you can be a hero and add them
 	yourself!  The actual work is done in python, you'll just need to write
 	a wrapper file
-
-Markdown Style Guide
-====================
-
-*	We use GFM (https://help.github.com/articles/github-flavored-markdown)
-*	Please use `` ` `` aggressively
-*	Please write some sort of spec before writing code
-	(http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
-*	Please have fun :D
 
 License
 =======

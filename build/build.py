@@ -82,6 +82,7 @@ templateFolder = "_template"
 debugFolder = "_debug"
 ignoreFolders = set(["_ignore", "_skip", styleFolder, templateFolder])
 mergeFolders = set([jsFolder, cssFolder])
+noTemplating = set([rawFolder, "_img"]);
 indexHTML = "index.html"
 uSet = type('', (), dict(__contains__ = lambda _,x: True))()
 
@@ -413,7 +414,7 @@ def compileFolder(path, buildTemplate, parents=[]):
     for fil in ls(path):
         fpath = path+"/"+fil;
         if isdir(fpath):
-            if fil != rawFolder:
+            if not fil in noTemplating:
                 compileFolder(fpath, buildTemplate, parents+[fil]);
         else:
             runBuildTemplate(fpath, buildTemplate);
@@ -574,4 +575,5 @@ for i in xrange(0, len(platforms)):
         mkdir(platformPaths[i])
     transferFiles(tmpFolder, platformPaths[i], platforms[i], debug,
                     uSet if i == 0 else projectsForApp);
+
 rm_r(tmpFolder);

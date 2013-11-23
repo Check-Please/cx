@@ -1,4 +1,4 @@
-<div id="receipt-page">
+<div id="receipt">
 	<div class='receipt {{logo != null ? "has-logo" : ""}}'>
 		<div class="header"></div>
 		{{(logo == null ? "" :}}

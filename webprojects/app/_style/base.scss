@@ -25,10 +25,6 @@ input:not([type]), input[type="color"], input[type="email"], input[type="number"
 	padding: 1px 0px;
 }
 
-body > * {
-	display: none;
-}
-
 a {
 	@include user-select(none);
 	cursor: pointer;
@@ -39,47 +35,11 @@ a {
 
 /* Control */
 
-.ask-split-page #header, .split-page #header {
-	display: block;
-}
-
-.ask-split-page #ask-split-page {
-	display: block;
-}
-
-.split-page #split-page {
-	display: block;
-}
-
-.receipt-page #receipt-page {
-	display: block;
-}
-
-.login-page #login-page {
-	display: block;
-}
-
-.pay-page #pay-page {
-	display: block;
-}
-
-.feedback-page #feedback-page {
-	display: block;
-}
-
-#no-js-page {
-	display: block;
-}
-
-.has-js #no-js-page {
+#header {
 	display: none;
 }
 
-.has-js #footer {
-	display: block;
-}
-
-#err-page {
+.askSplit #header, .split #header {
 	display: block;
 }
 
