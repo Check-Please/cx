@@ -116,13 +116,13 @@ mvc.views = mvc.views || {};
 	{
 		window.onkeydown = oldKeyDown;
 		oldKeyDown = null;
-		$view.find(".cvv").removeClass("help-needed");
+		$view.find(".cvv .popup-bg").hide();
 	}
 	function showInfographic()
 	{
 		oldKeyDown = window.onkeydown;
 		window.onkeydown = hideInfographic;
-		$view.find(".cvv").addClass("help-needed");
+		$view.find(".cvv .popup-bg").show();
 	}
 
 	/*	Deletes the currently selected card
@@ -164,7 +164,7 @@ mvc.views = mvc.views || {};
 				$view.find("select").change(update);
 				$view.find("input").change(update);
 				$view.find(".cvv .explanation > a").click(showInfographic);
-				$view.find(".cvv .popup-rapper").click(hideInfographic);
+				$view.find(".cvv .popup-bg").click(hideInfographic);
 				$view.find(".confirm").click(cBtn);
 				$view.find("a.delete").click(deleteCard);
 				update();
