@@ -11,7 +11,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import kinds.BasicPointer;
+import kinds.Client;
+import kinds.ConnectionToTablePointer;
 import kinds.BasicTickLog;
 import kinds.UserConnection;
 import kinds.TableKey;
@@ -48,7 +49,8 @@ public class InitServlet extends PostServletBase
 		config.txnReq = true;
 		config.txnXG = true;
 		config.bools = a("isNative");
-		config.strs = a("tableKey", "clientID", "platform");
+		config.strs = a("tableKey", "platform");
+		config.path = a(Client.getKind(), "clientID");
 		config.doubles = a("?lat", "?long", "?accuracy");
 	}
 
@@ -93,7 +95,7 @@ public class InitServlet extends PostServletBase
 			if(table.clearOldMetadata(items, ds))
 				table.commit(ds);
 			String connectionID = UUID.randomUUID().toString();
-			new BasicPointer(KeyFactory.createKey(BasicPointer.getKind(), connectionID), tableKey).commit(ds);
+			new ConnectionToTablePointer(KeyFactory.createKey(ConnectionToTablePointer.getKind(), connectionID), tableKey).commit(ds);
 			String token = ChannelServiceFactory.getChannelService().createChannel(connectionID);
 			Key logKey = BasicTickLog.makeKey(restr.getKey().getName(), tableKey, items);
 			try {
@@ -101,7 +103,21 @@ public class InitServlet extends PostServletBase
 			} catch(EntityNotFoundException e) {
 				new BasicTickLog(logKey, items).commit(ds);
 			}
-			new UserConnection(table.getKey().getChild(UserConnection.getKind(), connectionID), logKey.getName()).commit(ds);
+			Client c;
+			try {
+				c = new Client(p.getKey(), ds);
+			} catch(EntityNotFoundException e) {
+				c = new Client(p.getKey());
+			}
+			c.logConnection(connectionID);
+
+			boolean newClientKey = false;
+			if(!c.hasPrivateKey()) {
+				c.setKey();
+				newClientKey = true;
+			}
+			c.commit(ds);
+			new UserConnection(table.getKey().getChild(UserConnection.getKind(), connectionID), logKey.getName(), p.getStr(1)).commit(ds);
 
 			JSONObject ret = new JSONObject();
 			ret.put("restrName", restr.getName());
@@ -111,6 +127,9 @@ public class InitServlet extends PostServletBase
 			ret.put("connectionID", connectionID);
 			ret.put("items", new JSONArray(items.toString()));
 			ret.put("split", table.getSplit(connectionID, ds));
+			if(newClientKey) {
+				ret.put("deleteCCs", true);
+			}
 			out.println(ret);
 		} catch (EntityNotFoundException e) {
 			err(ERR__INVALID_TABLE_KEY, out);

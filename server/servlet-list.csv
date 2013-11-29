@@ -16,6 +16,7 @@ CX
 .ChannelConnectServlet, /_ah/channel/connected/
 .ChannelDisconnectServlet, /_ah/channel/disconnected/
 .CloseClientServlet, /cx/close/
+.EncryptCCServlet, /cx/encryptCC/
 .FactSheetServlet, /facts/
 .InitServlet, /cx/init/
 .LogPositionServlet, /cx/log_pos/

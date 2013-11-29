@@ -32,12 +32,12 @@ mvc.views = mvc.views || {};
 			else {
 				var prct = Math.round(t*10000/total)/100;
 				var moe = Math.min(1, Math.max(0.1, 100/total));
-				if((prct > 15-moe) && (prct < 15+moe))
-					prctName = "fifteen";
-				else if((prct > 17-moe) && (prct < 17+moe))
+				if((prct > 17-moe) && (prct < 17+moe))
 					prctName = "seventeen";
 				else if((prct > 20-moe) && (prct < 20+moe))
 					prctName = "twenty";
+				else if((prct > 25-moe) && (prct < 25+moe))
+					prctName = "twentyfive";
 				$tipPrct.text("("+prct+"%)");
 			}
 			$view.find(".tip ."+prctName).removeClass("not-picked");
@@ -52,27 +52,27 @@ mvc.views = mvc.views || {};
 		$container.empty();
 		for(var i = 0; i < items.length; i++) {
 			var item = items[i];
-			$container.append($(template.cxReceiptItem(item.name,
+			$container.append($(templates.receiptItem(item.name,
 				money.toStr(item.price),
 				item.mods.map(function(mod) {
-					return template.cxItemMod(mod.name, mod.price == 0 ? "" :
+					return templates.itemMod(mod.name, mod.price == 0 ? "":
 						money.toStr(mod.price));}).join(""), "")));
 		}
-		var space=template.cxReceiptItem("","--------","","divider");
+		var space=templates.receiptItem("","--------","","divider");
 		$container.append($(space));
-		$container.append($(template.cxReceiptItem("Subtotal",
+		$container.append($(templates.receiptItem("Subtotal",
 				money.toStr(total), "", "subtotal")));
 		if(items.discount != 0)
-			$container.append($(template.cxReceiptItem("Discount",
+			$container.append($(templates.receiptItem("Discount",
 				money.toStr(-items.discount), "", "discount")));
 		if(items.serviceCharge != 0)
-			$container.append($(template.cxReceiptItem("Service Charge",
+			$container.append($(templates.receiptItem("Service Charge",
 				money.toStr(items.serviceCharge), "", "service-charge")));
-		$container.append($(template.cxReceiptItem("Tax",
+		$container.append($(templates.receiptItem("Tax",
 				money.toStr(items.tax), "", "tax")));
 		$container.append($(space));
 		total += items.tax-items.discount+items.serviceCharge;
-		$container.append($(template.cxReceiptItem("Total",
+		$container.append($(templates.receiptItem("Total",
 				money.toStr(total), "", "total")));
 		calcTipPercent();
 	}
@@ -99,7 +99,7 @@ mvc.views = mvc.views || {};
 				updateTip();
 			}
 			if(!$view) {
-				var re=/^(.*?),?([^\\,]+,?[a-z ]{2,},?\\s*[0-9\\-]{0,10})$/i;
+				var re=/^(.*?),?([^\\,]+,?[a-z ]{2,},?\s*[0-9\\-]{0,10})$/i;
 				var splitAddress = re.exec(mvc.restrAddress().trim())
 				$view = $(templates.receipt(mvc.restrName(),mvc.restrStyle(),
 											splitAddress[1], splitAddress[2],
@@ -122,6 +122,10 @@ mvc.views = mvc.views || {};
 				$tipBox.keydown(updateTip);
 				$tipBox.keypress(updateTip);
 				updateTip();
+				mvc.items.listen(render);
+				mvc.split.listen(render);
+				mvc.selection.listen(render);
+				mvc.tip.listen(calcTipPercent);
 				$trgt.append($view);
 			} else
 				$view.show();
@@ -139,9 +143,4 @@ mvc.views = mvc.views || {};
 		}
 		
 	}
-
-	mvc.items.listen(render);
-	mvc.split.listen(render);
-	mvc.selection.listen(render);
-	mvc.tip.listen(calcTipPercent);
 })();

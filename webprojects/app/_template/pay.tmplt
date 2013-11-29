@@ -10,7 +10,7 @@
 		<p>No Password required for this card</p>
 		{{cvv}}
 		<a class="delete">Delete Card</a>
-	</div>
+	</form>
 
 	<form class="encrypted-cc">
 		<div class="password">
@@ -19,12 +19,12 @@
 		</div>
 		{{cvv}}
 		<a class="delete">Delete Card</a>
-	</div>
+	</form>
 
 	<form class="new-cc">
 		<div class="pan">
 			<label>Credit Card Number</label>
-			<input type="text" />
+			<input type="text"  maxlength="19" />
 		</div>
 		<div class="name">
 			<label>Name on card</label>
@@ -61,19 +61,21 @@
 			<input type="checkbox" />
 			<a>Security FAQ</a>
 		</div>
-		{{(allowNoPassword ?}}
-			<div class="req-password">
-				<label>Require a password to access credit card</label>
-				<input type="checkbox" />
+		{{(allowPassword ? }}
+			{{(allowNoPassword ?}}
+				<div class="req-password">
+					<label>Require a password to access credit card</label>
+					<input type="checkbox" />
+				</div>
+			{{:"")}}
+			<div class="password">
+				<label>Password</label>
+				<input type="text" />
+				{{(allowNoPassword ?}}
+					<span></span>
+				{{:"")}}
 			</div>
 		{{:"")}}
-		<div class="password">
-			<label>Password</label>
-			<input type="text" />
-			{{(allowNoPassword ?}}
-				<span></span>
-			{{:"")}}
-		</div>
 	</form>
 	<p class="ccPolicy">My clicking "Pay", you agree to our <a>Credit Card Policy</a></p>
 	<a class="confirm">Pay</a>

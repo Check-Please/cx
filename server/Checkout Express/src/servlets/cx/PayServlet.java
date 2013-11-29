@@ -16,7 +16,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import kinds.BasicPointer;
+import kinds.Client;
+import kinds.ConnectionToTablePointer;
 import kinds.ClosedUserConnection;
 import kinds.UserConnection;
 import kinds.TableKey;
@@ -24,6 +25,7 @@ import kinds.TableKey;
 import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 
 import servlets.oz.Data;
@@ -53,28 +55,29 @@ public class PayServlet extends PostServletBase
 		config.txnXG = true;
 		config.path = a("/", TableKey.getKind(), "tableKey");
 		config.exists = true;
-		config.exists2 = true;
-		config.strs = a("pan", "name", "expr", "zip", "?cvv");
+		config.strs = a("ciphertext", "?cvv");
 		config.strLists = a("items");
 		config.longLists = a("nums", "denoms");
-		config.longs = a("total", "tip", "pan", "expr", "zip", "?cvv");//NOTE: total does not include tip
-		config.keyNames = a("connectionID");
+		config.longs = a("total", "tip");//NOTE: total does not include tip
+		config.keyNames = a("connectionID", "?clientID");
 	}
 
-	/*	Validates various parts of the input.
+	/**	Runs some basic checks on credit card information.
 	 *
-	 *	@pre:	The pan, cvv, expr, and zip match /^\d+$/
-	 *	@param	pan Checked for length and that it follows Luhn's Algorithm
-	 *	@param	expr Checked for proper length
-	 *	@param	zip Checked for proper length
-	 *	@param	itemsToPay Checked for matching length against payFracs
-	 *	@param	payFracs Checked for matching length against itemsToPay.
-	 *	@throws	HttpErrMsg if the input wasn't valid
+	 *	@param	pan Checked for length, that is it a number, and that it follows Luhn's Algorithm
+	 *	@param	name Checked for length
+	 *	@param	expr Checked for length, that it is a number, that the month is valid, and that it hasn't expired
+	 *	@param	zip Checked for length and that it is a number
+	 *	@throws	HttpErrMsg if something is wrong
 	 */
-	private static void validateInput(String pan, String expr, String zip, List<String> itemsToPay, List<Frac> payFracs) throws HttpErrMsg
+	public static void basicValidation(String pan, String name, String expr, String zip) throws HttpErrMsg
 	{
 		if(pan.length() < 8)
 			throw new HttpErrMsg("The card number is too short");
+		if(pan.length() > 19)
+			throw new HttpErrMsg("The card number is too long");
+		if(!pan.matches("\\d+"))
+			throw new HttpErrMsg("Card number is not a number");
 		if(!pan.matches("(?:62|88|2014|2149)\\d+")) {
 			//Luhn Algorithm
 			int sum = 0;
@@ -85,20 +88,51 @@ public class PayServlet extends PostServletBase
 			if(sum != 0)
 				throw new HttpErrMsg("The card number is incorrect");
 		}
+		if(name.length() < 2)
+			throw new HttpErrMsg("The name on the card is too short");			
+		if(name.length() > 26)
+			throw new HttpErrMsg("The name on the card is too long");			
 		if(expr.length() != 4)
 			throw new HttpErrMsg("The expration date must be in YYMM format");
-		if(zip.length() != 5)
-			throw new HttpErrMsg("The zip code should be five digits");
-
+		if(!expr.matches("\\d+"))
+			throw new HttpErrMsg("Expiration date is not a number");
 		Calendar date = new GregorianCalendar();
 		//TODO: The following will have Y2.1K bugs and I'm not totally sure
 		//how to deal with them
 		int exprYear = Integer.parseInt(expr.substring(0, 2));
 		int exprMonth = Integer.parseInt(expr.substring(2, 4));
+		if((exprMonth == 0) || (exprMonth > 12))
+			throw new HttpErrMsg("No such month");
 		if((date.get(Calendar.YEAR) % 100 > exprYear) ||
 				((date.get(Calendar.YEAR) % 100 == exprYear) &&
 					(date.get(Calendar.MONTH)+1 > exprMonth)))
-			throw new HttpErrMsg("You are trying to pay with a credit card which has expired");
+			throw new HttpErrMsg("This card has expired");
+		if(zip.length() != 5)
+			throw new HttpErrMsg("The zip code should be five digits");
+		if(!zip.matches("\\d+"))
+			throw new HttpErrMsg("Zip code is not a number");
+	}
+
+	/*	Validates various parts of the input.
+	 *
+	 *	@param	pan Checked for length, that is it a number, and that it follows Luhn's Algorithm
+	 *	@param	name Checked for length
+	 *	@param	expr Checked for length, that it is a number, that the month is valid, and that it hasn't expired
+	 *	@param	zip Checked for length and that it is a number
+	 *	@param	cvv Checked for length and that it is a number
+	 *	@param	itemsToPay Checked for matching length against payFracs
+	 *	@param	payFracs Checked for matching length against itemsToPay.
+	 *	@throws	HttpErrMsg if the input wasn't valid
+	 */
+	private static void validateInput(String pan, String name, String expr, String zip, String cvv, List<String> itemsToPay, List<Frac> payFracs) throws HttpErrMsg
+	{
+		basicValidation(pan, name, expr, zip);
+		if(cvv != null) {
+			if((cvv.length() < 3) || (cvv.length() > 4))
+				throw new HttpErrMsg("Security code should be either 3 and 4 digits");
+			if(!cvv.matches("\\d+"))
+				throw new HttpErrMsg("Security code is not a number");
+		}
 		if(payFracs.size() != itemsToPay.size())
 			throw new HttpErrMsg("The number of fractions does not match the number of items");
 	}
@@ -215,7 +249,7 @@ public class PayServlet extends PostServletBase
 	 */
 	private static void closeConnection(TableKey table, String connectionID, long tip, DatastoreService ds) throws JSONException, HttpErrMsg
 	{
-		ds.delete(KeyFactory.createKey(BasicPointer.getKind(), connectionID));
+		ds.delete(KeyFactory.createKey(ConnectionToTablePointer.getKind(), connectionID));
 		UserConnection uc = new UserConnection(MyUtils.get_NoFail(table.getKey().getChild(UserConnection.getKind(), connectionID), ds));
 		ClosedUserConnection cuc = new ClosedUserConnection(table.getRestrUsername(), uc, ClosedUserConnection.CLOSE_CAUSE__PAID);
 		cuc.setTip(tip);
@@ -233,7 +267,7 @@ public class PayServlet extends PostServletBase
 	 */
 	private static void reopenConnection(TableKey table, String connectionID, DatastoreService ds)
 	{
-		new BasicPointer(KeyFactory.createKey(BasicPointer.getKind(), connectionID), table.getKey().getName()).commit(ds);
+		new ConnectionToTablePointer(KeyFactory.createKey(ConnectionToTablePointer.getKind(), connectionID), table.getKey().getName()).commit(ds);
 		ClosedUserConnection cuc = new ClosedUserConnection(MyUtils.get_NoFail(table.getKey().getChild(UserConnection.getKind(), connectionID), ds));
 		new UserConnection(cuc).commit(ds);
 		cuc.rmv(ds);
@@ -267,11 +301,28 @@ public class PayServlet extends PostServletBase
 	{
 		//Get params
 		TableKey table = new TableKey(p.getEntity());
-		String pan = p.getStr(0);
-		String name = p.getStr(1);
-		String expr = p.getStr(2);
-		String zip = p.getStr(3);
-		String cvv = p.getStr(4);
+		String rawCC = new Client(p.getEntity()).decrypt(p.getStr(0));
+		JSONObject cc;
+		try {
+			cc = new JSONObject(rawCC);
+		} catch(JSONException e) {
+			String cID = p.getKeyName(1);
+			if(cID == null)
+				throw new HttpErrMsg("Cannot decrypt credit information without client ID");
+			try {
+				rawCC = new Client(KeyFactory.createKey(Client.getKind(), cID), ds).decrypt(rawCC);
+			} catch (EntityNotFoundException e1) {
+				throw new HttpErrMsg("Invalid client ID");
+			}
+			if(rawCC == null)
+				throw new HttpErrMsg("We could not decrypt your credit card information.  You should delete the saved information and then re-enter it all");
+			cc = new JSONObject(rawCC);
+		}
+		String pan = cc.getString("pan");
+		String name = cc.getString("name");
+		String expr = cc.getString("expr");
+		String zip = cc.getString("zip");
+		String cvv = p.getStr(1);
 		List<String> itemsToPay = p.getStrList(0);
 		List<Frac> payFracs;
 		try {
@@ -282,7 +333,7 @@ public class PayServlet extends PostServletBase
 		long total = p.getLong(0);
 		long tip = p.getLong(1);
 		String connectionID = p.getKeyName(0);
-		validateInput(pan, expr, zip, itemsToPay, payFracs);
+		validateInput(pan, name, expr, zip, cvv, itemsToPay, payFracs);
 
 
 		//Get/set internal payment info
@@ -303,7 +354,8 @@ public class PayServlet extends PostServletBase
 		JSONObject query = new JSONObject(table.getQuery());
 		JSONObject ret = new JSONObject();
 		boolean sync = pay(query, table.getRestrUsername(), pan, name, expr, zip, cvv, itemsToPay, payFracs, items, total, tip, ds);
-		
+		config.FORBID_RETRIES = true;
+
 		closeConnection(table, connectionID, tip, ds);
 		boolean ticketPaid;
 		if(sync) {

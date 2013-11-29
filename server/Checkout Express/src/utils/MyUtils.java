@@ -5,6 +5,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.UUID;
 
+import org.apache.commons.codec.binary.Base64;
+
 import kinds.AbstractKind;
 import kinds.Globals;
 
@@ -76,6 +78,12 @@ public class MyUtils
 		return ret;
 	}
 
+	/**  Runs SHA-256 on a string and returns a base 64 encoding of the hash
+	 *
+	 * @param	s The string to be encoded
+	 * @return	A base 64 encoding of the hash
+	 * @throws	HttpErrMsg if SHA-256 is somehow missing
+	 */
 	public static String sha256(String s) throws HttpErrMsg
 	{
 		MessageDigest md;
@@ -84,21 +92,14 @@ public class MyUtils
 		} catch (NoSuchAlgorithmException e) {
 			throw new HttpErrMsg(500, "Encription algorithm missing");
 		}
-		md.update(s.getBytes()); 
-		byte byteData[] = md.digest();
-
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < byteData.length; i++) {
-			sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
-		}
-
-		return sb.toString();
+		md.update(s.getBytes());
+		return new String(Base64.encodeBase64(md.digest()));
 	}
 
 	public static AbstractKind wrapEntity(Entity e)
 	{
-		if(e.getKind().equals(kinds.BasicPointer.getKind()))
-			return new kinds.BasicPointer(e);
+		if(e.getKind().equals(kinds.ConnectionToTablePointer.getKind()))
+			return new kinds.ConnectionToTablePointer(e);
 		else if(e.getKind().equals(kinds.Globals.getKind()))
 			return new kinds.Globals(e);
 		else if(e.getKind().equals(kinds.TableKey.getKind()))

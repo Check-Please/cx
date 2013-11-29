@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import kinds.BasicPointer;
+import kinds.ConnectionToTablePointer;
 import kinds.TableKey;
 
 import utils.GetServletBase;
@@ -43,7 +43,7 @@ public class CleanServlet extends GetServletBase
 			m = new TableKey(KeyFactory.createKey(TableKey.getKind(), "IKA"),ds);
 			m.clearTickMetadata(ds);
 			m.commit(ds);
-			for(Entity e : ds.prepare(new Query(BasicPointer.getKind())).asIterable(FetchOptions.Builder.withLimit(1000)))
+			for(Entity e : ds.prepare(new Query(ConnectionToTablePointer.getKind())).asIterable(FetchOptions.Builder.withLimit(1000)))
 				ds.delete(e.getKey());
 		} catch (EntityNotFoundException e) {}
 	}

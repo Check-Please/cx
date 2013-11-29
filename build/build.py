@@ -84,6 +84,7 @@ ignoreFolders = set(["_ignore", "_skip", styleFolder, templateFolder])
 mergeFolders = set([jsFolder, cssFolder])
 noTemplating = set([rawFolder, "_img"]);
 indexHTML = "index.html"
+orderFile = "_order"
 uSet = type('', (), dict(__contains__ = lambda _,x: True))()
 
 """ Makes the web.xml file for the server
@@ -273,7 +274,7 @@ def compileTemplateInner(src):
                                     ).replace(  "\r", ""
                                     ).replace(  "\f", "\\f"
                                     ).replace(  "\'", "\\\'"
-                                    ).replace(  "\"", "\\\"'"
+                                    ).replace(  "\"", "\\\""
                                     ).replace(  "\n", "\"+\n\t\t\t\"")+"\"";
             else:
                 token = token.strip();
@@ -479,7 +480,14 @@ def transferLeaf(src, dest, plat, debug, parents, merge):
             while i < len(baseFolders):
                 baseFolder = src+baseFolders[i];
                 if exists(baseFolder):
-                    for fil in ls(baseFolder):
+                    fils = ls(baseFolder);
+                    oFil = baseFolder+"/"+orderFile;
+                    if exists(oFil):
+                        oFilReader = readfile(oFil);
+                        o = oFilReader.read().strip().split();
+                        oFilReader.close();
+                        fils = o+list(set(fils).difference(o));
+                    for fil in fils:
                         fname = baseFolder+"/"+fil;
                         if isdir(fname):
                             if fil[0] != '_':

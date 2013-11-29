@@ -33,13 +33,18 @@ var device = device || {};
 	 */
 	device.isNative = op.id.c(false);
 
-	/**	Determines if credit cards should be allowed to be stored without
-	 *	passwords on this device
+	/**	Determines if credit cards should only be allowed to be stored if a
+	 *	password is used
 	 *
-	 *	@return	true iff credit cards should be able to be stored without
-	 *			passwords on this device
+	 *	@return	true iff the above is true
 	 */
-	device.ccWOPass = op.id.c(false);
+	device.ccPassReq = op.id.c(true);
+
+	/**	Determines if the user should even be given the option to use a
+	 *	password 
+	 *	@return	true iff the above is true
+	 */
+	device.ccPassAllowed = op.id.c(true);
 
 	/**	Gets information about what platform the user is on
 	 *
@@ -247,6 +252,25 @@ var device = device || {};
 		}
 	};
 
+	/**	Deletes all currently stored credit card information
+	 */
+	device.deleteCards = function()
+	{
+		var ccList = device.getCCs();
+		for(var i = 0; i < ccList.length; i++)
+			accData(ccList[i].key, undefined);
+		device.accData("CCs", undefined);
+	};
+
+	/**	Hashes some text with SHA-256
+	 *
+	 *	@return {String}
+	 */
+	device.sha256 = function(text)
+	{
+		return sjcl.codec.base64.fromBits(sjcl.hash.sha256.hash(text))
+	}
+
 	/** Gets a list of credit cards.
 	 *
 	 *	@return A list of lists of objects. The list is sorted by importance.
@@ -272,106 +296,97 @@ var device = device || {};
 	 *	hopefully have read a book on cryptography by now!
 	 *
 	 *	@param	plaintext The text to encrypt
-	 *	@param	password	The password to encrypt with.
-	 *						null means no password.  The fuction should
-	 *						return very quickly if null is used. 
+	 *	@param	password The password to encrypt with.
 	 *	@return	The ciphertext
 	 */
 	device.encrypt = function(plaintext, password) {
-		var iter = 50000;
-		if(password == null) {
-			if(DEBUG)
-				assert(device.ccWOPass());
-			password = "password";
-			iter = 101;
-			
-		}
-		return sjcl.encrypt(password, plaintext, {iter: iter});
-	}
+		return sjcl.encrypt(password, plaintext, {iter: 50000});
+	};
 
 	/**	Decrypts some ciphertext which was encrypted with device.encrypt()
 	 *
 	 *	@param	ciphertext The text to decrypt
-	 *	@param	password	The password to decrypt with.
-	 *						null means no password.  The fuction should
-	 *						return very quickly if null is used. 
+	 *	@param	password The password to decrypt with.
 	 *	@return	The plaintext if the password was correct, else null
 	 */
 	device.decrypt = function(ciphertext, password) {
-		var iter = 50000;
-		if(password == null) {
-			if(DEBUG)
-				assert(device.ccWOPass());
-			password = "password";
-			iter = 101;
-			
-		}
 		try {
-			return sjcl.decrypt(password, ciphertext, {iter: iter});
+			return sjcl.decrypt(password, ciphertext, {iter: 50000});
 		} catch(e) {
 			return null;
 		}
-	}
+	};
 
+	var noPassSfx = " (no password)";//Cannot be a valid base 64 string
 
-	/** Adds a card to the list of credit cards
+	/** Stores encrypted card card information for later use
+	 *
+	 *	The encryption should be done server side.  The AES/PBKDF2 should
+	 *	be done client side, but asynchronously.
 	 *
 	 *	@param	pan	The principle account number
 	 *	@param	name The name on the card
 	 *	@param	expr The experation date for the card
 	 *	@param	zip The zip code for the address of the card holder
-	 *	@param	password	The password to encrypt the card data with
-	 *						null means no password.  The fuction should
-	 *						return very quickly if null is used. 
+	 *	@param	password	The password to encrypt the card data with.
+	 *						null means no password.
 	 */
 	device.storeCC = function(pan, name, expr, zip, password)
 	{
-		var k;
-		do {
-			k = "card::"+randStr();
-		} while(device.accData(k) !== undefined);
-		preview = pan.slice(-4);
-		while(preview.length < pan.length)
-			preview = "X"+preview;
-		var ccList = device.accData("CCs") || [];
-		ccList.unshift({preview: preview, key: k});
-		device.accData("CCs", ccList);
-		device.accData(k, device.encrypt(JSON.stringify({
-			pan: pan,
-			name: name,
-			expr: expr,
-			zip: zip
-		}), password));
+		ajax.send("cx", "encryptCC", {
+			pan: pan, name: name, expr: expr, zip: zip
+		}, function(ciphertext) {
+			var k;
+			do {
+				k = "card::"+randStr();
+			} while(device.accData(k) !== undefined);
+			preview = pan.slice(-4);
+			while(preview.length < pan.length)
+				preview = "X"+preview;
+			var ccList = device.getCCs();
+			ccList.unshift({preview: preview, key: k});
+			device.accData("CCs", ccList);
+			if(password == null)
+				ciphertext += noPassSfx;
+			else
+				ciphertext = device.encrypt(ciphertext, password);
+			device.accData(k, ciphertext);
+		}, buildAjaxErrFun("encrypt your information"));
 	};
 
 	/**	Gets a credit card from storage
 	 *
 	 *	@param	key The database key for the card information
-	 *	@param	password	The password to decrypt the card data with
+	 *	@param	password	The password to decrypt the card data with.
 	 *						null means no password.  The fuction should
 	 *						return very quickly if null is used. 
-	 *	@return	An object containing the credit card information.
-	 *			The fields are pan, name, expr, & zip.  Returns undefined for
-	 *			invalid key and null for incorrect password
+	 *	@return	If the password is correct, an encrypted version of the
+	 *			credit card information which the server will be able to
+	 *			decrypt.  If the password is incorrect, null.  If there is
+	 *			no card data associated with the specified key, undefined.
 	 */
 	device.getCC = function(key, password)
 	{
 		//Load and decrypt
-		var cipher = device.accData(key);
-		if(cipher == undefined)
+		var ct = device.accData(key);
+		if(ct == undefined)
 			return undefined;
-		var stringy = device.decrypt(cipher, password);
-		if(stringy == null)
+		if(ct.endsWith(noPassSfx) != (password == null))
+			return null;
+		if(password == null) 
+			return ct.substring(0, -noPassSfx.length);
+		var data = device.decrypt(ct, password);
+		if(data == null)
 			return null;
 
 		//Update order of CC list
-		var ccList = device.accData("CCs");
+		var ccList = device.getCCs();
 		for(var i = 0; ccList[i].key != key; i++)
 			;
 		ccList.unshift(ccList.splice(i, 1));
 		device.accData("CCs", ccList);
 
-		return JSON.parse(stringy);
+		return data;
 	};
 
 	/**	Deletes a credit card from storage
@@ -381,7 +396,7 @@ var device = device || {};
 	device.deleteCC = function(key)
 	{
 		device.accData(key, undefined);
-		var ccList = device.accData("CCs");
+		var ccList = device.getCCs();
 		for(var i = 0; ccList[i].key != key; i++)
 			;
 		ccList.splice(i, 1);

@@ -14,7 +14,7 @@ mvc.views = mvc.views || {};
 	}
 
 	mvc.views.feedback = {
-		build: function() {
+		build: function($trgt) {
 			if(!$view) {
 				$view = $(templates.feedback());
 				$view(".ratings").on("click", "a", function() {
@@ -36,11 +36,12 @@ mvc.views = mvc.views || {};
 						rating: rating
 					}, $.noop, buildAjaxErrFun("send rating"));
 				});
+				mvc.done.listen(markDone);
+				$trgt.append($view);
 			} else
 				$view.show();
 			markDone();
 		},
 		unbuild: function() {$view.hide();}
 	}
-	mvc.done.listen(markDone);
 })();

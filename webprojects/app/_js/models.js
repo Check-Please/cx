@@ -60,7 +60,8 @@ var mvc = {};
 		function myNotify(old) {
 			if(DEBUG)
 				assert(inited);
-			callAll(ls, arguments.length > 0 ? old : vals[name]);
+			old = arguments.length ? old : vals[name];
+			ls.each(function(f) { f(old); });
 		}
 
 		var ls = [];

@@ -12,10 +12,14 @@ var loading = loading || {};
 	{
 		var msg = mvc.loadMsg();
 		if(msg == null)
-			$("#loading").hide();
+			$("#loadMsg").hide();
 		else {
-			$("#loading p").text(msg);
-			$("#loading").show();
+			msg = msg.trim();
+			if(msg.match(/[a-z0-9]\.*$/i))
+				while(!msg.endsWith("..."))
+					msg += ".";
+			$("#loadMsg p").text(msg);
+			$("#loadMsg").show();
 		}
 	}
 

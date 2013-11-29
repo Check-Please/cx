@@ -14,11 +14,13 @@
 	window.onresize = function()
 	{
 		var $win = $(window);
-		var fSz = Math.floor($win.width()*.92/26);
+		var fSz = Math.floor($win.width()*0.0354);
 		var $body = $("body");
 		if($body.size() == 0)
 			return;
-		$body.css("font-size", fSz+"px");
+		$("html").css("font-size", $win.width()+"px");
+		$(".popup-bg").css("font-size",
+					Math.min($win.width(), $win.height())+"px");
 		//Use different logo images for each small size
 		var $logo = $("#footer img");
 		var logoH = fSz < 8 || fSz > 24 ? null : Math.ceil(fSz*2.5);
@@ -51,7 +53,7 @@
 	function goToView(view, stealMutex)
 	{
 		//Everything other than true is false
-		stealMutex = stealMutex !== true;
+		stealMutex = stealMutex === true;
 
 		//Mutex code
 		if(mutex)
@@ -116,9 +118,14 @@
 		} finally {
 			mutex = false;
 		}
+
+		//We ignored nativation due to errors via the mutex.  Here we are
+		//going to make that navigation happen
+		mvc.err.notify();
 	}
 
 	window.onload = function() {
+		setTimeout(window.onresize, 0);
 		inParallel([device.getTableKey, device.getPos], function(tKey, pos) {
 			tKey = tKey[0] || "";
 			if(tKey == "" && !device.isNative())
@@ -142,6 +149,8 @@
 					mvc.err.notify();
 					return;
 				}
+				if(data.deleteCCs)
+					device.deleteCards();
 				mvc.init({
 					key: tKey,
 					restrName: data.restrName,
@@ -224,7 +233,7 @@
 		});
 
 		$("#view").on("click", "a.confirm", function() {
-			nextView = currView.nextView && currView.nextView();
+			var nextView = currView.nextView && currView.nextView();
 			if(nextView)
 				goToView(nextView);
 		});

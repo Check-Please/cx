@@ -1,3 +1,4 @@
 @param cards
+@param {boolean} allowPassword
 @param {boolean} allowNoPassword
 @param cvv

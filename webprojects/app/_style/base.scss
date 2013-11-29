@@ -11,6 +11,7 @@ body, html {
 }
 
 body {
+	font-size: 0.0354em;
 	position: absolute;//So that margins push against the body's bounding box instead of against the window's one
 	@include no-text-adj;
 }

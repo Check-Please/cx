@@ -39,6 +39,9 @@ mvc.views = mvc.views || {};
 				//Actually build the thing
 				elems = {tmp: $tmp};
 				buildItems();
+				mvc.items.listen(buildItems);
+				mvc.split.listen(update);
+				mvc.selection.listen(update);
 				$trgt.append($view);
 			} else
 				$view.show();
@@ -146,8 +149,4 @@ mvc.views = mvc.views || {};
 		$view.find(".confirm")[(isValid() ? "remove" : "add") + "Class"](
 																"disabled");
 	}
-
-	mvc.items.listen(buildItems);
-	mvc.split.listen(update);
-	mvc.selection.listen(update);
 })();

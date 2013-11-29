@@ -15,7 +15,6 @@ public class Globals extends AbstractKind
 
 	Long ticketKeysBuilt;
 	public static final long defaultID = 1L;
-	public static final String subtleApiKey = "U0IrN0Mx";
 
 	public Globals(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
 	public Globals(Entity e) { super(e); }

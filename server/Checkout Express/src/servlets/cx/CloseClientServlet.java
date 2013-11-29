@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import kinds.BasicPointer;
+import kinds.ConnectionToTablePointer;
 import kinds.ClosedUserConnection;
 import kinds.UserConnection;
 import kinds.TableKey;
@@ -52,7 +52,7 @@ public class CloseClientServlet extends PostServletBase
 	private static boolean closeChannel(String cID, long cause, String errMsg, DatastoreService ds)
 	{
 		try {
-			BasicPointer ptr = new BasicPointer(KeyFactory.createKey(BasicPointer.getKind(), cID), ds);
+			ConnectionToTablePointer ptr = new ConnectionToTablePointer(KeyFactory.createKey(ConnectionToTablePointer.getKind(), cID), ds);
 			Key tKey = KeyFactory.createKey(TableKey.getKind(), ptr.getKeyName());
 			UserConnection uc = new UserConnection(tKey.getChild(UserConnection.getKind(), cID), ds);
 			new ClosedUserConnection(new TableKey(tKey, ds).getRestrUsername(), uc, cause, errMsg).commit(ds);

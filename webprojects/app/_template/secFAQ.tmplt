@@ -4,21 +4,26 @@
 
 <h2><strong>Q:</strong> How do you store credit card information?</h2>
 
-<p><strong>A:</strong> Your information is encrypted and stored on your device.  If you are using a service like iOS Keychain for iCloud backup, the encrypted information is then backed up using that service.  If you specify a password, we encrypt your credit card information using that password.  We do not store any credit card information on our servers.</p>
+<p><strong>A:</strong> Your information is encrypted and stored on your device.  We do not store any actual credit card information on our servers.  However, if you are using a servie like iCloud, the encrypted information may be backed up on that service.</p>
 
-<h2><strong>Q:</strong> What's the advantage to using a password?</h2>
 
-<p><strong>A:</strong> If a sophisticated computer hacker gains access to your device (e.g. he/she physically steals it) and you are not using a password, he/she might be able to decrypt your information.  If you are using a password, this would be next to impossible (unless he/she could figure out your password).</p>
+<h2><strong>Q:</strong> How do you encrypt credit card information?</h2>
 
-<p>If you are not using a passcode/password to unlock your device, not having a password is even more risky.  If someone steals your device, and your device is always unlocked, the thief could use your device to pay at any restaurant which accepts Checkout Express</p>
+<p><strong>A:</strong> First, we encrypt your information using a password that only our servers know.  Then, if you specify your own password, we encrypt your credit card information using that password.  Finally, if your device has secure storage capabilities built in, we use those to encrypt your information a final time.</p>
 
-<h2><strong>Q:</strong> How do you transmit credit card information?</h2>
+<h2><strong>Q:</strong> What password?  I wasn't asked for a password.</h2>
 
-<p><strong>A:</strong> Information is transmitted encrypted over cryptographic protocols known as “TLS” and “SSL.”  The exact details of how this encryption works depends on your device, but suffice it to say that this is the industry standard method for securely sending information over the internet.</p>
+<p><strong>A:</strong> On some devices, we feel that the built in security of the device is enough so that you do not need to enter in your own password</p>
 
-<h2><strong>Q:</strong> How is the credit card information charged?</h2>
+<h2><strong>Q:</strong> Someone stole my phone and they're using it to pay for their meals with my Checkout Express information.  What do I do?</h2>
 
-<p><strong>A:</strong> Your information is forwarded along to the restaurant’s Point of Sale software and charged as though you had given your card to the waitstaff and they had manually entered your information into the system</p>
+<p><strong>A:</strong> You should get your device remotely wiped immediately.  If this is not possible or does not solve the problem, email <a href="mailto:sjelin@chkex.com">sjelin@chkex.com</a> and we can sort this all out.  We can make any previously stored information about your cards for Checkout Express useless in future transactions.   You will not need to cancel your credit card.</p>
+
+<h2><strong>Q:</strong> What if I <span>want</span> to use a password?  I don't trust the built in security of my device</h2>
+
+<p><strong>A:</strong> We're working on this.  If you want this to be a priority of ours, email <a href="mailto:sjelin@chkex.com">sjelin@chkex.com</a>.</p>
+
+<p>However, keep in mind that in order to hve a chance of breaking though your devices security mesures, they would need unrestricted access to your device (they would probably need to physically steal it).  And even if a hacker breaks through the built in security mesures of your device, they won't get your actual credit card information.  What they'll get is more or less a code which lets them pay through Checkout Express, and not through any other service.  What's more, we can easily invalidate this code on our side if you ask us to (see the previous question).</p>
 
 <h2><strong>Q:</strong> What do I do if I forgot my password?</h2>
 
@@ -28,38 +33,38 @@
 
 <p><strong>A:</strong> The security code is never meant to be stored, and is used to verify that you are physically in possession of the card</p>
 
+<h2><strong>Q:</strong> Is there any risk that someone will be able to steal credit card information from Checkout Express?</h2>
+
+<p><strong>A:</strong> There is almost no chance that someone could decrypt your actual credit card information (i.e. your card number, expiration date, etc.) from your device.  In order to do that, they would need unrestricted access to the information on your device, unrestricted access to the information on our servers, your password (if you specified one), and the ability to break any secure storage features built into your device.</p>
+
+<p>However, if there is a virus on your device, it could theoretically watch your screen and steal your information before it is encrypted.</p>
+
+<h2><strong>Q:</strong> How do you transmit credit card information?</h2>
+
+<p><strong>A:</strong> Information is encrypted using an algorithm called "RSA" before it travels over any network.  In many cases, cryptography is built into the actual protocols the network uses.  This is the industry standard method for securely sending information over a network.</p>
+
+<h2><strong>Q:</strong> How is the credit card information charged?</h2>
+
+<p><strong>A:</strong> Your information is forwarded along to the restaurant’s Point of Sale software and charged as though you had given your card to the waitstaff and they had manually entered your information into the system</p>
+
 <h2><strong>Q:</strong> What information is stored?</h2>
 
 <p><strong>A:</strong> Your full card number, the name on your card, the expiration date of the card, and the billing zip code are all stored.</p>
-
-<h2><strong>Q:</strong> Is it dangerous that you’re storing the information on my phone instead of on your server?</h2>
-
-<p><strong>A:</strong> If your device is virus-free, you pick a good password, and you keep it secret then your information is extremely safe.  If you are not using a password, your information is still probably safe.</p>
-
-<h2><strong>Q:</strong> My friend said you're wrong and that it's dangerous regardless</h2>
-
-<p><strong>A:</strong> Your friend has probably not put as much thought into this as we have, but should feel free to email his/her concerns to <a href="mailto:sjelin@chkex.com">sjelin@chkex.com</a></p>
 
 <h2><strong>Q:</strong> Does Checkout Express meet the PCI DSS for safely storing and transmitting credit card information?</h2>
 
 <p><strong>A:</strong> We do not store any credit card information on our servers, so much of the PCI DSS does not apply to us.  We always make sure to encrypt your information if we are sending it over a public network.  We also do whatever we can to make sure the information stored on your device is secure.</p>
 
-<p>If you are using an decive which has a built in cryptographic service (e.g. iOS with Keychain), we use that service for storing data.  If you are not, we require that you enter a password.</p>
-
 <p>If your credit card information is being backed up through a service like iOS' Keychain, we have done our best to make sure that storing credit card information in this way is compliant with PCI DSS.  In the specific case of iOS' Keychain, it's worth noting that some apps developed by Apple (e.g. Sarafi) also use keychain to backup credit card information</p>
 
-<h2><strong>Q:</strong> Specifically, how do you encrypt the information?</h2>
+<h2><strong>Q:</strong> How big is the encryption key?</h2>
 
-<p><strong>A:</strong>  If you are not using a password, we might not use any proprietary encryption.  If you are using a password, we use an algorithm called PBKDF2 to generate an encryption key from your raw password.  We then use that encryption key to encrypt your information using an algorithm called AES.  The result of the AES encryption is then stored, along with some additional information (called “salt” and “IV”).  Both PBKDF2 and AES are commonly used by the biggest and safest tech companies around the world, and using them in concert is a standard practice designed to ensure your security.</p>
+<p><strong>A:</strong> 128-bits for AES that we control.</p>
+
+<h2><strong>Q:</strong> I'm still not sure I trust you guys.  Could I look at your source code?</h2>
+
+<p><strong>A:</strong> Currently, yes.  You can find everything at <a href="https://github.com/chkex/cx">https://github.com/chkex/cx</a>.  We may make the repository private in the future though.<p>
 
 <h2><strong>Q:</strong> How are you integrating with the restaurant's Point of Sale software?</h2>
 
 <p><strong>A:</strong> Have you heard the story of the Mechanical Turk?  Say "hi"</p>
-
-<h2><strong>Q:</strong> How big is the encryption key?</h2>
-
-<p><strong>A:</strong> 128-bits</p>
-
-<h2><strong>Q:</strong> How many iterations of PBKDF2 do you use?</h2>
-
-<p><strong>A:</strong> As of November 2013 we are using 50000 iterations</p>

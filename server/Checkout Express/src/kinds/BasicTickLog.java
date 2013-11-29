@@ -40,7 +40,7 @@ public class BasicTickLog extends AbstractKind
 	}
 	public void fromEntity(Entity e)
 	{
-		List<String> strItems = new ArrayList<String>(items.size());
+		List<String> strItems = DSConverter.getList(e, "items");
 		items = new ArrayList<TicketItem>(strItems.size());
 		for(int i = 0; i < strItems.size(); i++)
 			try {

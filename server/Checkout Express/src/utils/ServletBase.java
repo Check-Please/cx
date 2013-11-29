@@ -37,6 +37,7 @@ public abstract class ServletBase extends HttpServlet
 		public boolean txnReq = true;
 		public boolean txnXG = false;
 		public boolean readOnly = false;
+		public boolean FORBID_RETRIES = false;//This may be changed during runtime
 
 		public boolean getReqHacks = false;//Allows a get request to not be readonly
 
@@ -93,7 +94,7 @@ public abstract class ServletBase extends HttpServlet
 			throw new IllegalStateException("Transaction must be cross-group, but isn't required");
 	}
 
-	private static String admin_pass_sha256 = "ec7aa91afe5d302190b1bac80c554d8fcd2bc1bbc5a4366193b1992d072fb56c";
+	private static String admin_pass_sha256 = "n1c0TSkuq2RQ+qQLUCn+mg/Pga7Hfc40K8kdQqG2N40=";//There are over 100 bits of entropy in the source password.  Attempt to reverse the hash as your own risk.
 	public static String admin_pass_key = "fVCvW8";
 
 	public void do____Wrapper(HttpServletRequest req, HttpServletResponse resp) throws IOException
@@ -139,11 +140,9 @@ public abstract class ServletBase extends HttpServlet
 				if(!MyUtils.sha256(req.getSession().getAttribute(admin_pass_key).toString()).equals(admin_pass_sha256))
 					throw new HttpErrMsg("Incorrect admin password");
 			}
-			int numRetries = 0;
-			boolean retry;
+			int numRetries = MAX_RETRIES;
+			boolean success = false;
 			do {
-				retry = false;
-
 				//Load shit...
 				if(config.strs != null)
 					l.strs(config.strs);
@@ -207,11 +206,14 @@ public abstract class ServletBase extends HttpServlet
 								l.dne(1);
 						}
 					}
-					doReq(l, req.getSession(), ds, resp);
-					if(config.txnReq && !config.readOnly) try {
-						txn.commit();
+					try {
+						doReq(l, req.getSession(), ds, resp);
+						if(config.txnReq && !config.readOnly)
+							txn.commit();
+						success = true;
 					} catch(ConcurrentModificationException e) {
-						retry = numRetries++ < MAX_RETRIES;
+						if(numRetries-- == 0 || config.FORBID_RETRIES)
+							throw e;
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -221,7 +223,10 @@ public abstract class ServletBase extends HttpServlet
 						if (txn.isActive())
 							txn.rollback();//Do we special case config.readOnly?
 				}
-			} while(retry);
+				//Wait a little before trying again
+				if(!success)
+					try { Thread.sleep(10); } catch (InterruptedException e) {}
+			} while(!success);
 		} catch(HttpErrMsg e) {
 			e.apply(resp);
 		}

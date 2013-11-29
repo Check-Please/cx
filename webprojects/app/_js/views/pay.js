@@ -11,6 +11,11 @@ mvc.views = mvc.views || {};
 	var $newCC;//The element of card dropdown for new credit cards
 	var $view;//The object for the view
 
+	function isNewCC()
+	{
+		return $view.find(".cards").val() == $newCC.text();
+	}
+
 	function luhnValid(pan)
 	{
 		return pan.split('').reduce(function(sum, d, n) {
@@ -21,13 +26,19 @@ mvc.views = mvc.views || {};
 	function update()
 	{
 		invalidMsg = null;
-		if($view.find(".cvv input:visible").val() == "")
-			invalidMsg = "Enter security code";
-		if($view.find(".cards").val() == $newCC.text()) {
-			$view.addClass("new-cc-needed");
+		if(isNewCC()) {
+			$view.find(".unencrypted-cc").hide();
+			$view.find(".encrypted-cc").hide();
+			$view.find(".new-cc").show();
+
 			if($view.find(".save input")[0].checked) {
-				if(device.ccWOPass()) {
-					if($view.find(".req-password").show()[0].checked) {
+				if(device.ccPassReq())
+					$view.find(".new-cc .password").show();
+				else {
+					var pReq = false;
+					if(device.ccPassAllowed())
+						pReq = $view.find(".req-password").show()[0].checked;
+					if(pReq) {
 						$view.find(".new-cc .password").show();
 						var warn = null;
 						var password = $view.find(".password:visible").val();
@@ -45,9 +56,7 @@ mvc.views = mvc.views || {};
 													).text(	warn || null);
 					} else
 						$view.find(".new-cc .password").hide();
-				} else
-					$view.find(".new-cc .password").show();
-					
+				}	
 			} else {
 				$view.find(".req-password").hide();
 				$view.find(".new-cc .password").hide();
@@ -62,7 +71,7 @@ mvc.views = mvc.views || {};
 			else if(!pan.match(/^(?:62|88|2014|2149)/) && !luhnValid(pan))
 				invalidMsg = "There is a typo in your card number";
 			else if($view.find(".name input").val().length < 2)
-				invalidMsg = "Enter name";
+				invalidMsg = "Enter name on card";
 			else if((exprYear.length != 2) && (exprYear.length != 4))
 				invalidMsg = "Enter expiration year";
 			else if(!exprYear.match(/^\d+$/))
@@ -71,7 +80,7 @@ mvc.views = mvc.views || {};
 				invalidMsg = "Enter zip code";
 			else if(!zip.match(/^\d{5}(?:[-\s]\d{4})?/))
 				invalidMsg = "The zip code is not correctly formatted";
-			if((invalidMsg == null) && !device.ccWOPass() &&
+			if((invalidMsg == null) && device.ccPassReq() &&
 					($view.find(".password:visible").length > 0)) {
 				var password = $view.find(".password:visible").val();
 				if(password.length < 8)
@@ -87,10 +96,15 @@ mvc.views = mvc.views || {};
 									"numbers and letters";
 			}
 		} else {
-			$view.removeClass("new-cc-needed");
 			var noPass = $view.find("option:selected").noPass != null;
 			$view.find(".unencrypted-cc").toggle(noPass);
 			$view.find(".encrypted-cc").toggle(!noPass);
+			$view.find(".new-cc").hide();
+		}
+		if(invalidMsg==null) {
+			var cvv = $view.find(".cvv input:visible").val();
+			if((cvv != null) && (cvv.length < 3)) 
+				invalidMsg = "Enter security code";
 		}
 		$view.find(".confirm")[(invalidMsg == null ? "remove" : "add")
 						+ "Class"]("disabled");
@@ -136,8 +150,9 @@ mvc.views = mvc.views || {};
 						return "";
 					} else
 						return templates.cc(cc.key, cc.preview, !!info);
-				}).join(""), device.ccWOPass(), templates.cvv()));
-				$newCC = $view("select option").filter(function() {
+				}).join(""), device.ccPassAllowed(), !device.ccPassReq(),
+						templates.cvv()));
+				$newCC = $view.find(".cards option").filter(function() {
 					return $(this).attr("db_key") == null;
 				});
 				$view.find("select").keydown(update);
@@ -152,6 +167,7 @@ mvc.views = mvc.views || {};
 				$view.find(".cvv .popup-rapper").click(hideInfographic);
 				$view.find(".confirm").click(cBtn);
 				$view.find("a.delete").click(deleteCard);
+				update();
 				$trgt.append($view);
 			} else
 				$view.show();
@@ -171,8 +187,8 @@ mvc.views = mvc.views || {};
 			//Use different images for the SSL logo when possible
 			var $ssl = $view.find("img.ssl");
 			var sslH = $ssl.height();
-			$ssl.attr("src", "img/ssl_" + (sslH >= 55 ? "58" : sslH >= 37 ?
-						"52" : "22") + ".png");
+			$ssl.attr("src", "img/app/ssl_" + (sslH >= 55 ? "58" :
+										sslH >= 37 ?  "52" : "22") + ".png");
 		}
 	}
 
@@ -189,7 +205,7 @@ mvc.views = mvc.views || {};
 			return;
 		$btn.addClass("loading");
 
-		if($view.hasClass("new-cc-needed")) {
+		if(isNewCC()) {
 			var pan = $view.find(".pan input").val();
 			var name = $view.find(".name input").val();
 			var expr =	$view.find(".expr-year input").val().slice(-2) +

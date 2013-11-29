@@ -1,47 +1,177 @@
-if(!window.eval_c)
-	window.eval_c = function(arg) {
-		if((arg.indexOf(";") == -1) && (arg.indexOf("{") == -1))
-			return Function("return "+arg);
-		else
-			return function() {return eval(arg);};
-	};
-
-//Fixes first argument(s), as though the function were "curried"
-//
-//Be careful about the "this" object.  Use bind sometimes.
+//Fixes first argument(s), as though the function were "curried", hence "c"
 //
 //E.g.
 //	f.c(x)(y) = f(x,y)
 //	f.c(x,y)(z) = f(x,y,z)
 //	f.c(x)(y,z) = f(x,y,z)
-//Named after currying
-if(!Function.prototype.c)
+//
+//The "this" object which the origonal function is bound to may not transfer
+//onto the curried function.  For instance, the following:
+//	obj.f.c(0)(1)
+//is equivilant to:
+//	window.f = obj.f; f.c(0)(1); delete f;
+//This is because the function returned by the curry opperation is not a
+//member of any object, but is rather a free floating value.  One could
+//solve this problem by using ".bind", which asks for an explicit "this"
+//object, or by doing one of the following two options:
+//	obj.f.c(0).call(obj, 1);
+//	obj.f_ = obj.f.c(0); obj.f_(); delete obj.f_;
+if(!Function.prototype.c) {
 	Function.prototype.c = function() {
-		"use strict";
 		var f = this;
 		var a = Array.prototype.slice.call(arguments, 0);
-		return f == eval ? eval_c(a[0]) : function() {
-			return f.apply(this,
+		return function() { return f.apply(this,
 					a.concat(Array.prototype.slice.call(arguments, 0)));
+		};
+	};
+	eval.c = function(arg) {
+		if((arg.indexOf(";") == -1) && (arg.indexOf("{") == -1))
+			return Function("return "+arg);
+		else
+			return function() {return eval(arg);};
+	};
+}
+
+//Fixes last argument(s), as though they were "curried".  It's not like
+//normal currying though, so we use a k for "kurry"
+//
+//E.g.
+//	f.k(y)(x) = f(x,y)
+//	f.k(y,z)(x) = f(x,y,z)
+//	f.k(z)(x,y) = f(x,y,z)
+if(!Function.prototype.k)
+	Function.prototype.k = function() {
+		var f = this;
+		var a = Array.prototype.slice.call(arguments, 0);
+		return function() { return f.apply(this,
+					Array.prototype.slice.call(arguments, 0).concat(a));
 		};
 	};
 
 //Fixes argument at a particular index
-//e.g. f.C(x,1)(y) = f(y,x)
-//Edge cases like f.C(x,3)(y) will be be resolved be filling in the missing
-//arguments with undefined, e.g. f.C(x,3)(y) = f(y, undefined, undefined, x)
+//E.g.
+//	f.C(x,0)(y) = f(x,y)
+//	f.C(y,1)(x) = f(x,y)
+//	f.C(y,1)(x,z) = f(x,y,z)
+//	f.C(z,2)(x,y) = f(x,y,z)
+//	f.C(y,-1)(x,z) = f(x,y,z)
+//	f.C(x,-2)(y,z) = f(x,y,z)
+//	f.C(y,1)() = f(undefined, y)
+//	f.C(y,z,1)(x) = f(x,y,z)
+//
+//Note that since -0 == 0, this function cannot be used to append to the end
+//of the passed arguments.  That's what ".k" is for.
+//
+//Also, be aware that there are some weird implications of padding the passed
+//arguments with "undefined."  For instance:
+//	f.C(y,1).C(x,0)() = f(x,y)
+//	f.C(x,0).C(y,1)() = f(x, undefined, y)
+//This is not a bug.  It's just weird.  Think about it.
 if(!Function.prototype.C)
-	Function.prototype.C = function(a, i) {
-		"use strict";
+	Function.prototype.C = function() {
 		var f = this;
+		var i = arguments[arguments.length-1];
+		var a = Array.prototype.slice.call(arguments, 0, -1);
 		return function() {
 			var args = Array.prototype.slice.call(arguments, 0);
+			if(i < 0)
+				i = Math.max(0, args.length+i);
 			if(args.length <= i) {
-				args.length = i+1;
-				args[i] = a;
-			} else
-				args.splice(i, 0, a);
-			return f.apply(this, args);
+				args.length = i;
+				return f.apply(this, args.concat(a));
+			}
+			return f.apply(this, args.splice.bind(args,i,0).apply(args,a));
+		};
+	};
+
+//Similar to .C but limits the arugments which can be passed later
+//
+//E.g.
+//	f.K(x,y,0)(z,t) = f(x,y)
+//	f.K(x,y,1)(z,t) = f(z,x,y)
+//	f.K(x,y,-1)(z,t) = f(x,y,z)
+//
+//As a special case, if the last parameter passes is not an integer, or if
+//no parameters are passed, then it is as though 0 were appended to the end
+//of the parameter list.  For instance:
+//	f.K("a", "b")("c") = f("a", "b");
+//	f.K()("a","b") = f();
+//Be careful with this special case though.  If you do something like this:
+//	f.K(x,y)(z)
+//and y is an integer, you may not get the behavior you were looking for
+if(!Function.prototype.K)
+	Function.prototype.K = function() {
+		var f = this;
+		var a;
+		var i = arguments.length ? arguments[arguments.length-1] : null;
+		if(i != (i | 0)) {
+			a = Array.prototype.slice.call(arguments, 0);
+			i = 0;
+		} else
+			a = Array.prototype.slice.call(arguments, 0, -1);
+		return i == 0 ? function() {return f.apply(this, a);} : function() {
+			args = Array.prototype.slice.call(arguments, 0, Math.abs(i));
+			return f.apply(this, i < 0 ? a.concat(args) : args.concat(a));
+		};
+	}
+
+//Basic uncurry
+//
+//The "this" object will basically always be "window" when the
+//function is called unless it has been fixed by bind()
+//
+//E.g.
+//	f.u()(x,y) = f(x)(y)
+if(!Function.prototype.u)
+	Function.prototype.u = function() {
+		var f = this;
+		return function() {
+			for(var i = 0; i < arguments.length; i++)
+				f = f(arguments[i]);
+			return f;
+		};
+	};
+
+//More general uncurry
+//
+//Same rules for the "this" object as ".c"
+//
+//E.g.
+//	f.U()(x,y,z) = f(x)(y)(z)
+//	f.U(0)(x,y,z) = f()(x)(y)(z)
+//	f.U(1)(x,y,z) = f(x)(y)(z)
+//	f.U(2)(x,y,z) = f(x,y)(z)
+//	f.U(3)(x,y,z) = f(x,y,z)
+//	f.U(4)(x,y,z) = f(x,y,z)
+//	f.U(1,2)(x,y,z) = f(x)(y,z)
+//	f.U(2,1)(x,y,z) = f(x,y)(z)
+//	f.U(2,2)(x,y,z) = f(x,y)(z)
+//	f.U(-1)(x,y,z) = f(z)(x)(y)
+//	f.U(-2)(x,y,z) = f(y,z)(x)
+//	f.U(-1,2)(x,y,z) = f(z)(x,y)
+if(!Function.prototype.U)
+	Function.prototype.U = function() {
+		var f = this;
+		var lens = arguments;
+		return function() {
+			var i = 0;
+			var l = 0;
+			var h = arguments.length;
+			while(l < h) {
+				var len = (i < lens.length) ? lens[i++] : 1;
+				var a;
+				if(len >= 0) {
+					a = Array.prototype.slice.call(arguments, l,
+							Math.min(h, l+len));
+					l += len;
+				} else {
+					a = Array.prototype.slice.call(arguments, 
+							Math.max(l, h+len), h);
+					h += len;
+				}
+				f = f.apply(this, a);
+			}
+			return f;
 		};
 	};
 
@@ -50,21 +180,17 @@ if(!Function.prototype.C)
 //Name "o" is a reference to the math symbol
 if(!Function.prototype.o)
 	Function.prototype.o = function(g) {
-		"use strict";
 		var f = this;
 		return function() { return f(g.apply(this, arguments)); };
 	};
 
 //Basic opperators
-//The *_c versions of the functions are designed for currying. *_c <==> *.c
-//The _C versions curry the second parameter, instead of the first
-var op = {
+op = {
 	p: function(x,y) {return x+y;},
 	m: function(x,y) {return x-y;},
 	t: function(x,y) {return x*y;},
 	d: function(x,y) {return x/y;},
 	mod: function(x,y) {return x%y;},
-	o: function(f, g) {return function() {return f(g(this, arguments));};},
 
 	eq: function(x,y) {return x==y;},
 	neq: function(x,y) {return x!=y;},
@@ -82,110 +208,41 @@ var op = {
 	id: function(x) {return x;},
 
 	call: function(f) {return f();},
+	get: function(o, k) {return o[k];},
+	set: function(o, k, v) {return (o[k] = v);},
 
-	p_c: function(x) {return function(y) {return x+y;};},
-	m_c: function(x) {return function(y) {return x-y;};},
-	t_c: function(x) {return function(y) {return x*y;};},
-	d_c: function(x) {return function(y) {return x/y;};},
-	mod_c: function(x) {return function(y) {return x%y;};},
-	o_c: function(f) {return function (g) {return function()
-		{return f(g(this, arguments));};};},
+	custom: function(op) {return function(obj) {
+		return obj[op].apply(obj, Array.prototype.slice.call(arguments, 1));
+	};}
+};
 
-	eq_c: function(x) {return function(y) {return x==y;};},
-	neq_c: function(x) {return function(y) {return x!=y;};},
-	eeq_c: function(x) {return function(y) {return x===y;};},
-	neeq_c: function(x) {return function(y) {return x!==y;};},
-	gt_c: function(x) {return function(y) {return x>y;};},
-	lt_c: function(x) {return function(y) {return x<y;};},
-	ge_c: function(x) {return function(y) {return x>=y;};},
-	le_c: function(x) {return function(y) {return x<=y;};},
-
-	or_c: function(x) {return function(y) {return x||y;};},
-	and_c: function(x) {return function(y) {return x&&y;};},
-
-	id_c: function(x) {return function() {return x;};},
-
-	p_C: function(y) {return function(x) {return x+y;};},
-	m_C: function(y) {return function(x) {return x-y;};},
-	t_C: function(y) {return function(x) {return x*y;};},
-	d_C: function(y) {return function(x) {return x/y;};},
-	mod_C: function(y) {return function(x) {return x%y;};},
-	o_C: function(g) {return function (f) {return function()
-		{return f(g(this, arguments));};};},
-
-	eq_C: function(y) {return function(x) {return x==y;};},
-	neq_C: function(y) {return function(x) {return x!=y;};},
-	eeq_C: function(y) {return function(x) {return x===y;};},
-	neeq_C: function(y) {return function(x) {return x!==y;};},
-	gt_C: function(y) {return function(x) {return x>y;};},
-	lt_C: function(y) {return function(x) {return x<y;};},
-	ge_C: function(y) {return function(x) {return x>=y;};},
-	le_C: function(y) {return function(x) {return x<=y;};},
-
-	or_C: function(y) {return function(x) {return x||y;};},
-	and_C: function(y) {return function(x) {return x&&y;};}
-}
-
-function callAll(funs)
-{
-	var args = Array.prototype.slice.call(arguments, 1);
-	for(var i = 0; i < funs.length; i++)
-		funs[i].apply(this, args);
-}
-
+["c", "C", "k", "K", "u", "U", "o", "sum", "min", "max"].forEach(function(x){
+	op[x] = op.custom(x);
+});
 
 if(!Array.prototype.sum)
 	Array.prototype.sum = Array.prototype.reduce.c(op.p, 0);
 
 if(!Array.prototype.min)
 	Array.prototype.min = function() {
-		"use strict";
 		return Math.min.apply(Math, this);
 	};
 
 if(!Array.prototype.max)
 	Array.prototype.max = function() {
-		"use strict";
 		return Math.max.apply(Math, this);
 	};
+
+if(!Array.prototype.each)
+	Array.prototype.each = Array.prototype.forEach;
 
 //The tabulate function from SML, except that if no function is passed it
 //assumes the indentity function
 if(!Array.tabulate)
 	Array.tabulate = function(n, f) {
-		"use strict";
 		var a = new Array(n);
-		if(f == null) 
-			for(var i = 0; i < n; i++)
-				a[i] = i;
-		else
-			for(var i = 0; i < n; i++)
-				a[i] = f(i);
+		f = f || op.id;
+		for(var i = 0; i < n; i++)
+			a[i] = f(i);
 		return a;
 	};
-
-//"sfx" stands for suffix.  Please just read this one - it's weird.
-//It's useful, for example, if you have a 2D array and you want the lengths
-//of each sub-array, you could do a.map(sfx("length"))
-//If you are just trying to get a property, use sfx.prop.  If you are just
-//trying to call a sunfuction, use sfx.fun.  If you need to call a function
-//and give it arguments, then use sfx.fun_args
-if(!window.sfx) {
-	window.sfx = function(s) {
-		"use strict";
-		return function(x) { return eval("x."+s); };
-	};
-	window.sfx.prop = function(p) {
-		"use strict";
-		return function(x) { return x[p]; }
-	};
-	window.sfx.fun = function(f) {
-		"use strict";
-		return function(x) { return x[f](); }
-	};
-	window.sfx.fun_args = function(f) {
-		"use strict";
-		var a = Array.prototype.slice.call(arguments, 1);
-		return function(x) { return x[f].apply(x, a); }
-	};
-}

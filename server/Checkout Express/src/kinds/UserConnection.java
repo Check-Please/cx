@@ -28,16 +28,18 @@ public class UserConnection extends AbstractKind
 	protected String username;
 	protected Map<String, Date> startTimes;
 	protected String ticketLogID;
+	protected String platform;
 	public UserConnection(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
 	public UserConnection(Entity e) { super(e); }
 
-	public UserConnection(Key k, String ticketLogID)
+	public UserConnection(Key k, String ticketLogID, String plat)
 	{
 		setKey(k);
 		itemsToPay = new HashSet<String>();
 		username = null;
 		startTimes = new HashMap<String, Date>();
 		this.ticketLogID = ticketLogID;
+		platform = plat;
 	}
 	
 	protected UserConnection(Key k, Set<String> itemsToPay, String username, Map<String, Date> startTimes, String ticketLogID)
@@ -132,6 +134,7 @@ public class UserConnection extends AbstractKind
 		e.setProperty("username", username);
 		DSConverter.set(e, "startTimes", startTimes, DSConverter.DataTypes.MAP);
 		e.setProperty("ticketLogID", ticketLogID);
+		e.setProperty("platform", platform);
 		return e;
 	}
 	@SuppressWarnings("unchecked")
@@ -141,5 +144,6 @@ public class UserConnection extends AbstractKind
 		username = (String) e.getProperty("username");
 		startTimes = (Map<String, Date>) DSConverter.get(e, "startTimes", DSConverter.DataTypes.MAP);
 		ticketLogID = (String) e.getProperty("ticketLogID");
+		platform = (String) e.getProperty("platform");
 	}
 }
