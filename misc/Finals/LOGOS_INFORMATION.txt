@@ -1,0 +1,38 @@
+MODERN POS LOGO INFORMATION
+
++ COLORS
+
+  +Orange 
+ 
+   Darkest: PMS 180 C
+   Medium: PMS Warm Red C
+   Light: PMS 178 C
+   Lightest: PMS Orange 21 C
+
+  +Grey
+   
+   70% Black
+
++ TYPOGRAPHY
+   
+  +Ambassador
+   -http://www.myfonts.com/fonts/juraj-chrastina/ambassador/
+
+
+
+
+CHECKOUT EXPRESS LOGO INFORMATION
+
++ COLORS
+
+  +Aqua 
+ 
+   Darkest: PMS 3275 C
+   Dark: PMS 3265 C 
+   Medium: PMS 325 C
+   Light: PMS 3385 C
+   Lightest: PMS 571 C
+
+  +Grey
+   
+   70% Black

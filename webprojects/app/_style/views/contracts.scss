@@ -1,0 +1,49 @@
+@import "../../../_ignore/main.scss";
+
+#view .contract {
+    position: fixed;
+    z-index: 9000;
+    background: #EEE;
+    height: 100%;
+    width: 100%;
+}
+
+#view .contract .content {
+    overflow: scroll;
+    margin: 1em;
+    padding: 1em;
+    background: #FFF;
+}
+
+#view .contract .content h1 {
+	margin-top: 0px;
+}
+
+#view .contract .content h2 {
+	font-weight: normal;
+}
+
+#view .contract .content span {
+	font-style: italic;
+}
+
+#view .contract .buttons {
+	display: block;
+	margin: auto;
+}
+
+#view .contract .buttons .confirm {
+	margin-bottom: 0px;
+	display: inline-block;
+	float: left;
+}
+
+#view .contract .buttons .disagree {
+	@include btn-base(0.3em, 0.35em 0.3em 0.25em 0.3em);
+	@include btn-gradients("8C8C8C", "646464", "989898", "747474");
+	font-size: 1.5em;
+	width: 4em;
+	display: inline-block;
+	@include border-radius(0.2em);
+	float: right;
+}
