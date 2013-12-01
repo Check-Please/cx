@@ -125,12 +125,15 @@
 	}
 
 	window.onload = function() {
+		if(!DEBUG && window.location.protocol != "https:")
+			window.location.href = "https:" +
+						location.href.substring(location.protocol.length);
 		setTimeout(window.onresize, 0);
 		inParallel([device.getTableKey, device.getPos], function(tKey, pos) {
 			tKey = tKey[0] || "";
 			if(tKey == "" && !device.isNative())
-				return(window.location = window.location.hostname
-														+ "/splash.html");
+				return(window.location = "http://"+window.location.host
+														+ "/website.html");
 			ajax.send("cx", "init", {
 				isNative: device.isNative(),
 				tableKey: tKey,

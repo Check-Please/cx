@@ -10,7 +10,7 @@ mvc.views = mvc.views || {};
 		this.readonly = readonly === true;
 	};
 
-	cv.prototype.build = function($trgt, oldView) {
+	cv.prototype.build = function($trgt) {
 		this.$view = $(templates.contract(templates[this.viewName](),
 						this.readonly));
 		this.$view.find("a.disagree").click(mvc.err.c("You cannot use this "+
