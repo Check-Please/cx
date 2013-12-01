@@ -99,7 +99,7 @@ mvc.views = mvc.views || {};
 				updateTip();
 			}
 			if(!$view) {
-				var re=/^(.*?),?([^\\,]+,?[a-z ]{2,},?\s*[0-9\\-]{0,10})$/i;
+				var re= /^(.*?),?([^\\,]+,?[a-z ]{2,},?\s*[0-9\\-]{0,10})$/i;
 				var splitAddress = re.exec(mvc.restrAddress().trim())
 				$view = $(templates.receipt(mvc.restrName(),mvc.restrStyle(),
 											splitAddress[1], splitAddress[2],

@@ -55,7 +55,7 @@ public class PayServlet extends PostServletBase
 		config.txnXG = true;
 		config.path = a("/", TableKey.getKind(), "tableKey");
 		config.exists = true;
-		config.strs = a("ciphertext", "?cvv");
+		config.strs = a("ccInfo", "?cvv");
 		config.strLists = a("items");
 		config.longLists = a("nums", "denoms");
 		config.longs = a("total", "tip");//NOTE: total does not include tip
@@ -82,10 +82,10 @@ public class PayServlet extends PostServletBase
 			//Luhn Algorithm
 			int sum = 0;
 			for(int i = 0; i < pan.length(); i++) {
-				int d = Integer.parseInt(pan.substring(i, 1));
-				sum += (i == 0) ? (d*2)%9 : d;
+				int d = Integer.parseInt(pan.substring(i, i+1));
+				sum += (i%2 == 0) && (d != 9) ? (d*2)%9 : d;
 			}
-			if(sum != 0)
+			if(sum%10 != 0)
 				throw new HttpErrMsg("The card number is incorrect");
 		}
 		if(name.length() < 2)
@@ -301,7 +301,7 @@ public class PayServlet extends PostServletBase
 	{
 		//Get params
 		TableKey table = new TableKey(p.getEntity());
-		String rawCC = new Client(p.getEntity()).decrypt(p.getStr(0));
+		String rawCC = p.getStr(0);
 		JSONObject cc;
 		try {
 			cc = new JSONObject(rawCC);

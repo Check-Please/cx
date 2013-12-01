@@ -1,149 +1,149 @@
 new_restr?password=1234&name=Burgers%20%27n%20Beers&address=6543%202nd%20Ave.%2C%20Pittsburgh%2C%20PA%2C%2015213&email=sjelin@gmail.com&username=sjelin
 
-newTable?query={"method":"preloaded","id":0}&restr=sjelin&code=IKA
+new_table?query={"method":"preloaded","id":0}&restr=sjelin&code=IKA
 
 
 
 new_restr?password=1234&name=Beer%20Emporium&address=302%20South%20St.%20Clair%20Street%2C%20Pittsburgh%2C%20PA%2015206&email=sjelin@gmail.com&username=beer-emporium
 
-newTable?query={"method":"preloaded","id":1}&restr=beer-emporium&code=IWP
+new_table?query={"method":"preloaded","id":1}&restr=beer-emporium&code=IWP
 
 
 
 new_restr?password=1234&name=Avenue%20B&address=5501%20Centre%20Avenue%2C%20Pittsburgh%2C%20PA%2015232&email=sjelin@gmail.com&style=avenue_b&username=avenue-b
 
-newTable?query={"method":"preloaded","id":2}&restr=avenue-b&code=JTQ
+new_table?query={"method":"preloaded","id":2}&restr=avenue-b&code=JTQ
 
 
 
 new_restr?password=1234&name=Shady%20Grove&address=5500%20Walnut%20Street%2C%20Pittsburgh%2C%20PA%2015232&email=sjelin@gmail.com&style=shady_grove&username=shady-grove
 
-newTable?query={"method":"preloaded","id":3}&restr=shady-grove&code=HPK
+new_table?query={"method":"preloaded","id":3}&restr=shady-grove&code=HPK
 
 
 
 new_restr?password=1234&name=up&address=5500%20Walnut%20Street%2C%20Pittsburgh%2C%20PA%2015232&email=sjelin@gmail.com&style=up&username=up
 
-newTable?query={"method":"preloaded","id":4}&restr=up&code=SVY
+new_table?query={"method":"preloaded","id":4}&restr=up&code=SVY
 
 
 
 new_restr?password=1234&name=The%20Elbow%20Room&address=5533%20Walnut%20Street%2C%20Pittsburgh%2C%20Pennsylvania%2015232&email=sjelin@gmail.com&username=elbow-room
 
-newTable?query={"method":"preloaded","id":5}&restr=elbow-room&code=ZZF
+new_table?query={"method":"preloaded","id":5}&restr=elbow-room&code=ZZF
 
 
 
 new_restr?password=1234&name=Eden&address=735%20Copeland%20St.%2C%20Pittsburgh%2C%20PA%2015232&email=sjelin@gmail.com&style=eden&username=eden
 
-newTable?query={"method":"preloaded","id":6}&restr=eden&code=OTV
+new_table?query={"method":"preloaded","id":6}&restr=eden&code=OTV
 
 
 
 new_restr?password=1234&name=Girasole&address=733%20Copeland%20St.%2C%20Pittsburgh%2C%20PA%2015232&email=sjelin@gmail.com&style=girasole&username=girasole
 
-newTable?query={"method":"preloaded","id":7}&restr=girasole&code=HRI
+new_table?query={"method":"preloaded","id":7}&restr=girasole&code=HRI
 
 
 
 new_restr?password=1234&name=Social&address=6425%20Penn%20Avenue%2C%20Pittsburgh%2C%20Pennsylvania%2015206&email=sjelin@gmail.com&style=social&username=social
 
-newTable?query={"method":"preloaded","id":8}&restr=social&code=SFH
+new_table?query={"method":"preloaded","id":8}&restr=social&code=SFH
 
 
 
 new_restr?password=1234&name=Stack%27d&address=728%20Copeland%20St%2C%20Pittsburgh%2C%20PA%2015232&email=sjelin@gmail.com&style=stackd&username=stackd
 
-newTable?query={"method":"preloaded","id":9}&restr=stackd&code=CUT
+new_table?query={"method":"preloaded","id":9}&restr=stackd&code=CUT
 
 
 
 new_restr?password=1234&name=Steel%20Cactus&address=5505%20Walnut%20Street%2C%20Pittsburgh%20PA%2015232&email=sjelin@gmail.com&style=steel_cactus&username=steel_cactus
 
-newTable?query={"method":"preloaded","id":10}&restr=steel_cactus&code=PQY
+new_table?query={"method":"preloaded","id":10}&restr=steel_cactus&code=PQY
 
 
 
 new_restr?password=1234&name=BRGR&address=5997%20Penn%20Cir%20S%20%20Pittsburgh%2C%20PA%2015206&email=sjelin@gmail.com&style=brgr&username=brgr
 
-newTable?query={"method":"preloaded","id":11}&restr=brgr
+new_table?query={"method":"preloaded","id":11}&restr=brgr
 
 
 
 new_restr?password=1234&name=Plum&address=5996%20Penn%20Cir%20S%20%20Pittsburgh%2C%20PA%2015206&email=sjelin@gmail.com&style=plum&username=plum
 
-newTable?query={"method":"preloaded","id":12}&restr=plum
+new_table?query={"method":"preloaded","id":12}&restr=plum
 
 
 
 new_restr?password=1234&name=Spoon&address=134%20South%20Highland%20Ave%2C%20Pittsburgh%2C%20PA%2C%2015206&email=sjelin@gmail.com&style=spoon&username=spoon
 
-newTable?query={"method":"preloaded","id":13}&restr=spoon
+new_table?query={"method":"preloaded","id":13}&restr=spoon
 
 
 
 new_restr?password=1234&name=1947%20Tavern&address=5744%201/2%20Ellsworth%20Ave%2C%20Pittsburgh%20PA%2015232&email=sjelin@gmail.com&username=1947-tavern
 
-newTable?query={"method":"preloaded","id":14}&restr=1947-tavern
+new_table?query={"method":"preloaded","id":14}&restr=1947-tavern
 
 
 
 new_restr?password=1234&name=Buffalo%20Blues&address=216%20S%20Highland%20Ave%2C%20Pittsburgh%20PA%2015206&email=sjelin@gmail.com&username=buffalo-blues
 
-newTable?query={"method":"preloaded","id":15}&restr=buffalo-blues
+new_table?query={"method":"preloaded","id":15}&restr=buffalo-blues
 
 
 
 new_restr?password=1234&name=Bites%20and%20Brews&address=5750%20Ellsworth%20Ave%2C%20Pittsburgh%20PA%2015232&email=sjelin@gmail.com&username=bites
 
-newTable?query={"method":"preloaded","id":16}&restr=bites
+new_table?query={"method":"preloaded","id":16}&restr=bites
 
 
 
 new_restr?password=1234&name=Brasserie%2033&address=5863%20Ellsworth%20Ave.%2C%20Pittsburgh%2C%20PA%2015232&email=sjelin@gmail.com&style=b33&username=b33
 
-newTable?query={"method":"preloaded","id":17}&restr=b33
+new_table?query={"method":"preloaded","id":17}&restr=b33
 
 
 
 new_restr?password=1234&name=Harris%20Grill&address=5747%20Ellsworth%20Ave%2C%20Pittsburgh%2C%20PA%2015232&email=sjelin@gmail.com&style=harris_grill&username=harris_grill
 
-newTable?query={"method":"preloaded","id":18}&restr=harris_grill
+new_table?query={"method":"preloaded","id":18}&restr=harris_grill
 
 
 
 new_restr?password=1234&name=Paris%2066&address=6018%20Penn%20Cir%20S%2C%20Pittsburgh%2C%20PA%2015206&email=sjelin@gmail.com&style=p66&username=p66
 
-newTable?query={"method":"preloaded","id":19}&restr=p66
+new_table?query={"method":"preloaded","id":19}&restr=p66
 
 
 
 new_restr?password=1234&name=Toast%21&address=5102%20Baum%20Blvd%2C%20Pittsburgh%2C%20PA%2015224&email=sjelin@gmail.com&style=toast&username=toast
 
-newTable?query={"method":"preloaded","id":20}&restr=toast
+new_table?query={"method":"preloaded","id":20}&restr=toast
 
 
 
 new_restr?password=1234&name=Union%20Pig%20%26%20Chicken&address=220%20N%20Highland%20Ave%2C%20Pittsburgh%2C%20PA%2015206&email=sjelin@gmail.com&style=union&username=union
 
-newTable?query={"method":"preloaded","id":21}&restr=union
+new_table?query={"method":"preloaded","id":21}&restr=union
 
 
 new_restr?password=1234&name=Legume&address=214%20N%20craig%20St%2C%20Pittsburgh%2C%20PA%2015213&email=sjelin@gmail.com&style=legume&username=legume
 
-newTable?query={"method":"preloaded","id":22}&restr=legume
+new_table?query={"method":"preloaded","id":22}&restr=legume
 
 
 new_restr?password=1234&name=Fuel%20%26%20Fuddle&address=212%20Oakland%20Ave%2C%20Pittsburgh%2C%20PA%2015213&email=sjelin@gmail.com&username=fuel
 
-newTable?query={"method":"preloaded","id":23}&restr=fuel
+new_table?query={"method":"preloaded","id":23}&restr=fuel
 
 
 new_restr?password=1234&name=Dinette&address=5996%20Penn%20Circle%20South%2C%20Pittsburgh%2C%20PA%2015206&email=sjelin@gmail.com&username=dinette
 
-newTable?query={"method":"preloaded","id":24}&restr=dinette
+new_table?query={"method":"preloaded","id":24}&restr=dinette
 
 
 new_restr?password=1234&name=Noodlehead&address=242%20South%20Highland%20Ave%2C%20Pittsburgh%2C%20PA%2015206&email=sjelin@gmail.com&style=noodlehead&username=noodlehead
 
-newTable?query={"method":"preloaded","id":25}&restr=noodlehead
+new_table?query={"method":"preloaded","id":25}&restr=noodlehead

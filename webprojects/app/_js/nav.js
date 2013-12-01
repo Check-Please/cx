@@ -40,7 +40,7 @@
 			$body.addClass("tall");
 
 		if(currView && currView.onResize)
-			currView.onResize();
+			currView.onResize(fSz);
 	};
 
 	var mutex = false;
@@ -142,10 +142,11 @@
 			}, function(data) {
 				data = JSON.parse(data);
 				if(data.errCode != null) {
-					mvc.init({err:	data.errCode == 0 ? "NoKey" :
-									data.errCode == 1 ? "InvalidKey" :
-									data.errCode == 2 ? "Empty" :
+					mvc.init({err:	data.errCode == 0 ? "noKey" :
+									data.errCode == 1 ? "invalidKey" :
+									data.errCode == 2 ? "empty" :
 														"500"});
+					loading.init();
 					mvc.err.notify();
 					return;
 				}

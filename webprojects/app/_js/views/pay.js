@@ -18,18 +18,21 @@ mvc.views = mvc.views || {};
 
 	function luhnValid(pan)
 	{
-		return pan.split('').reduce(function(sum, d, n) {
-			return sum + parseInt((n%2)? d : [0,2,4,6,8,1,3,5,7,9][d]);
-		}, 0) % 10 == 0;
+		return pan.match(/^(?:62|88|2014|2149)/) ||
+			pan.split('').reduce(function(sum, d, n) {
+				return sum + parseInt((n%2)? d : [0,2,4,6,8,1,3,5,7,9][d]);
+			}, 0) % 10 == 0;
 	}
 
 	function update()
 	{
 		invalidMsg = null;
+		var cBtn = true;
 		if(isNewCC()) {
 			$view.find(".unencrypted-cc").hide();
 			$view.find(".encrypted-cc").hide();
 			$view.find(".new-cc").show();
+			$view.find(".delete").hide();
 
 			if($view.find(".save input")[0].checked) {
 				if(device.ccPassReq())
@@ -37,11 +40,13 @@ mvc.views = mvc.views || {};
 				else {
 					var pReq = false;
 					if(device.ccPassAllowed())
-						pReq = $view.find(".req-password").show()[0].checked;
+						pReq = $view.find(".req-password").show().find(
+														"input")[0].checked;
 					if(pReq) {
 						$view.find(".new-cc .password").show();
-						var warn = null;
-						var password = $view.find(".password:visible").val();
+						var warn = "";
+						var password =
+								$view.find(".password input:visible").val();
 						if(password.length < 8)
 							warn =	"Your password should be at least "+
 									"eight characters long";
@@ -52,8 +57,7 @@ mvc.views = mvc.views || {};
 						else if(password.match(/^[a-z]*$/i))
 							warn =	"Your password should be more than just"+
 									"a word";
-						$view.find(".password span").toggle(warn != null
-													).text(	warn || null);
+						$view.find(".password span").text(warn);
 					} else
 						$view.find(".new-cc .password").hide();
 				}	
@@ -61,53 +65,71 @@ mvc.views = mvc.views || {};
 				$view.find(".req-password").hide();
 				$view.find(".new-cc .password").hide();
 			}
+			//Check card number
 			var pan = $view.find(".pan input").val();
-			var exprYear = $view.find(".expr-year input").val();
-			var zip = $view.find(".zip input").val();
-			if(pan.length < 8)
+			if(pan.length < 8) {
 				invalidMsg = "Enter card number";
-			else if(!pan.match(/^\d+$/))
+				cBtn = cBtn && pan.length > 0;
+			} else if(!pan.match(/^\d+$/))
 				invalidMsg = "Your card number must be a number";
-			else if(!pan.match(/^(?:62|88|2014|2149)/) && !luhnValid(pan))
+			else if(!luhnValid(pan))
 				invalidMsg = "There is a typo in your card number";
-			else if($view.find(".name input").val().length < 2)
+			//Check name
+			var name = $view.find(".name input").val();
+			if(name.length < 2) {
 				invalidMsg = "Enter name on card";
-			else if((exprYear.length != 2) && (exprYear.length != 4))
+				cBtn = cBtn && name.length > 0;
+			}
+			//Check expiration year
+			var exprYear = $view.find(".expr-year input").val();
+			if((exprYear.length != 2) && (exprYear.length != 4)) {
 				invalidMsg = "Enter expiration year";
-			else if(!exprYear.match(/^\d+$/))
+				cBtn = cBtn && exprYear.length > 0;
+			} else if(!exprYear.match(/^\d+$/))
 				invalidMsg = "The expiration year must be a number";
-			else if(zip.length < 5)
+			//Check zip code
+			var zip = $view.find(".zip input").val();
+			if(zip.length < 5) {
 				invalidMsg = "Enter zip code";
-			else if(!zip.match(/^\d{5}(?:[-\s]\d{4})?/))
+				cBtn = cBtn && zip.length > 0;
+			} else if(!zip.match(/^\d{5}(?:[-\s]\d{4})?/))
 				invalidMsg = "The zip code is not correctly formatted";
-			if((invalidMsg == null) && device.ccPassReq() &&
+			if(device.ccPassReq() &&
 					($view.find(".password:visible").length > 0)) {
-				var password = $view.find(".password:visible").val();
+				var password = $view.find(".password input:visible").val();
+				var warn = null;
 				if(password.length < 8)
-					invalidMsg = "Password too short";
+					warn = "Password too short";
 				else if(!password.match(/[0-9]/))
-					invalidMsg = "Password should contain a number";
+					warn = "Password should contain a number";
 				else if(!password.match(/[a-z]/))
-					invalidMsg ="Password should contain a lowercase letter";
+					warn ="Password should contain a lowercase letter";
 				else if(!password.match(/[A-Z]/))
-					invalidMsg ="Password should contain a uppercase letter";
-				else if(password.match(/^[0-9a-z]$/i))
-					invalidMsg =	"Password should be more than just "+
-									"numbers and letters";
+					warn ="Password should contain an uppercase letter";
+				else if(password.match(/^[0-9a-z]*$/i))
+					warn =	"Password should be more than just numbers and "+
+							"letters";
+				if(warn != null) {
+					invalidMsg = warn;
+					$view.find(".password span").text(warn);
+					cBtn = false;
+				} else
+					$view.find(".password span").text("");
 			}
 		} else {
-			var noPass = $view.find("option:selected").noPass != null;
+			var noPass = $view.find(".cards :selected").attr("noPass")!=null;
 			$view.find(".unencrypted-cc").toggle(noPass);
 			$view.find(".encrypted-cc").toggle(!noPass);
 			$view.find(".new-cc").hide();
+			$view.find(".delete").show();
 		}
-		if(invalidMsg==null) {
-			var cvv = $view.find(".cvv input:visible").val();
-			if((cvv != null) && (cvv.length < 3)) 
-				invalidMsg = "Enter security code";
-		}
-		$view.find(".confirm")[(invalidMsg == null ? "remove" : "add")
-						+ "Class"]("disabled");
+		var cvv = $view.find(".cvv input:visible").val();
+		if((cvv != null) && (cvv.length < 3)) {
+			invalidMsg = "Enter security code";
+			cBtn = cBtn && cvv.length > 0;
+		} else if((cvv != null) && !cvv.match(/^\d+$/))
+			invalidMsg = "Security code must be a number";
+		$view.find(".confirm")[(cBtn?"remove":"add") + "Class"]("disabled");
 		window.onresize();
 	}
 
@@ -129,12 +151,13 @@ mvc.views = mvc.views || {};
 	 */
 	function deleteCard()
 	{
-		var $op = $view.find("option:selected");
-		if(confirm("Delete card "+$op.text+"?")) {
+		var $op = $view.find(".cards :selected");
+		if(confirm("Delete card "+$op.text()+"?")) {
 			device.deleteCC($op.attr("db_key"));
 			$op.remove();
 			var $sel = $view.find(".cards");
 			$sel[0].selectedIndex = $sel[0].options.length-1;
+			update();
 		}
 	}
 
@@ -167,8 +190,12 @@ mvc.views = mvc.views || {};
 				$view.find(".cvv .popup-bg").click(hideInfographic);
 				$view.find(".confirm").click(cBtn);
 				$view.find("a.delete").click(deleteCard);
-				update();
+				$view.find(".save a").click(
+								mvc.contract.c(mvc.views.secFAQ.viewName));
+				$view.find(".ccPolicy a").click(
+								mvc.contract.c(mvc.views.ccPolicy.viewName));
 				$trgt.append($view);
+				update();
 			} else
 				$view.show();
 		},
@@ -215,10 +242,10 @@ mvc.views = mvc.views || {};
 			if($view.find(".save input")[0].checked)
 				setTimeout(device.storeCC.c(pan, name, expr, zip,
 					$view.find(".password input:visible").val()) || null, 0);
-			pay(pan, name, expr, zip, cvv);
+			pay(JSON.stringify({pan:pan,name:name,expr:expr,zip:zip}), cvv);
 		} else setTimeout(function() {
-			var cc = device.getCC($view.find(":selected").attr("db_key"),
-					$view.find(".password input:visible").val() || null);
+			var cc =device.getCC($view.find(".cards :selected").attr("db_key"
+					), $view.find(".password input:visible").val() || null);
 			if(cc === undefined) {
 				alert(	"Credit card data missing.  You should probably "+
 						"delete this card.");
@@ -227,14 +254,13 @@ mvc.views = mvc.views || {};
 				alert("Incorrect password");
 				$btn.removeClass("loading");
 			} else
-				pay(cc.pan, cc.name, cc.expr, cc.zip,
-					$view.find(".cvv input:visible").val());
+				pay(cc, $view.find(".cvv input:visible").val());
 		}, 0);
 	}
 
 	/*	Pays.  When finished paying, removes the "loading" class
 	 */
-	function pay(pan, name, expr, zip, cvv)
+	function pay(ccInfo, cvv)
 	{
 		var items = [];
 		var nums = [];
@@ -249,11 +275,9 @@ mvc.views = mvc.views || {};
 		ajax.send("cx", "pay", {
 			tableKey: mvc.key(),
 			connectionID: mvc.connectionID(),
-			pan: pan,
-			name: name,
-			expr: expr,
-			zip: zip,
+			ccInfo: ccInfo,
 			cvv: cvv,
+			clientID: device.getClientID(),
 			items: items,
 			nums: nums,
 			denoms: denoms,

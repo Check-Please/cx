@@ -17,7 +17,7 @@ mvc.views = mvc.views || {};
 		build: function($trgt) {
 			if(!$view) {
 				$view = $(templates.feedback());
-				$view(".ratings").on("click", "a", function() {
+				$view.find(".ratings").on("click", "a", function() {
 					var $this = $(this);
 					var rating;
 					if($this.hasClass("bad"))

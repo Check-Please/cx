@@ -11,21 +11,21 @@
 	}
 }
 
-#pay .login {
-	text-align: center;
-	margin-bottom: 1em;
+#pay .delete {
+	@include btn-base(0.2em 0px, 0.25em 0px 0.15em 0px);
+	@include btn-gradients("568CBE", "2C589B", "6798C5", "4269A5");
+	font-size: 0.7em;
+	position: relative;
+	bottom: 0.15em;
+	width: 6em;
 }
 
-#pay .login a {
-	text-decoration: underline;
-}
-
-#pay .new-cc {
+#pay form {
 	margin-top: 1.5em;
 	position: relative;
 }
 
-#pay .new-cc > * {
+#pay form > div {
 	height: 3.5em;
 	position: relative;
 }
@@ -54,7 +54,7 @@
 	width: 12.5em;
 }
 
-#pay .new-cc input {
+#pay form input {
 	width: calc(12.5em - 2px);
 }
 
@@ -107,6 +107,41 @@
 	margin: auto;
 }
 
-#pay .security-notice {
+#pay .save, #pay .req-password {
+	height: 2em;
+}
+
+#pay .save input, #pay .req-password input {
+	width: auto;
+	position: relative;
+	bottom: 0.2em;
+}
+
+#pay .save a {
+	position: absolute;
+	right: 2px;
+	text-decoration: underline;
+}
+
+#pay .password span {
+	position: absolute;
+	right: 2px;
+	top: 0px;
 	font-size: 0.7em;
+	max-width: 17em;
+	color: #F00;
+}
+
+#pay .ccPolicy {
+	font-size: 0.8em;
+}
+
+#pay .ccPolicy a {
+	text-decoration: underline;
+}
+
+#pay .encrypted-cc .cvv {
+	position: absolute;
+	top: 0px;
+	right: 2px;
 }

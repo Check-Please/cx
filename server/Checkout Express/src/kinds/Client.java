@@ -57,7 +57,7 @@ public class Client extends AbstractKind
 		IvParameterSpec iv;
 		byte [] ct;
 		try {
-			if(tokens.length == 2)
+			if(tokens.length != 2)
 				throw new Exception();
 			iv = new IvParameterSpec(Base64.decodeBase64(tokens[0].getBytes()));
 			ct = Base64.decodeBase64(tokens[1].getBytes());
@@ -84,7 +84,7 @@ public class Client extends AbstractKind
 			throw new HttpErrMsg(404, "IV malformated");
 		}
 		try {
-			return new String(cipher.doFinal(Base64.decodeBase64(ct)));
+			return new String(cipher.doFinal(ct));
 		} catch (Exception e) {
 			throw new HttpErrMsg(404, "Ciphertext malformated");
 		}

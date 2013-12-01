@@ -258,7 +258,7 @@ var device = device || {};
 	{
 		var ccList = device.getCCs();
 		for(var i = 0; i < ccList.length; i++)
-			accData(ccList[i].key, undefined);
+			device.accData(ccList[i].key, undefined);
 		device.accData("CCs", undefined);
 	};
 
@@ -333,14 +333,15 @@ var device = device || {};
 	 */
 	device.storeCC = function(pan, name, expr, zip, password)
 	{
-		ajax.send("cx", "encryptCC", {
+		ajax.send("cx", "encryptCC", { clientID: device.getClientID(),
 			pan: pan, name: name, expr: expr, zip: zip
 		}, function(ciphertext) {
+			ciphertext = ciphertext.trim();
 			var k;
 			do {
 				k = "card::"+randStr();
 			} while(device.accData(k) !== undefined);
-			preview = pan.slice(-4);
+			var preview = pan.slice(-4);
 			while(preview.length < pan.length)
 				preview = "X"+preview;
 			var ccList = device.getCCs();
@@ -374,7 +375,7 @@ var device = device || {};
 		if(ct.endsWith(noPassSfx) != (password == null))
 			return null;
 		if(password == null) 
-			return ct.substring(0, -noPassSfx.length);
+			return ct.substring(0, ct.length-noPassSfx.length);
 		var data = device.decrypt(ct, password);
 		if(data == null)
 			return null;
@@ -383,7 +384,7 @@ var device = device || {};
 		var ccList = device.getCCs();
 		for(var i = 0; ccList[i].key != key; i++)
 			;
-		ccList.unshift(ccList.splice(i, 1));
+		ccList.unshift(ccList.splice(i, 1)[0]);
 		device.accData("CCs", ccList);
 
 		return data;

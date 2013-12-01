@@ -5,20 +5,19 @@
 		{{cards}}
 		<option>New Credit Card</option>
 	</select>
+	<a class="delete">Delete Card</a>
 
 	<form class="unencrypted-cc">
 		<p>No Password required for this card</p>
 		{{cvv}}
-		<a class="delete">Delete Card</a>
 	</form>
 
 	<form class="encrypted-cc">
 		<div class="password">
 			<label>Password</label>
-			<input type="text" />
+			<input type="password" />
 		</div>
 		{{cvv}}
-		<a class="delete">Delete Card</a>
 	</form>
 
 	<form class="new-cc">
@@ -57,23 +56,25 @@
 			<input type="text" maxlength="5" />
 		</div>
 		<div class="save">
-			<label>Save your credit card for future use</label>
-			<input type="checkbox" />
-			<a>Security FAQ</a>
+			<span>
+				<input type="checkbox" />
+				Save your credit card for future use
+			</span>
+			<a>(Security FAQ)</a>
 		</div>
 		{{(allowPassword ? }}
 			{{(allowNoPassword ?}}
 				<div class="req-password">
-					<label>Require a password to access credit card</label>
-					<input type="checkbox" />
+					<span>
+						<input type="checkbox" />
+						Require a password to access credit card
+					</span>
 				</div>
 			{{:"")}}
 			<div class="password">
 				<label>Password</label>
-				<input type="text" />
-				{{(allowNoPassword ?}}
-					<span></span>
-				{{:"")}}
+				<input type="password" />
+				<span></span>
 			</div>
 		{{:"")}}
 	</form>

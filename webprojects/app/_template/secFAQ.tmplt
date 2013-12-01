@@ -1,10 +1,10 @@
 <h1>Security FAQ (Frequently Asked Questions)</h1>
 
-<p>This is in no sense a legal or technical document.  Some of the details have been simplified for easier reading.  No one may be held accountable for any misstatement on the part of the writer or misinterpretation on the part of the reader.  For the actual legal agreement, please read the Credit Card Policy.</p>
+<p><strong>Disclaimer:</strong> This is in no sense a legal or technical document.  Some of the details have been simplified for easier reading.  Some information may be out of date.  No one may be held accountable for any misstatement on the part of the writer or misinterpretation on the part of the reader.  For the actual legal agreement, please read the Credit Card Policy.</p>
 
 <h2><strong>Q:</strong> How do you store credit card information?</h2>
 
-<p><strong>A:</strong> Your information is encrypted and stored on your device.  We do not store any actual credit card information on our servers.  However, if you are using a servie like iCloud, the encrypted information may be backed up on that service.</p>
+<p><strong>A:</strong> Your information is encrypted and stored on your device.  We do not store any actual credit card information on our servers.  However, if you are using a service like iCloud, the encrypted information may be backed up on that service.</p>
 
 
 <h2><strong>Q:</strong> How do you encrypt credit card information?</h2>
@@ -23,7 +23,7 @@
 
 <p><strong>A:</strong> We're working on this.  If you want this to be a priority of ours, email <a href="mailto:sjelin@chkex.com">sjelin@chkex.com</a>.</p>
 
-<p>However, keep in mind that in order to hve a chance of breaking though your devices security mesures, they would need unrestricted access to your device (they would probably need to physically steal it).  And even if a hacker breaks through the built in security mesures of your device, they won't get your actual credit card information.  What they'll get is more or less a code which lets them pay through Checkout Express, and not through any other service.  What's more, we can easily invalidate this code on our side if you ask us to (see the previous question).</p>
+<p>However, keep in mind that in order to have a chance of breaking though your devices security measures, they would need unrestricted access to your device (they would probably need to physically steal it).  And even if a hacker breaks through the built in security measures of your device, they won't get your actual credit card information.  What they'll get is more or less a code which lets them pay through Checkout Express, and not through any other service.  What's more, we can easily invalidate this code on our side if you ask us to (see the previous question).</p>
 
 <h2><strong>Q:</strong> What do I do if I forgot my password?</h2>
 
@@ -55,7 +55,7 @@
 
 <p><strong>A:</strong> We do not store any credit card information on our servers, so much of the PCI DSS does not apply to us.  We always make sure to encrypt your information if we are sending it over a public network.  We also do whatever we can to make sure the information stored on your device is secure.</p>
 
-<p>If your credit card information is being backed up through a service like iOS' Keychain, we have done our best to make sure that storing credit card information in this way is compliant with PCI DSS.  In the specific case of iOS' Keychain, it's worth noting that some apps developed by Apple (e.g. Sarafi) also use keychain to backup credit card information</p>
+<p>If your credit card information is being backed up through a service like iOS' Keychain, we have done our best to make sure that storing credit card information in this way is compliant with PCI DSS.  In the specific case of iOS' Keychain, it's worth noting that some apps developed by Apple (e.g. Safari) also use keychain to backup credit card information</p>
 
 <h2><strong>Q:</strong> How big is the encryption key?</h2>
 

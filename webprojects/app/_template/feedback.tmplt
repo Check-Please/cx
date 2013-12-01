@@ -3,10 +3,10 @@
 	<div class="feedback">
 		<h3>Rate your experience:</h3>
 		<div class="ratings">
-			<a class="bad"><img src="img/thumbs-down.png" /></a>
+			<a class="bad"><img src="img/app/thumbs-down.png" /></a>
 			<a class="ok">OK</a>
-			<a class="just good"><img src="img/thumbs-up.png" /></a>
-			<a class="very good"><img src="img/thumbs-up-up.png" /></a>
+			<a class="just good"><img src="img/app/thumbs-up.png" /></a>
+			<a class="very good"><img src="img/app/thumbs-up-up.png" /></a>
 		</div>
 	</div>
 	<div class="self-promotion">

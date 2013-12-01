@@ -37,6 +37,7 @@ public class EncryptCCServlet extends PostServletBase
 		config.path = a(Client.getKind(), "clientID");
 		config.exists = true;
 		config.keyNames = a("clientID");
+		config.txnXG = true;
 	}
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException, HttpErrMsg
 	{

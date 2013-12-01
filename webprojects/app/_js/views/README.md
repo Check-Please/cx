@@ -44,5 +44,5 @@ displayed at the same time.  Views must implement the following interface:
 				defined equivalent to always returning null.
 
 
-`onResize()` -	Optional.  If this view is active, called wehen the window
-				resizes.
+`onResize(fSz)` -	Optional.  If this view is active, called wehen the
+					window resizes.  fSz == font size
