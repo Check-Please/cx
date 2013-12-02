@@ -25,6 +25,7 @@ CX
 
 CX - Split
 .AddToSplitServlet, /cx/split/add/
+.CancelSplitServlet, /cx/split/cancel/
 .RemoveFromSplitServlet, /cx/split/remove/
 .StartSplitServlet, /cx/split/start/
 

@@ -92,6 +92,7 @@ mvc.views = mvc.views || {};
 		}
 	}
 
+	var $splitBtn;
 	mvc.views.receipt = {
 		build: function($trgt) {
 			function setTipByPrct(prct) {
@@ -103,8 +104,10 @@ mvc.views = mvc.views || {};
 				var splitAddress = re.exec(mvc.restrAddress().trim())
 				$view = $(templates.receipt(mvc.restrName(),mvc.restrStyle(),
 											splitAddress[1], splitAddress[2],
-											"<REPLACE_ME />"));
+											"<REPLACE_ME />", "<R_ME_2 />"));
 				$container = $view.find("REPLACE_ME").parent();
+				$splitBtn = $view.find("R_ME_2").parent();
+				$splitBtn.text(templates.splitText(mvc.split() != null));
 				render();
 				$tipBox = $view.find(".tip input");
 				$view.find(".tip .percent.seventeen").click(
@@ -114,8 +117,8 @@ mvc.views = mvc.views || {};
 				$view.find(".tip .percent.twentyfive").click(
 						setTipByPrct.c(25));
 				$view.find(".tip .percent.other").click(function() {
-					$tipBox.val(money.toStr(Math.round(
-								[200, total/3.3].max()), ""));
+					$tipBox.val("");
+					$tipBox.focus();
 					updateTip();
 				});
 				$tipBox.keyup(updateTip);
@@ -127,8 +130,10 @@ mvc.views = mvc.views || {};
 				mvc.selection.listen(render);
 				mvc.tip.listen(calcTipPercent);
 				$trgt.append($view);
-			} else
+			} else {
+				$splitBtn.text(templates.splitText(mvc.split() != null));
 				$view.show();
+			}
 		},
 		redirect: function() {
 			if((mvc.split() != null) && !mvc.views.split.valid())

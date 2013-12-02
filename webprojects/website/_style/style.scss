@@ -7,6 +7,10 @@ body {
 	margin: 0px 25px;
 }
 
+body > a {
+	display: block;
+}
+
 img {
 	width: 100%;
 	margin: 25px 0px;
@@ -70,4 +74,8 @@ h2 {
 @media (min-width: 850px) {
 	body { width: 800px; }
 	#content { width: 650px; }
+}
+
+@media (max-width: 550px) {
+	#nav a span { display: none; }
 }

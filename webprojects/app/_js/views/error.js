@@ -17,6 +17,6 @@ mvc.views = mvc.views || {};
 										error: err}, $.noop);
 			socket.close();
 		},
-		redirect: function() {if(mvc.err()==null) return mvc.views.askSplit;}
+		redirect: function() {if(mvc.err()==null) return mvc.views.receipt;}
 	};
 })();

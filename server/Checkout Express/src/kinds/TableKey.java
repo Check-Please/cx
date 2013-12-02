@@ -96,6 +96,16 @@ public class TableKey extends AbstractKind
 		splitStarted = true;
 	}
 
+	public void cancelSplit(DatastoreService ds)
+	{
+		splitStarted = false;
+		for(Entity e : ds.prepare(new Query(UserConnection.getKind(), getKey())).asIterable()) {
+			UserConnection c = new UserConnection(e);
+			c.removeItems();
+			c.commit(ds);
+		}
+	}
+
 	private Iterable<Entity> getClients(DatastoreService ds)
 	{
 		return getClients(getKey(), ds);
@@ -143,12 +153,20 @@ public class TableKey extends AbstractKind
 				UserConnection.sendSplitUpdate(splitID, splitItems, e.getKey(), channelService);
 	}
 
-	public void sendStartSplit(String splitID, DatastoreService ds)
+	public void sendStartSplit(String splitterID, DatastoreService ds)
 	{
 		ChannelService channelService = ChannelServiceFactory.getChannelService();
 		for(Entity e : getClients(ds))
-			if(!e.getKey().getName().equals(splitID))
+			if(!e.getKey().getName().equals(splitterID))
 				UserConnection.sendStartSplit(e.getKey(), channelService);
+	}
+
+	public void sendCancelSplit(String splitterID, DatastoreService ds)
+	{
+		ChannelService channelService = ChannelServiceFactory.getChannelService();
+		for(Entity e : getClients(ds))
+			if(!e.getKey().getName().equals(splitterID))
+				UserConnection.sendCancelSplit(e.getKey(), channelService);
 	}
 
 	public void sendErrMsg(String msg, DatastoreService ds)

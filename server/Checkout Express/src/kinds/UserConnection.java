@@ -35,11 +35,11 @@ public class UserConnection extends AbstractKind
 	public UserConnection(Key k, String ticketLogID, String plat)
 	{
 		setKey(k);
-		itemsToPay = new HashSet<String>();
 		username = null;
 		startTimes = new HashMap<String, Date>();
 		this.ticketLogID = ticketLogID;
 		platform = plat;
+		removeItems();
 	}
 	
 	protected UserConnection(Key k, Set<String> itemsToPay, String username, Map<String, Date> startTimes, String ticketLogID)
@@ -68,6 +68,11 @@ public class UserConnection extends AbstractKind
 	public void removeItem(String id)
 	{
 		itemsToPay.remove(id);
+	}
+
+	public void removeItems()
+	{
+		itemsToPay = new HashSet<String>();
 	}
 
 	public Set<String> getItems()
@@ -115,6 +120,11 @@ public class UserConnection extends AbstractKind
 	public static void sendStartSplit(Key k, ChannelService channelService)
 	{
 		sendMsg("start_split", "", k, channelService);
+	}
+
+	public static void sendCancelSplit(Key k, ChannelService channelService)
+	{
+		sendMsg("cancel_split", "", k, channelService);
 	}
 
 	public static void sendErrMessage(String msg, Key k, ChannelService channelService)

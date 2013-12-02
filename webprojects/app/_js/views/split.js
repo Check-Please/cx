@@ -17,7 +17,7 @@ mvc.views = mvc.views || {};
 		params = params || {};
 		params.tableKey = mvc.key();
 		params.connectionID = mvc.connectionID();
-		ajax.send("cx/split", cmd, params, f1, f2, f3);
+		ajax.send("cx/split", cmd, params, f1 || $.noop, f2, f3);
 	};
 
 	var $view = null;
@@ -27,13 +27,17 @@ mvc.views = mvc.views || {};
 				$view = $(templates.split("<REPLACE_ME />"));
 				var $tmp = $view.find("REPLACE_ME");
 
-				//Add click event to toggle selection
+				//Add click events
 				$tmp.parent().on("click", "a", function() {
 					var id = $(this).attr("itemID");
 					var selection = mvc.selection();
 					send((selection[id] = !selection[id]) ? 'add' : 'remove',
 															{itemID : id});
 					mvc.selection.notify();
+				});
+				$view.find(".cancel").click(function() {
+					send('cancel');
+					mvc.split(null);
 				});
 
 				//Actually build the thing
@@ -48,8 +52,8 @@ mvc.views = mvc.views || {};
 
 			//Start split
 			if(mvc.split() == null) {
-				mvc.split({});
 				send('start');
+				mvc.split({});
 			}
 		},
 		unbuild: function() {$view.hide()},
@@ -132,6 +136,8 @@ mvc.views = mvc.views || {};
 	 */
 	function isValid()
 	{
+		if(mvc.split() == null)
+			return true;
 		if(items == null)
 			return mvc.processedSplit() == null;
 		var sel = mvc.selection() || {};

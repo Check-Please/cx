@@ -15,6 +15,7 @@
 	@include btn-base(0.2em 0px, 0.25em 0px 0.15em 0px);
 	@include btn-gradients("568CBE", "2C589B", "6798C5", "4269A5");
 	font-size: 0.7em;
+	@include border-radius(0.2em);
 	position: relative;
 	bottom: 0.15em;
 	width: 6em;

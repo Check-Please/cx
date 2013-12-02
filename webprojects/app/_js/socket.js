@@ -64,6 +64,12 @@ var socket = socket || {};
 			else
 				mvc.split.notify();
 		},
+		CANCEL_SPLIT: function() {
+			if(mvc.split() == null)
+				mvc.split.notify();
+			else
+				mvc.split(null);
+		},
 		ERR: function() {
 			mvc.err(Array.prototype.join.call(arguments, "\n"));
 		},
@@ -93,11 +99,10 @@ var socket = socket || {};
 
 	function onError(err)
 	{
-		if(err.code == 0)
-			if(err.description == null || err.description.trim().length == 0)
-				err.description =	"Either the server or your phone seems "+
-				   					"to have turned off";
-		mvc.err("Channel error #"+err.code+": "+err.description);
+		if(err.code == 401)
+			mvc.err("timeout");
+		else
+			mvc.err("reload");
 	}
 
 	function onClose() {}

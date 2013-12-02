@@ -42,6 +42,10 @@ mvc.views = mvc.views || {};
 				$view.show();
 			markDone();
 		},
-		unbuild: function() {$view.hide();}
+		unbuild: function() {$view.hide();},
+		redirect: function() {
+			if(!mvc.done() && !mvc.paid())
+				return mvc.views.receipt;
+		}
 	}
 })();

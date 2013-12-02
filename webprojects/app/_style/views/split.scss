@@ -1,5 +1,11 @@
 @import "../../../_ignore/main.scss";
 
+#split {
+	position: relative;
+	padding-bottom: 2em;
+	margin-bottom: 1em;
+}
+
 #split p {
 	padding: 0px 1em;
 }
@@ -7,7 +13,7 @@
 #split .items {
 	list-style-type: none;
 	padding: 0px 1em;
-	margin: auto;
+	margin: 0px auto 2em 0px;
 }
 
 #split .item {
@@ -62,4 +68,24 @@
 
 #split .item.has-others .others {
 	display: inline-block;
+}
+
+#split a.confirm {
+	position: absolute;
+	bottom: 0px;
+	left: 50%;
+	margin: 0px 0px 0px -5em;
+}
+
+#split a.cancel {
+	@include btn-base(0.3em, 0.35em 0.3em 0.25em 0.3em);
+	@include btn-gradients("8C8C8C", "646464", "989898", "747474");
+	font-size: 1.5em;
+	display: block;
+	width: 4em;
+	@include border-radius(0.2em);
+	position: absolute;
+	bottom: 0px;
+	right: 50%;
+	margin-right: -5em;
 }

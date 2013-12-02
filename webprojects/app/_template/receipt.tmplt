@@ -12,6 +12,7 @@
 		<ul class="items">{{items}}</ul>
 		<div class="footer"></div>
 	</div>
+	<div><a class="split" href="#split">{{splitText}}</a></div>
 	<div class="tip">
 		<div class="buttons">
 			Tip:

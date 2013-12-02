@@ -58,6 +58,14 @@
 	font-weight: bold;
 }
 
+#receipt a.split {
+	display: block;
+	color: #000;
+	margin-bottom: 1em;
+	text-align: center;
+	text-decoration: underline;
+}
+
 #receipt .tip {
 	width: 23em;
 	margin: auto;

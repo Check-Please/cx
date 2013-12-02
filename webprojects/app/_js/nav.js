@@ -10,6 +10,7 @@
 	var inited = false;
 	var currView = null;
 	var hashchangeSupport = "onhashchange" in window;
+	var unloading = false;
 
 	window.onresize = function()
 	{
@@ -83,10 +84,14 @@
 				return;
 
 			//Spy
-			if(inited && !isFeedback)
+			if(inited && !isFeedback) {
 				ajax.send("cx", "log_pos", {position: view.viewName,
 					tableKey: mvc.key(), connectionID: mvc.connectionID()},
-					$.noop, buildAjaxErrFun("contact the server"));
+					$.noop, function() {
+						if((mvc.err() == null) && !unloading)
+							mvc.err("reload");
+					});
+			}
 
 			//Actually transition from old view to new view
 			var $view = $("#view");
@@ -125,7 +130,7 @@
 	}
 
 	window.onload = function() {
-		if(!DEBUG && window.location.protocol != "https:")
+		if((location.hostname!="localhost") && (location.protocol!="https:"))
 			window.location.href = "https:" +
 						location.href.substring(location.protocol.length);
 		setTimeout(window.onresize, 0);
@@ -195,11 +200,14 @@
 			$("head").append($script);
 		}
 
-		mvc.split.listen(function(oldSplit) {
-			if(!mvc.done() && (mvc.split()!=null) && (mvc.loadMsg()==null) && 
-					((oldSplit == null) || !mvc.views.split.valid())) {
-				mvc.tip(null);
-				goToView(mvc.views.split);
+		mvc.split.listen(function() {
+			if(!mvc.done() && !mvc.paid() && (mvc.loadMsg() == null)) {
+				if(mvc.split() == null) {
+					mvc.selection({});
+					if(currView == mvc.views.split)
+						goToView(mvc.views.receipt);
+				} else if(!mvc.views.split.valid())
+					goToView(mvc.views.split);
 			}
 		});
 		mvc.contract.listen(function() {
@@ -254,16 +262,15 @@
 		}
 	};
 
-	var unloading = false;
 	window.onunload = window.onbeforeunload = function() {
-		if(mvc.inited() && (mvc.err() == null) && !unloading) {
+		if(inited && (mvc.err() == null) && !unloading) {
 			unloading = true;
 			ajax.send("cx", "close", {connectionID: mvc.connectionID()});
 		}
 	};
 
 	window.onhashchange = function() {
-		goToView(mvc.views[location.hash.slice(1)] || mvc.views.askSplit);
+		goToView(mvc.views[location.hash.slice(1)] || mvc.views.receipt);
 	}
 
 })();
