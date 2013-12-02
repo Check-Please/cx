@@ -191,6 +191,7 @@
 				loading.init();
 				inited = true;
 				window.onhashchange();
+				mvc.views.err.allowReload();
 			}, buildAjaxErrFun("establish connection with the server"));
 		});
 		if(device.getDebugID() != null) {
