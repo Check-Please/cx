@@ -16,8 +16,8 @@ mvc.views = mvc.views || {};
 			if(DEBUG)
 				console.log("Error page:\n\n"+(new Error()).stack);
 			if(mvc.connectionID() != null)
-				ajax.send("cx", "close", {connectionID: mvc.connectionID(),
-								error: err}, reload ? undefined : $.noop);
+				device.ajax.send("cx", "close", {connectionID:
+					mvc.connectionID(), error:err}, reload?undefined:$.noop);
 			socket.close();
 			if(reload)
 				return window.location.reload(false);

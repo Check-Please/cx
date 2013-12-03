@@ -81,16 +81,23 @@ function ajax(method, url, rawData, callback, failFunc, boringUpdate)
 	xmlhttp.send(data);
 	return xmlhttp;
 }
-ajax.get = ajax.c("GET");
-ajax.post = ajax.c("POST");
-ajax.receive = function(base, cmd, data, callback, failFun, boringUpdate)
-{
-	return ajax.get("/"+base+"/"+cmd,data,callback,failFun,boringUpdate);
-}
-ajax.send = function(base, cmd, data, callback, failFun, boringUpdate)
-{
-	return ajax.post("/"+base+"/"+cmd,data,callback,failFun,boringUpdate);
-}
+["get", "post", "put", "delete"].forEach(function(method) {
+	ajax[method] = function() {
+		var args = [method.toUpperCase()];
+		args.push.apply(args, arguments);
+		this.apply(window, args);
+	};
+});
+
+for(var i = 0; i < 2; i++)
+	ajax[i == 0 ? "receive" : "send"] = function(module, cmd) {
+		if(module.endsWith("/"))
+			module = module.slice(0, module.length-1);
+		if(module && module.length > 0)
+			arguments[1] = module + (cmd[0] == "/" : "" : "/") + cmd;
+		arguments[0] = i == 0 ? "GET" : "POST";
+		this.apply(window, Array.toArray(arguments));
+	}
 
 function buildAjaxErrFun(cmd, dontStopLoading)
 {

@@ -67,6 +67,22 @@ var device = device || {};
 		);
 	};
 
+	device.localServer = function() {
+		return !device.isNative() && (location.hostname != "localhost") &&
+						(window.location.protocol != "https:");
+	}
+
+	/* Ajax stuff */
+	device.ajax = function(method, url)
+	{
+		if(device.isNative() && !url.match(/^[a-z]*:\/\//i))
+			arguments[1] = "https://www.chkex.com"+(url[0]=="/":"":"/")+url;
+		ajax.apply(this, Array.toArray(arguments));
+	};
+	for(var f in ajax)
+		if(Function.prototype[f] == undefined)
+			device.ajax[f] = ajax[f];
+
 	/**	Determines the key for the table
 	 *
 	 *	@param	callback A callback function. The first parameter is the key.
@@ -333,7 +349,7 @@ var device = device || {};
 	 */
 	device.storeCC = function(pan, name, expr, zip, password)
 	{
-		ajax.send("cx", "encryptCC", { clientID: device.getClientID(),
+		device.ajax.send("cx", "encryptCC", { clientID: device.getClientID(),
 			pan: pan, name: name, expr: expr, zip: zip
 		}, function(ciphertext) {
 			ciphertext = ciphertext.trim();

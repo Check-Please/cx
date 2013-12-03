@@ -85,7 +85,7 @@
 
 			//Spy
 			if(inited && !isFeedback) {
-				ajax.send("cx", "log_pos", {position: view.viewName,
+				device.ajax.send("cx", "log_pos", {position: view.viewName,
 					tableKey: mvc.key(), connectionID: mvc.connectionID()},
 					$.noop, function() {
 						if((mvc.err() == null) && !unloading)
@@ -130,16 +130,17 @@
 	}
 
 	window.onload = function() {
-		if((location.hostname!="localhost") && (location.protocol!="https:"))
+		if(!device.isNative() && (window.location.hostname != "localhost") &&
+						(window.location.protocol != "https:"))
 			window.location.href = "https:" +
-						location.href.substring(location.protocol.length);
+					window.location.href.substring(location.protocol.length);
 		setTimeout(window.onresize, 0);
 		inParallel([device.getTableKey, device.getPos], function(tKey, pos) {
 			tKey = tKey[0] || "";
 			if(tKey == "" && !device.isNative())
 				return(window.location = "http://"+window.location.host
 														+ "/website.html");
-			ajax.send("cx", "init", {
+			device.ajax.send("cx", "init", {
 				isNative: device.isNative(),
 				tableKey: tKey,
 				clientID: device.getClientID(),
@@ -266,7 +267,7 @@
 	window.onunload = window.onbeforeunload = function() {
 		if(inited && (mvc.err() == null) && !unloading) {
 			unloading = true;
-			ajax.send("cx", "close", {connectionID: mvc.connectionID()});
+			device.ajax.send("cx","close",{connectionID:mvc.connectionID()});
 		}
 	};
 

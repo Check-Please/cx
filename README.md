@@ -24,12 +24,13 @@ How to Set Up
 	1.	Git
 	2.	The lastest JRE and JDK
 	3.	Python
-	4.	UglifyJS (install node.js, run `npm install uglify-js -g`)
-	5.	SASS (install ruby, run `gem install sass`)
-	6.	Eclipse (if you need to work on or locally run the server)
-	7.	The iPhone SDK (if you are going to work on the iPhone app)
-	8.	The Andriod SDK (if you are going to work on the Andriod app)
-	9.	Microsoft Visual Studio (if you are going to work on the plugin)
+	4.	UglifyJS (install node.js, run `sudo npm install uglify-js -g`)
+	5.	PhoneGap (install node.js, tun `sudo npm install -g phonegap`)
+	6.	SASS (install ruby, run `gem install sass`)
+	7.	Eclipse (if you need to work on or locally run the server)
+	8.	The iPhone SDK (if you are going to work on the iPhone app)
+	9.	The Andriod SDK (if you are going to work on the Andriod app)
+	10.	Microsoft Visual Studio (if you are going to work on the plugin)
 
 3.	Clone this project to your machine
 

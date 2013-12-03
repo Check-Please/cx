@@ -272,7 +272,7 @@ mvc.views = mvc.views || {};
 			nums.push(item.num);
 			denoms.push(item.denom);
 		}
-		ajax.send("cx", "pay", {
+		device.ajax.send("cx", "pay", {
 			tableKey: mvc.key(),
 			connectionID: mvc.connectionID(),
 			ccInfo: ccInfo,
