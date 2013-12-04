@@ -11,8 +11,11 @@ mvc.views = mvc.views || {};
 			var err = mvc.err();
 			$trgt.append($((templates["err__"+err] ||
 												templates.err.c(err))()));
-			var reload = device.isNative() && reloadsAllows && (
-							(err == "reload") || (err == "timeout"));
+			var reload;
+			if(NATIVE)
+				reload = reloadsAllowed&&(err=="reload" || err=="timeout");
+			else
+				reload = false;
 			if(DEBUG)
 				console.log("Error page:\n\n"+(new Error()).stack);
 			if(mvc.connectionID() != null)

@@ -27,12 +27,6 @@ var device = device || {};
 (function() {
 	"use strict";
 
-	/** Determines if the app is running natively or in the browser
-	 *
-	 *	@return	true iff the app is running natively
-	 */
-	device.isNative = op.id.c(false);
-
 	/**	Determines if credit cards should only be allowed to be stored if a
 	 *	password is used
 	 *
@@ -67,21 +61,24 @@ var device = device || {};
 		);
 	};
 
-	device.localServer = function() {
-		return !device.isNative() && (location.hostname != "localhost") &&
-						(window.location.protocol != "https:");
-	}
-
 	/* Ajax stuff */
-	device.ajax = function(method, url)
-	{
-		if(device.isNative() && !url.match(/^[a-z]*:\/\//i))
-			arguments[1] = "https://www.chkex.com"+(url[0]=="/":"":"/")+url;
-		ajax.apply(this, Array.toArray(arguments));
-	};
-	for(var f in ajax)
-		if(Function.prototype[f] == undefined)
-			device.ajax[f] = ajax[f];
+	var serverAddress;
+	if(LOCAL)
+		serverAddress = "localhost:8888";
+	else
+		serverAddress = "https://www.chkex.com";
+	if(NATIVE) {
+		device.ajax = function(method, url)
+		{
+			if(!url.match(/^[a-z]*:\/\//i))
+				arguments[1] = serverAddress + (url[0] =="/"?"":"/") + url;
+			ajax.apply(this, Array.toArray(arguments));
+		};
+		for(var f in ajax)
+			if(Function.prototype[f] == undefined)
+				device.ajax[f] = ajax[f];
+	} else
+		device.ajax = ajax;
 
 	/**	Determines the key for the table
 	 *

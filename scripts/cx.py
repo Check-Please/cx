@@ -6,7 +6,7 @@ if len(sys.argv) < 2 or len(sys.argv) == 2 and sys.argv[1] == "help":
     print ""
     print "The most commonly used commands are:"
     print "\tbuild - run the buold script"
-    print "\tbd - shorthand for \"build --debug\""
+    print "\tdb - shorthand for \"build --debug --local\""
     print "\thelp - get help with this tool" 
     print "\thome - print the path to the root of the project"
     print "\tpwd - print working directory relative to the project root"
@@ -16,13 +16,15 @@ else:
 
     if sys.argv[1] == "build":
         call(["python", os.path.join(home,"build","build.py")]+sys.argv[2:])
-    elif sys.argv[1] == "bd":
-        call(["python", os.path.join(home,"build","build.py"), "--debug"]
+    elif sys.argv[1] == "db":
+        call(["python", os.path.join(home,"build","build.py"), "-d", "-l"]
                 +sys.argv[2:])
     elif sys.argv[1] == "help":
         if sys.argv[2] == "build":
-            print "Run the build script.  Pass \"--debug\" flag to avoid js "
-            print "compression"
+            print "Run the build script.  Pass \"-d\" or \"--debug\" flag to"
+            print "run in debug mode (no compression, files in \"debug\""
+            print "subfolder included).  Pass \"-l\" or \"--local\" flag to"
+            print "run using localhost as the server for native apps."
         elif sys.argv[2] == "help":
             print "Run without extra arguments to get the usage and a list "
             print "of command.  Run with an extra argument to get details "

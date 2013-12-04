@@ -91,10 +91,11 @@ function ajax(method, url, rawData, callback, failFunc, boringUpdate)
 
 for(var i = 0; i < 2; i++)
 	ajax[i == 0 ? "receive" : "send"] = function(module, cmd) {
+		module = module || "";
 		if(module.endsWith("/"))
 			module = module.slice(0, module.length-1);
-		if(module && module.length > 0)
-			arguments[1] = module + (cmd[0] == "/" : "" : "/") + cmd;
+		if(module.length > 0)
+			arguments[1] = module + (cmd[0] == "/" ? "" : "/") + cmd;
 		arguments[0] = i == 0 ? "GET" : "POST";
 		this.apply(window, Array.toArray(arguments));
 	}

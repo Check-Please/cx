@@ -130,18 +130,26 @@
 	}
 
 	window.onload = function() {
-		if(!device.isNative() && (window.location.hostname != "localhost") &&
+		if(!NATIVE) {
+			if((window.location.hostname != "localhost") &&
 						(window.location.protocol != "https:"))
-			window.location.href = "https:" +
+				window.location.href = "https:" +
 					window.location.href.substring(location.protocol.length);
+		}
 		setTimeout(window.onresize, 0);
 		inParallel([device.getTableKey, device.getPos], function(tKey, pos) {
 			tKey = tKey[0] || "";
-			if(tKey == "" && !device.isNative())
-				return(window.location = "http://"+window.location.host
+			var isNative;
+			if(NATIVE)
+				isNative = true;
+			else {
+				isNative = false;
+				if(tKey == "")
+					return(window.location = "http://"+window.location.host
 														+ "/website.html");
+			}
 			device.ajax.send("cx", "init", {
-				isNative: device.isNative(),
+				isNative: isNative,
 				tableKey: tKey,
 				clientID: device.getClientID(),
 				platform: device.getPlatform(),

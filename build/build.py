@@ -52,19 +52,39 @@ def sass(src, dest):
     return subprocess.call(["sass", "--update",
                             expandPath(src)+":"+expandPath(dest)])
 
-def compressJS(path):
+def preprocessJS(path, native, debug, local):
     path = expandPath(path)
-    proc = subprocess.Popen(["uglifyjs", path, "-o", path, "-c", "-m",
-                "--define", "DEBUG=false"], stderr=subprocess.PIPE);
-    ignoreNext = False;
-    for line in proc.stderr:
-        if line.strip() == "WARN: Condition always false [null:1,6]":
-            ignoreNext = True;
-        elif ignoreNext:
-            ignoreNext = False;
-        else:
-            sys.stderr.write(line);
-    return proc.returncode;
+    if debug:
+        infil = readfile(path);
+        content = ( "//--  BUILD VARS  --//\n" +
+                    "var DEBUG = true;\n" +
+                    "var NATIVE = "+("true" if native else "false")+";\n" +
+                    "var LOCAL = "+("true" if local else "false")+";\n" +
+                    "//--  END BUILD VARS  --//\n\n" +
+                    infil.read());
+        infil.close();
+        outfil = writefile(path);
+        outfil.write(content);
+        outfil.close();
+        return 0;
+    else:
+        config = writefile("build/ugly_vars.js");
+        proc = subprocess.Popen(["uglifyjs", path, "-o", path, "-c", "-m",
+                    "--define", "DEBUG=false" +
+                    ",NATIVE="+("true" if native else "false") +
+                    ",LOCAL="+("true" if local else "false"),
+                    ]+(["--screw-ie8"] if native else []),
+                stderr=subprocess.PIPE);
+
+        ignoreNext = False;
+        for line in proc.stderr:
+            if line.strip() == "WARN: Condition always false [null:1,6]":
+                ignoreNext = True;
+            elif ignoreNext:
+                ignoreNext = False;
+            else:
+                sys.stderr.write(line);
+        return proc.returncode;
 
 #############################################################################
 # Helper Methods
@@ -86,6 +106,8 @@ noTemplating = set([rawFolder, "_img"]);
 indexHTML = "index.html"
 orderFile = "_order"
 uSet = type('', (), dict(__contains__ = lambda _,x: True))()
+webPlat = "web";
+
 
 """ Makes the web.xml file for the server
 
@@ -449,12 +471,13 @@ def clearFolder(path, protectedList=None):
     @param dest The root of the folder which 
     @param plat The platform which the resulting files will run on
     @param debug Whether or not the --debug flag was specified
+    @param local If the app will be running off of localhost
     @param parents  A list of parent folders, leading back to the root of the
                     transfer
     @param merge    Whether or not the files in the folder should be merged
                     into a single file
 """
-def transferLeaf(src, dest, plat, debug, parents, merge):
+def transferLeaf(src, dest, plat, debug, local, parents, merge):
     if merge:
         assert(len(parents) > 0);
     isDir = isdir(src)
@@ -498,9 +521,9 @@ def transferLeaf(src, dest, plat, debug, parents, merge):
                             infil.close()
                 i += 1;
             outfil.close();
-            if not debug and ext == "js":
-                print "\tCompressing \""+ofpath+"\"..."
-                compressJS(ofpath);
+            if ext == "js":
+                print "\tPreprocessing \""+ofpath+"\"..."
+                preprocessJS(ofpath, (plat != webPlat), debug, local);
         else:
             for baseFolder in baseFolders:
                 baseFolder = src+baseFolder;
@@ -520,12 +543,13 @@ def transferLeaf(src, dest, plat, debug, parents, merge):
     @param dest The root of the folder to transfer to the final directory
     @param plat The platform which the resulting files will run on
     @param debug Whether or not the --debug flag was specified
+    @param local If the app will be running off of localhost
     @param foldersToFollow  A set-like object which specifies if a folder
                             should be recursed upon
     @param parents  A list of parent folders, leading back to the root of the
                     transfer
 """
-def transferFiles(src, dest, plat, debug, foldersToFollow, parents=[]):
+def transferFiles(src,dest,plat,debug,local,foldersToFollow,parents=[]):
     if len(parents) == 0:
         print "Transfering files for "+plat+"..."
     for fil in ls(src):
@@ -541,19 +565,24 @@ def transferFiles(src, dest, plat, debug, foldersToFollow, parents=[]):
                     for f in ls(fpath):
                         cp_r(fpath+"/"+f, dpath+"/"+f);
                 elif not fil in ignoreFolders:
-                    transferLeaf(fpath, dest, plat, debug, parents,
+                    transferLeaf(fpath, dest, plat, debug, local, parents,
                                                         fil in mergeFolders);
             elif fil in foldersToFollow:
-                transferFiles(fpath, dest, plat, debug, uSet, parents+[fil])
+                transferFiles(fpath,dest,plat,debug,local,uSet,parents+[fil])
     htmlPath = src+"/"+indexHTML;
     if exists(htmlPath):
-        transferLeaf(htmlPath, dest, plat, debug, parents, True)
+        transferLeaf(htmlPath, dest, plat, debug, local, parents, True)
 
 #############################################################################
 # Executed liness
 #############################################################################
 
-debug = len((lambda x: x[0])(getopt.getopt(sys.argv[1:], "", ["debug"]))) > 0
+debug = False;
+local = False;
+for (op, val) in getopt.getopt(sys.argv[1:], "ld", ["debug", "local"])[0]:
+    debug = debug or op == "-d" or op == "--debug";
+    local = local or op == "-l" or op == "--local";
+
 projectsForApp = set([]);
 projectsForAppFil = readfile("build/app-web-projects.csv");
 for row in csv.reader(projectsForAppFil):
@@ -581,7 +610,7 @@ for i in xrange(0, len(platforms)):
             "server/protected_war.csv" if i == 0 else None)
     else:
         mkdir(platformPaths[i])
-    transferFiles(tmpFolder, platformPaths[i], platforms[i], debug,
+    transferFiles(tmpFolder, platformPaths[i], platforms[i], debug, local,
                     uSet if i == 0 else projectsForApp);
 
 rm_r(tmpFolder);
