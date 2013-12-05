@@ -1,2 +1,3 @@
 device.getTableKey = function(c) {c("IKA")};
-//device.getDebugID = op.id.c("chkex_iOS");
+device.ccPassReq = op.id.c(false);
+device.ccPassAllowed = op.id.c(false);
