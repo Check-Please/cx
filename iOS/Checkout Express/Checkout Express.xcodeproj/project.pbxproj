@@ -22,6 +22,12 @@
 		3C346C97184EECD10048AFB5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3C346C95184EECD10048AFB5 /* InfoPlist.strings */; };
 		3C346C99184EECD10048AFB5 /* Checkout_ExpressTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C346C98184EECD10048AFB5 /* Checkout_ExpressTests.m */; };
 		3C346CA3184EEF210048AFB5 /* www in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CA2184EEF210048AFB5 /* www */; };
+		3C346CA7185100390048AFB5 /* CXSplash-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CA4185100390048AFB5 /* CXSplash-568h@2x.png */; };
+		3C346CA8185100390048AFB5 /* CXSplash.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CA5185100390048AFB5 /* CXSplash.png */; };
+		3C346CA9185100390048AFB5 /* CXSplash@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CA6185100390048AFB5 /* CXSplash@2x.png */; };
+		3C346CAE18510DF50048AFB5 /* icon-29pt.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CAB18510DF50048AFB5 /* icon-29pt.png */; };
+		3C346CAF18510DF50048AFB5 /* icon-40pt.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CAC18510DF50048AFB5 /* icon-40pt.png */; };
+		3C346CB018510DF50048AFB5 /* icon-60pt.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CAD18510DF50048AFB5 /* icon-60pt.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +61,13 @@
 		3C346C96184EECD10048AFB5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3C346C98184EECD10048AFB5 /* Checkout_ExpressTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Checkout_ExpressTests.m; sourceTree = "<group>"; };
 		3C346CA2184EEF210048AFB5 /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = "<group>"; };
+		3C346CA4185100390048AFB5 /* CXSplash-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "CXSplash-568h@2x.png"; path = "Images/CXSplash-568h@2x.png"; sourceTree = "<group>"; };
+		3C346CA5185100390048AFB5 /* CXSplash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = CXSplash.png; path = Images/CXSplash.png; sourceTree = "<group>"; };
+		3C346CA6185100390048AFB5 /* CXSplash@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "CXSplash@2x.png"; path = "Images/CXSplash@2x.png"; sourceTree = "<group>"; };
+		3C346CAA185100670048AFB5 /* Checkout Express.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Checkout Express.entitlements"; sourceTree = "<group>"; };
+		3C346CAB18510DF50048AFB5 /* icon-29pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-29pt.png"; path = "Images/icon-29pt.png"; sourceTree = "<group>"; };
+		3C346CAC18510DF50048AFB5 /* icon-40pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-40pt.png"; path = "Images/icon-40pt.png"; sourceTree = "<group>"; };
+		3C346CAD18510DF50048AFB5 /* icon-60pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-60pt.png"; path = "Images/icon-60pt.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +97,12 @@
 		3C346C61184EECD10048AFB5 = {
 			isa = PBXGroup;
 			children = (
+				3C346CAB18510DF50048AFB5 /* icon-29pt.png */,
+				3C346CAC18510DF50048AFB5 /* icon-40pt.png */,
+				3C346CAD18510DF50048AFB5 /* icon-60pt.png */,
+				3C346CA4185100390048AFB5 /* CXSplash-568h@2x.png */,
+				3C346CA5185100390048AFB5 /* CXSplash.png */,
+				3C346CA6185100390048AFB5 /* CXSplash@2x.png */,
 				3C346CA2184EEF210048AFB5 /* www */,
 				3C346C73184EECD10048AFB5 /* Checkout Express */,
 				3C346C92184EECD10048AFB5 /* Checkout ExpressTests */,
@@ -115,6 +134,7 @@
 		3C346C73184EECD10048AFB5 /* Checkout Express */ = {
 			isa = PBXGroup;
 			children = (
+				3C346CAA185100670048AFB5 /* Checkout Express.entitlements */,
 				3C346C7C184EECD10048AFB5 /* chkexAppDelegate.h */,
 				3C346C7D184EECD10048AFB5 /* chkexAppDelegate.m */,
 				3C346C7F184EECD10048AFB5 /* Main.storyboard */,
@@ -203,6 +223,17 @@
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Checkout Express";
 				TargetAttributes = {
+					3C346C69184EECD10048AFB5 = {
+						DevelopmentTeam = 64C9PG396K;
+						SystemCapabilities = {
+							com.apple.DataProtection = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
+					};
 					3C346C8A184EECD10048AFB5 = {
 						TestTargetID = 3C346C69184EECD10048AFB5;
 					};
@@ -232,10 +263,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C346CA9185100390048AFB5 /* CXSplash@2x.png in Resources */,
+				3C346CA7185100390048AFB5 /* CXSplash-568h@2x.png in Resources */,
+				3C346CB018510DF50048AFB5 /* icon-60pt.png in Resources */,
 				3C346CA3184EEF210048AFB5 /* www in Resources */,
 				3C346C86184EECD10048AFB5 /* Images.xcassets in Resources */,
+				3C346CA8185100390048AFB5 /* CXSplash.png in Resources */,
+				3C346CAE18510DF50048AFB5 /* icon-29pt.png in Resources */,
 				3C346C78184EECD10048AFB5 /* InfoPlist.strings in Resources */,
 				3C346C81184EECD10048AFB5 /* Main.storyboard in Resources */,
+				3C346CAF18510DF50048AFB5 /* icon-40pt.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -383,10 +420,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = "Checkout Express/Checkout Express.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Checkout Express/Checkout Express-Prefix.pch";
 				INFOPLIST_FILE = "Checkout Express/Checkout Express-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -396,10 +437,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = "Checkout Express/Checkout Express.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Checkout Express/Checkout Express-Prefix.pch";
 				INFOPLIST_FILE = "Checkout Express/Checkout Express-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -465,6 +510,7 @@
 				3C346C9E184EECD10048AFB5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		3C346C9F184EECD10048AFB5 /* Build configuration list for PBXNativeTarget "Checkout ExpressTests" */ = {
 			isa = XCConfigurationList;
@@ -473,6 +519,7 @@
 				3C346CA1184EECD10048AFB5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

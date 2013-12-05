@@ -126,7 +126,18 @@
 @mixin background-gradient($angle, $color1, $offset1, $color2 ,$offset2:100, $color3:null, $offset3:100, $color4:null, $offset4:100, $color5:null, $offset5:100){
 	@include background-gradient-inner($angle, $color1, $offset1, $color2, $offset2, $color3, $offset3, $color4, $offset4, $color5, $offset5);
 	.platform-wp & {
-		background: #{'#'+$color1};
+		$c: $color1;
+		@if $angle == bottom {
+			$c: $color2;
+		}
+		background: #{'#'+$c};
+	}
+	.platform-iOS & {
+		$offset2: 2 * $offset2;
+		$offset3: 2 * $offset3;
+		$offset4: 2 * $offset4;
+		$offset5: 2 * $offset5;
+		@include background-gradient-inner($angle, $color1, $offset1, $color2, $offset2, $color3, $offset3, $color4, $offset4, $color5, $offset5);
 	}
 }
 
@@ -210,9 +221,9 @@
 @mixin btn-gradients($a, $b, $c, $d)
 {
 	@include background-gradient(top, #{$a}, 0, #{$b}, 100);
-	&:active {@include background-gradient(top, #{$b}, 0, #{$a}, 100);}
+	&:active {@include background-gradient(bottom, #{$a}, 0, #{$b}, 100);}
 	&:hover {@include background-gradient(top, #{$c}, 0, #{$d}, 100);}
-	&:hover:active {@include background-gradient(top, #{$d}, 0, #{$c}, 100);}
+	&:hover:active {@include background-gradient(bottom,#{$c},0,#{$d},100);}
 	&.disabled, &.disabled:active, &.disabled:hover, &.disabled:hover:active {
 		@include background-gradient(top, #{$a}, 0, #{$b}, 100);
 	}

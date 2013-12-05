@@ -427,7 +427,8 @@ def compileFolder(path, buildTemplate, parents=[]):
         else:
             runBuildTemplate(fpath, buildTemplate);
     if isdir(path+"/"+styleFolder):
-        sass(path+"/"+styleFolder, path+"/"+cssFolder);
+        cp_r(path+"/"+styleFolder, path+"/"+cssFolder);
+        sass(path+"/"+cssFolder, path+"/"+cssFolder);
     if isdir(path+"/"+templateFolder):
         compileWebTemplates(path+"/"+templateFolder, parents);
 
@@ -538,7 +539,7 @@ def transferLeaf(src, dest, plat, debug, local, server, parents, merge):
                         if isdir(fname):
                             if fil[0] != '_':
                                 baseFolders.insert(i+1, fname[len(src):]);
-                        elif fil.endswith(ext):
+                        elif fil.endswith("."+ext):
                             infil = readfile(fname);
                             outfil.write(infil.read()+"\n");
                             infil.close()
