@@ -1,10 +1,14 @@
+@mixin prefixed($prop, $val) {
+	-webkit-#{$prop}: $val;
+	-moz-#{$prop}: $val;
+	-o-#{$prop}: $val;
+	-khtml-#{$prop}: $val;
+	-ms-#{$prop}: $val;
+	#{$prop}: $val;
+}
+
 @mixin no-text-adj {
-	-webkit-text-size-adjust: none;
-	-moz-text-size-adjust: none;
-	-o-text-size-adjust: none;
-	-khtml-text-size-adjust: none;
-	-ms-text-size-adjust: none;
-	text-size-adjust: none;
+	@include prefixed(text-size-adjust, none);
 }
 
 @mixin no-extra-style {
@@ -14,96 +18,119 @@
 
 @mixin user-select($a, $b:none) {
 	-webkit-touch-callout: $b;
-	-webkit-user-select: $a;
-	-khtml-user-select: $a;
-	-moz-user-select: $a;
-	-o-user-select: $a;
-	-ms-user-select: $a;
-	user-select: $a;
+	@include prefixed(user-select, $a);
 }
 
-@mixin box-shadow($a) {
-	-webkit-box-shadow: $a;
-	-khtml-box-shadow: $a;
-	-moz-box-shadow: $a;
-	-o-box-shadow: $a;
-	-ms-box-shadow: $a;
-	box-shadow: $a;
+@mixin box-shadow($a, $b:null, $c:null, $d:null, $e:null, $f:null, $g:null, $h:null, $i:null, $j:null, $k:null, $l:null) {
+	@include shadow-inner(box-shadow, $a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l);
 }
 
-@mixin box-shadow2($a,$b) {
-	-webkit-box-shadow: $a,$b;
-	-khtml-box-shadow: $a,$b;
-	-moz-box-shadow: $a,$b;
-	-o-box-shadow: $a,$b;
-	-ms-box-shadow: $a,$b;
-	box-shadow: $a,$b;
+@mixin text-shadow($a, $b:null, $c:null, $d:null, $e:null, $f:null, $g:null, $h:null, $i:null, $j:null, $k:null, $l:null) {
+	@include shadow-inner(text-shadow, $a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l);
 }
 
-@mixin box-shadow3($a,$b,$c) {
-	-webkit-box-shadow: $a,$b,$c;
-	-khtml-box-shadow: $a,$b,$c;
-	-moz-box-shadow: $a,$b,$c;
-	-o-box-shadow: $a,$b,$c;
-	-ms-box-shadow: $a,$b,$c;
-	box-shadow: $a,$b,$c;
+@mixin shadow-inner($cmd, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l) {
+	$evenOnFlat: false;
+	@if $b != null {
+		@if $b == true {
+			$evenOnFlat: true;
+		} @else {
+			$a: $a, $b;
+		}
+	}
+	@if $c != null {
+		@if $c == true {
+			$evenOnFlat: true;
+		} @else { 
+			$a: $a, $c;
+		}
+	}
+	@if $d != null {
+		@if $d == true {
+			$evenOnFlat: true;
+		} @else { 
+			$a: $a, $d;
+		}
+	}
+	@if $e != null {
+		@if $e == true {
+			$evenOnFlat: true;
+		} @else { 
+			$a: $a, $e;
+		}
+	}
+	@if $f != null {
+		@if $f == true {
+			$evenOnFlat: true;
+		} @else { 
+			$a: $a, $f;
+		}
+	}
+	@if $g != null {
+		@if $g == true {
+			$evenOnFlat: true;
+		} @else { 
+			$a: $a, $g;
+		}
+	}
+	@if $h != null {
+		@if $h == true {
+			$evenOnFlat: true;
+		} @else { 
+			$a: $a, $h;
+		}
+	}
+	@if $i != null {
+		@if $i == true {
+			$evenOnFlat: true;
+		} @else { 
+			$a: $a, $i;
+		}
+	}
+	@if $j != null {
+		@if $j == true {
+			$evenOnFlat: true;
+		} @else { 
+			$a: $a, $j;
+		}
+	}
+	@if $k != null {
+		@if $k == true {
+			$evenOnFlat: true;
+		} @else { 
+			$a: $a, $k;
+		}
+	}
+	@if $l != null {
+		@if $l == true {
+			$evenOnFlat: true;
+		} @else { 
+			$a: $a, $l;
+		}
+	}
+	@include prefixed($cmd, $a);
+	@if not $evenOnFlat { .platform-wp &, .platform-iOS & {
+		@include prefixed($cmd, none);
+	}; };
 }
 
-@mixin box-shadow4($a,$b,$c,$d) {
-	-webkit-box-shadow: $a,$b,$c,$d;
-	-khtml-box-shadow: $a,$b,$c,$d;
-	-moz-box-shadow: $a,$b,$c,$d;
-	-o-box-shadow: $a,$b,$c,$d;
-	-ms-box-shadow: $a,$b,$c,$d;
-	box-shadow: $a,$b,$c,$d;
-}
 
-@mixin box-shadow5($a,$b,$c,$d,$e) {
-	-webkit-box-shadow: $a,$b,$c,$d,$e;
-	-khtml-box-shadow: $a,$b,$c,$d,$e;
-	-moz-box-shadow: $a,$b,$c,$d,$e;
-	-o-box-shadow: $a,$b,$c,$d,$e;
-	-ms-box-shadow: $a,$b,$c,$d,$e;
-	box-shadow: $a,$b,$c,$d,$e;
-}
 
-@mixin box-shadow6($a,$b,$c,$d,$e,$f) {
-	-webkit-box-shadow: $a,$b,$c,$d,$e,$f;
-	-khtml-box-shadow: $a,$b,$c,$d,$e,$f;
-	-moz-box-shadow: $a,$b,$c,$d,$e,$f;
-	-o-box-shadow: $a,$b,$c,$d,$e,$f;
-	-ms-box-shadow: $a,$b,$c,$d,$e,$f;
-	box-shadow: $a,$b,$c,$d,$e,$f;
-}
-
-@mixin box-shadow7($a,$b,$c,$d,$e,$f,$g) {
-	-webkit-box-shadow: $a,$b,$c,$d,$e,$f,$g;
-	-khtml-box-shadow: $a,$b,$c,$d,$e,$f,$g;
-	-moz-box-shadow: $a,$b,$c,$d,$e,$f,$g;
-	-o-box-shadow: $a,$b,$c,$d,$e,$f,$g;
-	-ms-box-shadow: $a,$b,$c,$d,$e,$f,$g;
-	box-shadow: $a,$b,$c,$d,$e,$f,$g;
-}
-
-@mixin border-radius($x) {
-	-webkit-border-radius: $x;
-	-khtml-border-radius: $x;
-	-moz-border-radius: $x;
-	-o-border-radius: $x;
-	-ms-border-radius: $x;
-	border-radius: $x;
-}
-
-@mixin with-prefix($prop, $val) {
-	-webkit-#{$prop}: $val;
-	-khtml-#{$prop}: $val;
-	-moz-#{$prop}: $val;
-	-o-#{$prop}: $val;
-	-ms-#{$prop}: $val;
-	#{$prop}: $val;
+@mixin border-radius($x, $evenOnWP:false) {
+	@include prefixed(border-radius, $x);
+	@if not $evenOnWP { .platform-wp & {
+		@include prefixed(border-radius, 0px);
+	}; };
 }
 
 @mixin background-gradient($angle, $color1, $offset1, $color2 ,$offset2:100, $color3:null, $offset3:100, $color4:null, $offset4:100, $color5:null, $offset5:100){
+	@include background-gradient-inner($angle, $color1, $offset1, $color2, $offset2, $color3, $offset3, $color4, $offset4, $color5, $offset5);
+	.platform-wp & {
+		background: #{'#'+$color1};
+	}
+}
+
+@mixin background-gradient-inner($angle, $color1, $offset1, $color2, $offset2:100, $color3:null, $offset3:100, $color4:null, $offset4:100, $color5:null, $offset5:100){
 	$angle_webkit: 'left top, left bottom';
 	$angle_svg: '%20x2%3d%220%25%22%20y2%3d%22100%25%22';
 	$color-stop1_css: '#'#{$color1}' '#{$offset1}'%';
@@ -160,18 +187,24 @@
 	background-image:linear-gradient(#{$angle},#{$color-stop1_css}#{$color-stop2_css}#{$color-stop3_css}#{$color-stop4_css}#{$color-stop5_css});
 }
 
-@mixin btn-base($p, $q)
+@mixin btn-base($p, $q, $protectMargin:false)
 {
 	display: inline-block;
 	text-align: center;
 	color: #FFF;
-	text-shadow: 1px 1px rgba(0,0,0,0.3);
-	border-radius: 0.1em;
-	border: 1px solid rgba(0,0,0,0.1);
-	@include box-shadow(inset 0px 1px 1px 0px rgba(255,255,255,0.5));
+	@include border-radius(0.1em);
 	padding: #{$p};
 	&:active {padding: #{$q};}
 	&.disabled:active {padding: #{$p};}
+
+	border: 1px solid rgba(0,0,0,0.1);
+	text-shadow: 1px 1px rgba(0,0,0,0.3);
+	@include box-shadow(inset 0px 1px 1px rgba(255,255,255,0.5));
+	.platform-iOS &, .platform-wp & {
+		border: none;
+		@if not $protectMargin { margin: 1px; }
+		text-shadow: 0px 0px rgba(0,0,0,0);
+	}
 }
 
 @mixin btn-gradients($a, $b, $c, $d)
@@ -191,12 +224,7 @@
 	filter:alpha(opacity=#{$x*100});
 	-ms-filter:"alpha(opacity=#{$x*100})";
 	-o-filter:"alpha(opacity=#{$x*100})";
-	-khtml-opacity: $x;
-	-moz-opacity: $x;
-	-webkit-opacity: $x;
-	-ms-opacity: $x;
-	-o-opacity: $x;
-	opacity: $x;
+	@include prefixed(opacity, $x);
 }
 
 @mixin transition-css3($prop, $val) {

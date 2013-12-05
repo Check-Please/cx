@@ -44,7 +44,7 @@ var device = device || {};
 	 *
 	 *	@return	A string describing the platform
 	 */
-	device.getPlatform = op.id.c(navigator.userAgent);
+	device.getPlatform = op.id.c("_PLATFORM_: " + navigator.userAgent);
 
 	/** Makes a UUID.  Should comply with the UUID spec
 	 *
@@ -61,17 +61,11 @@ var device = device || {};
 		);
 	};
 
-	/* Ajax stuff */
-	var serverAddress;
-	if(LOCAL)
-		serverAddress = "localhost:8888";
-	else
-		serverAddress = "https://www.chkex.com";
-	if(NATIVE) {
+	if(_NATIVE_) {
 		device.ajax = function(method, url)
 		{
 			if(!url.match(/^[a-z]*:\/\//i))
-				arguments[1] = serverAddress + (url[0] =="/"?"":"/") + url;
+				arguments[1] = "_SERVER_" + (url[0] =="/"?"":"/") + url;
 			ajax.apply(this, Array.toArray(arguments));
 		};
 		for(var f in ajax)

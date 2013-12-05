@@ -3,7 +3,7 @@
 a.loading {
 	cursor: default !important;
 	color: rgba(0,0,0,0) !important;
-	text-shadow: 0px 0px rgba(0,0,0,0) !important;
+	@include text-shadow(none !important);
 	background: #B0B0B0 !important;
 	background-image: url('../img/app/loading.gif') !important;
 	background-repeat: no-repeat !important;

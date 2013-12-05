@@ -17,7 +17,7 @@ mvc.views = mvc.views || {};
 		params = params || {};
 		params.tableKey = mvc.key();
 		params.connectionID = mvc.connectionID();
-		deevice.ajax.send("cx/split", cmd, params, f1 || $.noop, f2, f3);
+		device.ajax.send("cx/split", cmd, params, f1 || $.noop, f2, f3);
 	};
 
 	var $view = null;

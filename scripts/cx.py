@@ -6,7 +6,7 @@ if len(sys.argv) < 2 or len(sys.argv) == 2 and sys.argv[1] == "help":
     print ""
     print "The most commonly used commands are:"
     print "\tbuild - run the buold script"
-    print "\tdb - shorthand for \"build --debug --local\""
+    print "\td - shorthand for \"build --debug --local\""
     print "\thelp - get help with this tool" 
     print "\thome - print the path to the root of the project"
     print "\tpwd - print working directory relative to the project root"
@@ -16,7 +16,7 @@ else:
 
     if sys.argv[1] == "build":
         call(["python", os.path.join(home,"build","build.py")]+sys.argv[2:])
-    elif sys.argv[1] == "db":
+    elif sys.argv[1] == "d":
         call(["python", os.path.join(home,"build","build.py"), "-d", "-l"]
                 +sys.argv[2:])
     elif sys.argv[1] == "help":

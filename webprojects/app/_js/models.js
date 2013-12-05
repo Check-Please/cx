@@ -45,11 +45,11 @@ var mvc = {};
 	var inited = false;
 
 	mvc.inited = function() {
-		if(DEBUG)
+		if(_DEBUG_)
 			assert(arguments.length == 0);
 		return inited;
 	}
-	if(DEBUG) {
+	if(_DEBUG_) {
 		mvc.inited.notify = mvc.inited.listen = function() {assert(false);};
 	}
 
@@ -58,7 +58,7 @@ var mvc = {};
 		'items', 'split', 'selection', 'tip', 'contract', 'loadMsg', 'paid',
 		'done', 'err'].forEach(function(name) {
 		function myNotify(old) {
-			if(DEBUG)
+			if(_DEBUG_)
 				assert(inited);
 			old = arguments.length ? old : vals[name];
 			ls.each(function(f) { f(old); });
@@ -66,7 +66,7 @@ var mvc = {};
 
 		var ls = [];
 		mvc[name] = function(v) {
-			if(DEBUG)
+			if(_DEBUG_)
 				assert(inited);
 			if(arguments.length > 0) {
 				var old = vals[name];
@@ -82,7 +82,7 @@ var mvc = {};
 
 	mvc.init = function(v)
 	{
-		if(DEBUG) {
+		if(_DEBUG_) {
 			assert(!inited);
 			assert(typeof v == "object");
 			assert(!v.hasOwnProperty("inited"));

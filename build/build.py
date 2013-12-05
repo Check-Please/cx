@@ -52,39 +52,22 @@ def sass(src, dest):
     return subprocess.call(["sass", "--update",
                             expandPath(src)+":"+expandPath(dest)])
 
-def preprocessJS(path, native, debug, local):
+def compressJS(path, native):
     path = expandPath(path)
-    if debug:
-        infil = readfile(path);
-        content = ( "//--  BUILD VARS  --//\n" +
-                    "var DEBUG = true;\n" +
-                    "var NATIVE = "+("true" if native else "false")+";\n" +
-                    "var LOCAL = "+("true" if local else "false")+";\n" +
-                    "//--  END BUILD VARS  --//\n\n" +
-                    infil.read());
-        infil.close();
-        outfil = writefile(path);
-        outfil.write(content);
-        outfil.close();
-        return 0;
-    else:
-        config = writefile("build/ugly_vars.js");
-        proc = subprocess.Popen(["uglifyjs", path, "-o", path, "-c", "-m",
-                    "--define", "DEBUG=false" +
-                    ",NATIVE="+("true" if native else "false") +
-                    ",LOCAL="+("true" if local else "false"),
-                    ]+(["--screw-ie8"] if native else []),
-                stderr=subprocess.PIPE);
+    proc = subprocess.Popen(["uglifyjs", path, "-o", path, "-c", "-m"
+                ]+(["--screw-ie8"] if native else []),
+            stderr=subprocess.PIPE);
 
-        ignoreNext = False;
-        for line in proc.stderr:
-            if line.strip() == "WARN: Condition always false [null:1,6]":
-                ignoreNext = True;
-            elif ignoreNext:
-                ignoreNext = False;
-            else:
-                sys.stderr.write(line);
-        return proc.returncode;
+    ignoreNext = False;
+    for line in proc.stderr:
+        if re.match(r'WARN: Condition always (?:true|false) \[',
+                                                    line.strip()) != None:
+            ignoreNext = True;
+        elif ignoreNext:
+            ignoreNext = False;
+        else:
+            sys.stderr.write(line);
+    return proc.returncode;
 
 #############################################################################
 # Helper Methods
@@ -107,6 +90,8 @@ indexHTML = "index.html"
 orderFile = "_order"
 uSet = type('', (), dict(__contains__ = lambda _,x: True))()
 webPlat = "web";
+localServer = "http://localhost:8888";
+webServer = "https://www.chkex.com";
 
 
 """ Makes the web.xml file for the server
@@ -463,6 +448,42 @@ def clearFolder(path, protectedList=None):
         if not fil in protected:
             rm_r(path+"/"+fil);
 
+""" Adds some variables corresponding to the conditions under which the files
+    were built.
+
+    @param path The path of the files to add variables to
+    @param plat The platform for which the files were built
+    @param debug If the --debug flag was set
+    @param local If the --local flag was set
+    @param server   The value specified by --server.  If no value was
+                    specified, one is infered
+"""
+def addBuildVars(path, plat, debug, local, server):
+    if isdir(path):
+        for fil in ls(path):
+            addBuildVars(path+"/"+fil, plat, debug, local, server);
+    else:
+        native = plat != webPlat;
+        if not native:
+            server = "";
+        elif server == None:
+            server = localServer if local else webServer;
+        infil = readfile(path);
+        content = infil.read();
+        infil.close();
+        content =   re.sub(r'\b_PLATFORM_\b', plat,
+                    re.sub(r'\b_NATIVE_\b', "true" if native else "false",
+                    re.sub(r'\b_DEBUG_\b', "true" if debug else "false",
+                    re.sub(r'\b_LOCAL_\b', "true" if local else "false",
+                    re.sub(r'\b_SERVER_\b', server,
+                    content)))));
+        outfil = writefile(path);
+        outfil.write(content);
+        outfil.close();
+
+
+        
+
 """ Merges some files and transfers them to their final destination
 
     Also compresses JS files unless --debug
@@ -472,15 +493,17 @@ def clearFolder(path, protectedList=None):
     @param plat The platform which the resulting files will run on
     @param debug Whether or not the --debug flag was specified
     @param local If the app will be running off of localhost
+    @param server The server which the app should use for things like ajax
     @param parents  A list of parent folders, leading back to the root of the
                     transfer
     @param merge    Whether or not the files in the folder should be merged
                     into a single file
 """
-def transferLeaf(src, dest, plat, debug, local, parents, merge):
+def transferLeaf(src, dest, plat, debug, local, server, parents, merge):
     if merge:
         assert(len(parents) > 0);
     isDir = isdir(src)
+    wantsBuildVars = not (isDir and (os.path.basename(src) in noTemplating));
     ext = src[src.rfind("/_")+2:] if isDir else src[src.rfind(".")+1:];
     outPath = dest+("/"+ext if isDir else "");
     for parent in parents:
@@ -521,9 +544,11 @@ def transferLeaf(src, dest, plat, debug, local, parents, merge):
                             infil.close()
                 i += 1;
             outfil.close();
-            if ext == "js":
-                print "\tPreprocessing \""+ofpath+"\"..."
-                preprocessJS(ofpath, (plat != webPlat), debug, local);
+            if wantsBuildVars:
+                addBuildVars(ofpath, plat, debug, local, server);
+            if ext == "js" and not debug:
+                print "\tCompressing \""+ofpath+"\"..."
+                compressJS(ofpath, (plat != webPlat));
         else:
             for baseFolder in baseFolders:
                 baseFolder = src+baseFolder;
@@ -531,9 +556,15 @@ def transferLeaf(src, dest, plat, debug, local, parents, merge):
                     for fil in ls(baseFolder):
                         fname = baseFolder+"/"+fil;
                         if fil[0] != '_' or not isdir(fname):
-                            cp_r(fname, outPath+"/"+fil);
+                            oPath = outPath+"/"+fil;
+                            cp_r(fname, oPath);
+                            if wantsBuildVars:
+                                addBuildVars(oPath,plat,debug,local,server);
     else:
-        cp_r(src, outPath + ("."+ext if merge else ""));
+        oPath = outPath + ("."+ext if merge else "");
+        cp_r(src, oPath);
+        if wantsBuildVars:
+            addBuildVars(oPath, plat, debug, local, server);
 
 """ Takes the compiled files and places them in their final directory
 
@@ -544,12 +575,13 @@ def transferLeaf(src, dest, plat, debug, local, parents, merge):
     @param plat The platform which the resulting files will run on
     @param debug Whether or not the --debug flag was specified
     @param local If the app will be running off of localhost
+    @param server The server which the app should use for things like ajax
     @param foldersToFollow  A set-like object which specifies if a folder
                             should be recursed upon
     @param parents  A list of parent folders, leading back to the root of the
                     transfer
 """
-def transferFiles(src,dest,plat,debug,local,foldersToFollow,parents=[]):
+def transferFls(src,dest,plat,debug,local,server,foldersToFollow,parents=[]):
     if len(parents) == 0:
         print "Transfering files for "+plat+"..."
     for fil in ls(src):
@@ -565,13 +597,14 @@ def transferFiles(src,dest,plat,debug,local,foldersToFollow,parents=[]):
                     for f in ls(fpath):
                         cp_r(fpath+"/"+f, dpath+"/"+f);
                 elif not fil in ignoreFolders:
-                    transferLeaf(fpath, dest, plat, debug, local, parents,
-                                                        fil in mergeFolders);
+                    transferLeaf(fpath, dest, plat, debug, local, server,
+                                            parents, fil in mergeFolders);
             elif fil in foldersToFollow:
-                transferFiles(fpath,dest,plat,debug,local,uSet,parents+[fil])
+                transferFls(fpath, dest, plat, debug, local, server, uSet,
+                                                            parents+[fil])
     htmlPath = src+"/"+indexHTML;
     if exists(htmlPath):
-        transferLeaf(htmlPath, dest, plat, debug, local, parents, True)
+        transferLeaf(htmlPath,dest,plat,debug,local,server,parents,True);
 
 #############################################################################
 # Executed liness
@@ -579,9 +612,13 @@ def transferFiles(src,dest,plat,debug,local,foldersToFollow,parents=[]):
 
 debug = False;
 local = False;
-for (op, val) in getopt.getopt(sys.argv[1:], "ld", ["debug", "local"])[0]:
+server = None;
+for (op, val) in getopt.getopt(sys.argv[1:], "lds", ["debug", "local",
+                                                            "server"])[0]:
     debug = debug or op == "-d" or op == "--debug";
     local = local or op == "-l" or op == "--local";
+    if op == "-s" or op == "--server":
+        server = val;
 
 projectsForApp = set([]);
 projectsForAppFil = readfile("build/app-web-projects.csv");
@@ -610,7 +647,7 @@ for i in xrange(0, len(platforms)):
             "server/protected_war.csv" if i == 0 else None)
     else:
         mkdir(platformPaths[i])
-    transferFiles(tmpFolder, platformPaths[i], platforms[i], debug, local,
-                    uSet if i == 0 else projectsForApp);
+    transferFls(tmpFolder, platformPaths[i], platforms[i], debug, local,
+                    server, uSet if i == 0 else projectsForApp);
 
 rm_r(tmpFolder);

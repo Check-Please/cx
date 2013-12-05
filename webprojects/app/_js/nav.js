@@ -15,7 +15,7 @@
 	window.onresize = function()
 	{
 		var $win = $(window);
-		var fSz = Math.floor($win.width()*0.0354);
+		var fSz = $win.width()*0.0354;
 		var $body = $("body");
 		if($body.size() == 0)
 			return;
@@ -24,12 +24,20 @@
 					Math.min($win.width(), $win.height())+"px");
 		//Use different logo images for each small size
 		var $logo = $("#footer img");
-		var logoH = fSz < 8 || fSz > 24 ? null : Math.ceil(fSz*2.5);
-		$logo.attr("src", "img/app/cx"+(fSz>24?"":"_"+(logoH||20)) + ".png");
-		if(logoH == null)
+		var logoH = fSz * (window.devicePixelRatio || 1) * 2.5;
+		var verySmall = logoH < 19;
+		if(logoH < 21.5)
+			logoH = 20;
+		else if(logoH < 60) {
+			var x = logoH % 5;
+			logoH = Math.round(logoH - x + (x < 1.5 ? 0 : x < 4 ? 3 : 5));
+		}
+		$logo.attr("src", "img/app/cx" + (logoH>60 ? "":"_"+logoH) + ".png");
+		if(verySmall || logoH > 60)
 			$logo.removeAttr("style");
 		else
-			$logo.css("height", logoH+"px");
+			$logo.css("height",
+					Math.round(logoH/(window.devicePixelRatio || 1))+"px");
 
 		//The following is inefficient but works 100% of the time
 		//All the min and max stuff is to deal with browser inconsistency
@@ -41,7 +49,7 @@
 			$body.addClass("tall");
 
 		if(currView && currView.onResize)
-			currView.onResize(fSz);
+			currView.onResize(Math.floor(fSz));
 	};
 
 	var mutex = false;
@@ -60,7 +68,7 @@
 		if(mutex)
 			if(!stealMutex)
 				return;
-		if(DEBUG)
+		if(_DEBUG_)
 			assert(!mutex || stealMutex);
 		mutex = true;
 		try {
@@ -97,7 +105,7 @@
 			var $view = $("#view");
 			if((currView != null) && (currView.unbuild != null))
 				currView.unbuild($view, view);
-			if(DEBUG) {
+			if(_DEBUG_) {
 				assert($("#view > :visible").length == 0);
 				window.DEBUG_VAR = $("#view > *");
 			}
@@ -107,7 +115,7 @@
 			$("body").addClass(view.viewName);
 			if(view.build != null)
 				view.build($view, currView);
-			if(DEBUG) {
+			if(_DEBUG_) {
 				window.DEBUG_VAR.each(function() {
 					assert($(this).parent("#view").length == 1);
 				});
@@ -130,26 +138,25 @@
 	}
 
 	window.onload = function() {
-		if(!NATIVE) {
+		if(!_NATIVE_) {
 			if((window.location.hostname != "localhost") &&
 						(window.location.protocol != "https:"))
 				window.location.href = "https:" +
 					window.location.href.substring(location.protocol.length);
-		}
+			if(navigator.userAgent.indexOf("iPhone") != -1)
+				$("body").addClass("platform-iOS");
+		} else
+			$("body").addClass("platform-_PLATFORM_");
 		setTimeout(window.onresize, 0);
 		inParallel([device.getTableKey, device.getPos], function(tKey, pos) {
 			tKey = tKey[0] || "";
-			var isNative;
-			if(NATIVE)
-				isNative = true;
-			else {
-				isNative = false;
+			if(!_NATIVE_) {
 				if(tKey == "")
 					return(window.location = "http://"+window.location.host
 														+ "/website.html");
 			}
 			device.ajax.send("cx", "init", {
-				isNative: isNative,
+				isNative: _NATIVE_,
 				tableKey: tKey,
 				clientID: device.getClientID(),
 				platform: device.getPlatform(),
@@ -179,7 +186,7 @@
 					split: data.split,
 					selection: {},
 				});
-				socket.open(data.channelToken);
+				socket.init(data.channelToken);
 				$("title").text("Pay your ticket at "+data.restrName);
 				if(data.restrStyle == null) {
 					var $name = $("<span>");
@@ -200,8 +207,8 @@
 				loading.init();
 				inited = true;
 				window.onhashchange();
-				mvc.views.err.allowReload();
-			}, buildAjaxErrFun("establish connection with the server"));
+				mvc.views.error.allowReload();
+			}, mvc.err.c("Couldn't contact the server"));
 		});
 		if(device.getDebugID() != null) {
 			var $script = $("<script>");

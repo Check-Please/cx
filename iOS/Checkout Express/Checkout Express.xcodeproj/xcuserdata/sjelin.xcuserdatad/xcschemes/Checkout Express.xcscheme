@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3C817E74182C3EEB00FD0186"
+               BlueprintIdentifier = "3C346C69184EECD10048AFB5"
                BuildableName = "Checkout Express.app"
                BlueprintName = "Checkout Express"
                ReferencedContainer = "container:Checkout Express.xcodeproj">
@@ -32,7 +32,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3C817E98182C3EEC00FD0186"
+               BlueprintIdentifier = "3C346C8A184EECD10048AFB5"
                BuildableName = "Checkout ExpressTests.xctest"
                BlueprintName = "Checkout ExpressTests"
                ReferencedContainer = "container:Checkout Express.xcodeproj">
@@ -42,7 +42,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3C817E74182C3EEB00FD0186"
+            BlueprintIdentifier = "3C346C69184EECD10048AFB5"
             BuildableName = "Checkout Express.app"
             BlueprintName = "Checkout Express"
             ReferencedContainer = "container:Checkout Express.xcodeproj">
@@ -61,7 +61,7 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3C817E74182C3EEB00FD0186"
+            BlueprintIdentifier = "3C346C69184EECD10048AFB5"
             BuildableName = "Checkout Express.app"
             BlueprintName = "Checkout Express"
             ReferencedContainer = "container:Checkout Express.xcodeproj">
@@ -79,7 +79,7 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3C817E74182C3EEB00FD0186"
+            BlueprintIdentifier = "3C346C69184EECD10048AFB5"
             BuildableName = "Checkout Express.app"
             BlueprintName = "Checkout Express"
             ReferencedContainer = "container:Checkout Express.xcodeproj">

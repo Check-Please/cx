@@ -1,5 +1,3 @@
-var DEBUG = true;
-
 function assert(condition, msg) {
 	if(!condition) {
 		msg = "ASSERTION FAILED"+(msg == null ? "" : ": "+msg);

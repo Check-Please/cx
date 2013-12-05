@@ -11,12 +11,9 @@ mvc.views = mvc.views || {};
 			var err = mvc.err();
 			$trgt.append($((templates["err__"+err] ||
 												templates.err.c(err))()));
-			var reload;
-			if(NATIVE)
-				reload = reloadsAllowed&&(err=="reload" || err=="timeout");
-			else
-				reload = false;
-			if(DEBUG)
+			var reload = _NATIVE_ && reloadsAllowed &&
+									(err == "reload" || err == "timeout");
+			if(_DEBUG_)
 				console.log("Error page:\n\n"+(new Error()).stack);
 			if(mvc.connectionID() != null)
 				device.ajax.send("cx", "close", {connectionID:

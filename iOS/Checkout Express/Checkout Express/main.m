@@ -2,17 +2,17 @@
 //  main.m
 //  Checkout Express
 //
-//  Created by Martin Jelin on 11/7/13.
+//  Created by Martin Jelin on 12/3/13.
 //  Copyright (c) 2013 Checkout Express. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
-#import "AppDelegate.h"
+#import "chkexAppDelegate.h"
 
 int main(int argc, char * argv[])
 {
     @autoreleasepool {
-        return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+        return UIApplicationMain(argc, argv, nil, NSStringFromClass([chkexAppDelegate class]));
     }
 }

@@ -21,14 +21,14 @@
 	border: 1px solid rgba(0,0,0,0.5);
 	margin: 0.8em 0px;
 	@include border-radius(1em);
-	@include box-shadow2(inset 0.05em 0.05em 0.05em 0px rgb(255, 255, 255), inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1));
+	@include box-shadow(inset 0.05em 0.05em 0.05em 0px rgb(255, 255, 255), inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1));
 }
 
 #split .item.selected {
 	color: #FFF;
-	text-shadow: 1px 1px rgba(0,0,0,0.3);
+	@include text-shadow(1px 1px rgba(0,0,0,0.3));
 	@include background-gradient(top, "568CBE", 0, "2C589B", 100);
-	@include box-shadow2(inset 0.05em 0.05em 0.05em 0px rgba(255, 255, 255, 0.3), inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1));
+	@include box-shadow(inset 0.05em 0.05em 0.05em 0px rgba(255, 255, 255, 0.3), inset -0.05em -0.05em 0.05em 0px rgba(0, 0, 0, 0.1));
 }
 
 #split .item a {
@@ -63,7 +63,7 @@
 	color: #FFF;
 	padding: 0.1em 0.5em;
 	border: 1px solid rgba(0,0,0,0.1);
-	@include box-shadow3(inset 1px 1px 1px 0px rgba(255,255,255,0.4), inset -1px -1px 1px 0px rgba(0,0,0,0.1), 0.05em 0.1em 0.1em -0.05em rgba(0,0,0,0.2));
+	@include box-shadow(inset 1px 1px 1px 0px rgba(255,255,255,0.4), inset -1px -1px 1px 0px rgba(0,0,0,0.1), 0.05em 0.1em 0.1em -0.05em rgba(0,0,0,0.2));
 }
 
 #split .item.has-others .others {
@@ -78,7 +78,7 @@
 }
 
 #split a.cancel {
-	@include btn-base(0.3em, 0.35em 0.3em 0.25em 0.3em);
+	@include btn-base(0.3em, 0.35em 0.3em 0.25em 0.3em, true);
 	@include btn-gradients("8C8C8C", "646464", "989898", "747474");
 	font-size: 1.5em;
 	display: block;

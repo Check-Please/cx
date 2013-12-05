@@ -1,14 +1,14 @@
 //
-//  AppDelegate.m
+//  chkexAppDelegate.m
 //  Checkout Express
 //
-//  Created by Martin Jelin on 11/7/13.
+//  Created by Martin Jelin on 12/3/13.
 //  Copyright (c) 2013 Checkout Express. All rights reserved.
 //
 
-#import "AppDelegate.h"
+#import "chkexAppDelegate.h"
 
-@implementation AppDelegate
+@implementation chkexAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {

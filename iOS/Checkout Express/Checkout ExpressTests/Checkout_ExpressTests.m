@@ -2,7 +2,7 @@
 //  Checkout_ExpressTests.m
 //  Checkout ExpressTests
 //
-//  Created by Martin Jelin on 11/7/13.
+//  Created by Martin Jelin on 12/3/13.
 //  Copyright (c) 2013 Checkout Express. All rights reserved.
 //
 
