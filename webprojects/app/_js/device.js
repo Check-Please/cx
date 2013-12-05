@@ -410,4 +410,4 @@ var device = device || {};
 		ccList.splice(i, 1);
 		device.accData("CCs", ccList);
 	};
-})()
+})();

@@ -27,7 +27,7 @@ mvc.views = mvc.views || {};
 			return this.nextView();
 	};
 	cv.prototype.onResize = function(fSz) {
-		this.$view.find(".content").height($(window).height()-8*fSz);
+		this.$view.find(".content").height(this.$view.height()-8*fSz);
 		var lens = this.$view.find(".buttons a").map(function() {
 			return $(this).outerWidth(true);
 		});
