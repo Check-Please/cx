@@ -11,40 +11,39 @@ var socket = socket || {};
 (function () {
 	"use strict";
 
-	socket.init = function(token) {
-		//Are you ready for the most fucked up thing you've ever seen?
-		//Because what follows is not for the faint of heart.  I'm serious.
-		//
-		//
-		//
-		//You've been warned.
-		device.ajax.get("_ah/channel/jsapi", {}, function(code) {
-			code = code.replace(/\/_ah/g, "_SERVER_/_ah");//I WARNED YOU
-			var $script=$("<script>");//This is going exactly where you think
-			$script.attr("type", "text/JavaScript");
-			$script[0].innerHTML = code;
-			$("head").append($script);
+	//Are you ready for the most fucked up thing you've ever seen?
+	//Because what follows is not for the faint of heart.  I'm serious.
+	//
+	//
+	//
+	//You've been warned.
+	if(_NATIVE_) device.ajax.get("_ah/channel/jsapi", {}, function(code) {
+		code = code.replace(/\/_ah/g, "_SERVER_/_ah");//I WARNED YOU
+		var $script=$("<script>");//This is going exactly where you think
+		$script.attr("type", "text/JavaScript");
+		$script[0].innerHTML = code;
+		$("head").append($script);
+	}, mvc.err.c("Couldn't connect to the server"));
+	//The web case was handled in index.html
 
-			//You think it's over don't you?
-			//Don't you?
-			//Hahaha, that's rich.
+	//You think it's over don't you?
+	//Don't you?
+	//Hahaha, that's rich.
 
-			var waitForLoad = function(timeWaited) {
-				if(window.goog && goog.appengine && goog.appengine.Channel)
-					open(token);
-				else {
-					if(timeWaited > 9000)
-						mvc.err("Could not connect to server");
-					else {
-						var wait = Math.ceil(waitForLoad/10+10);
-						setTimeout(waitForLoad, wait, timeWaited+wait)
-					}
-				}
+	socket.init = function(token, timeWaited) {
+		timeWaited = timeWaited || 0;
+		if(window.goog && goog.appengine && goog.appengine.Channel)
+			open(token);
+		else {
+			if(timeWaited > 9000)
+				mvc.err("Could not connect to server");
+			else {
+				var wait = Math.ceil(waitForLoad/10+20);
+				setTimeout(socket.init, wait, token, timeWaited+wait)
 			}
-			waitForLoad(0);
-		}, mvc.err.c("Couldn't connect to the server"));
-		//Ok, you an open your eyes now.
+		}
 	}
+	//Ok, you an open your eyes now.
 
 	var skt = null;
 	function open(token)

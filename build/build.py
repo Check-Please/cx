@@ -470,7 +470,22 @@ def addBuildVars(path, plat, debug, local, server):
         elif server == None:
             server = localServer if local else webServer;
         infil = readfile(path);
-        content = infil.read();
+        content = "";
+        failedIf = False;
+        for line in infil:
+            l = line.strip();
+            if l == "END_IF":
+                failedIf = False;
+            elif re.match(r'^IF(?:_NOT)?_[A-Z]+$', l) != None:
+                neg = re.match(r'^IF_NOT_', l) != None;
+                var = re.sub(r'IF(?:_NOT)_', "", l);
+                val =  (native if var == "NATIVE" else
+                        debug if var == "DEBUG" else
+                        local if var == "LOCAL" else
+                        None);
+                failedIf = val == neg;
+            elif not failedIf:
+                content += line;
         infil.close();
         content =   re.sub(r'\b_PLATFORM_\b', plat,
                     re.sub(r'\b_NATIVE_\b', "true" if native else "false",
