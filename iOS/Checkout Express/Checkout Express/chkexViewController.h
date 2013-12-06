@@ -5,11 +5,8 @@
 //  Created by Martin Jelin on 12/3/13.
 //  Copyright (c) 2013 Checkout Express. All rights reserved.
 //
+#import "WebViewController.h"
 
-#import <UIKit/UIKit.h>
+@interface chkexViewController : WebViewController
 
-@interface chkexViewController : UIViewController
-{
-    IBOutlet UIWebView *webView;
-}
 @end

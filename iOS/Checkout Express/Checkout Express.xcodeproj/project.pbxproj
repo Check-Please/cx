@@ -28,6 +28,7 @@
 		3C346CAE18510DF50048AFB5 /* icon-29pt.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CAB18510DF50048AFB5 /* icon-29pt.png */; };
 		3C346CAF18510DF50048AFB5 /* icon-40pt.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CAC18510DF50048AFB5 /* icon-40pt.png */; };
 		3C346CB018510DF50048AFB5 /* icon-60pt.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CAD18510DF50048AFB5 /* icon-60pt.png */; };
+		3CFA0FD61851BCBB00EABA01 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CFA0FD41851BCBA00EABA01 /* WebViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +69,9 @@
 		3C346CAB18510DF50048AFB5 /* icon-29pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-29pt.png"; path = "Images/icon-29pt.png"; sourceTree = "<group>"; };
 		3C346CAC18510DF50048AFB5 /* icon-40pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-40pt.png"; path = "Images/icon-40pt.png"; sourceTree = "<group>"; };
 		3C346CAD18510DF50048AFB5 /* icon-60pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-60pt.png"; path = "Images/icon-60pt.png"; sourceTree = "<group>"; };
+		3CFA0FD31851BCBA00EABA01 /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
+		3CFA0FD41851BCBA00EABA01 /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
+		3CFA0FD51851BCBB00EABA01 /* WebViewInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewInterface.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,6 +138,9 @@
 		3C346C73184EECD10048AFB5 /* Checkout Express */ = {
 			isa = PBXGroup;
 			children = (
+				3CFA0FD31851BCBA00EABA01 /* WebViewController.h */,
+				3CFA0FD41851BCBA00EABA01 /* WebViewController.m */,
+				3CFA0FD51851BCBB00EABA01 /* WebViewInterface.h */,
 				3C346CAA185100670048AFB5 /* Checkout Express.entitlements */,
 				3C346C7C184EECD10048AFB5 /* chkexAppDelegate.h */,
 				3C346C7D184EECD10048AFB5 /* chkexAppDelegate.m */,
@@ -294,6 +301,7 @@
 				3C346C7E184EECD10048AFB5 /* chkexAppDelegate.m in Sources */,
 				3C346C84184EECD10048AFB5 /* chkexViewController.m in Sources */,
 				3C346C7A184EECD10048AFB5 /* main.m in Sources */,
+				3CFA0FD61851BCBB00EABA01 /* WebViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

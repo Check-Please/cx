@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Checkout Express. All rights reserved.
 //
 
+
 #import "chkexViewController.h"
 
 @interface chkexViewController ()
@@ -14,20 +15,33 @@
 
 @implementation chkexViewController
 
-- (void)viewDidLoad
+- (NSString *) getInitialPageName
 {
-    [super viewDidLoad];
-    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"app" ofType:@"html" inDirectory:@"www"]];
-    
-    NSURLRequest *req = [NSURLRequest requestWithURL:url];
-    
-    [webView loadRequest:req];
+    return @"app.html";
 }
 
-- (void)didReceiveMemoryWarning
+- (id) processFunctionFromJS:(NSString *) name withArgs:(NSArray*) args error:(NSError **) error
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    
+    if ([name compare:@"sayHello" options:NSCaseInsensitiveSearch] == NSOrderedSame)
+    {
+        if (args.count > 0)
+        {
+            return [NSString stringWithFormat:@"Hello %@ !", [args objectAtIndex:0]];
+        }
+        else
+        {
+            NSString *resultStr = [NSString stringWithFormat:@"Missing argument in function %@", name];
+            [self createError:error withCode:-1 withMessage:resultStr];
+            return nil;
+        }
+    }
+    else
+    {
+        NSString *resultStr = [NSString stringWithFormat:@"Function '%@' not found", name];
+        [self createError:error withCode:-1 withMessage:resultStr];
+        return nil;
+    }
 }
 
 - (void)viewDidLayoutSubviews {
