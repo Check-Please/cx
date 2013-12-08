@@ -49,9 +49,13 @@ var iOS = iOS || {};
 
 	iOS.reenter = function(funky, success, arg)
 	{
-		var callback = funMap[funky][success ? "success" : "fail"];
-		if(callback)
-			callback(arg);
+		var callback = funMap[funky][success ? "success" : "fail"] || $.noop;
 		delete funMap[funky];
+		if(arguments.length == 2)
+			return callback();
+		var keys = Object.keys(arg);
+		if((keys.length == 1) && (keys[0] == "_"))
+			arg = arg._;
+		return callback(arg);
 	};
 })();

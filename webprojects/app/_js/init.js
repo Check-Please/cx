@@ -19,21 +19,21 @@
 		} else
 			$("body").addClass("platform-_PLATFORM_");
 		setTimeout(window.onresize, 0);
-		inParallel([device.getTableKey, device.getPos], function(tKey, pos) {
-			tKey = tKey[0] || "";
+		inParallel([device.getTableInfo, device.getPos], function(tInfo, pos) {
 			if(!_NATIVE_) {
-				if(tKey == "")
+				if(tInfo[1] == 0)
 					return(window.location = "http://"+window.location.host
 														+ "/website.html");
 			}
+			tInfo = tInfo[0] || "";
 			device.ajax.send("cx", "init", {
 				isNative: _NATIVE_,
-				tableKey: tKey,
+				tableInfo: tInfo,
 				clientID: device.getClientID(),
 				platform: device.getPlatform(),
 				lat: pos[0],
 				"long": pos[1],
-				accuracy: pos[2]
+				accuracy: pos[2],
 			}, function(data) {
 				data = JSON.parse(data);
 				if(data.errCode != null) {
@@ -48,7 +48,7 @@
 				if(data.deleteCCs)
 					device.deleteCards();
 				mvc.init({
-					key: tKey,
+					key: data.tKey,
 					restrName: data.restrName,
 					restrAddress: data.restrAddress,
 					restrStyle: data.restrStyle,

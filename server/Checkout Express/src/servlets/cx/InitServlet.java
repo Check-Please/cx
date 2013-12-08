@@ -49,7 +49,7 @@ public class InitServlet extends PostServletBase
 		config.txnReq = true;
 		config.txnXG = true;
 		config.bools = a("isNative");
-		config.strs = a("tableKey", "platform");
+		config.strs = a("tableInfo", "platform");
 		config.path = a(Client.getKind(), "clientID");
 		config.doubles = a("?lat", "?long", "?accuracy");
 	}
@@ -59,6 +59,11 @@ public class InitServlet extends PostServletBase
 	private static final int ERR__EMPTY_TICKET = 2;
 	private static final int ERR__JSON = 3;
 	private static final int ERR__UNSUPPORTED_FEATURE = 4;
+
+	private static String deduceTableKey(JSONObject info, DatastoreService ds) {
+		// TODO Something, anything...
+		return null;
+	}
 
 	/*
 	 * NOTE: Does not return
@@ -80,11 +85,16 @@ public class InitServlet extends PostServletBase
 
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, HttpErrMsg, JSONException
 	{
-		String tableKey = p.getStr(0);
-		if(tableKey.length() == 0)
+		String tableInfo = p.getStr(0);
+		if(tableInfo.length() == 0)
 			err(ERR__NO_TABLE_KEY, out);
 		else try {
-			tableKey = tableKey.toUpperCase();
+			String tableKey;
+			try {
+				tableKey = deduceTableKey(new JSONObject(tableInfo), ds);
+			}catch(JSONException e) {
+				tableKey = tableInfo.toUpperCase();
+			}
 			TableKey table = new TableKey(KeyFactory.createKey(TableKey.getKind(), tableKey), ds);
 			Restaurant restr = table.getRestr(ds);
 			List<TicketItem> items = TicketItem.getItems(table, ds);
@@ -120,6 +130,7 @@ public class InitServlet extends PostServletBase
 			new UserConnection(table.getKey().getChild(UserConnection.getKind(), connectionID), logKey.getName(), p.getStr(1)).commit(ds);
 
 			JSONObject ret = new JSONObject();
+			ret.put("tKey", tableKey);
 			ret.put("restrName", restr.getName());
 			ret.put("restrAddress", restr.getAddress());
 			ret.put("restrStyle", restr.getStyle());

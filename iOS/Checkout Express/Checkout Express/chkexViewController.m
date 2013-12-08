@@ -15,33 +15,99 @@
 
 @implementation chkexViewController
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    locationDelegate = [[LocationDelegate alloc] init];
+    [locationDelegate.locationManager startUpdatingLocation];
+}
+
+
 - (NSString *) getInitialPageName
 {
     return @"app.html";
 }
 
-- (id) processFunctionFromJS:(NSString *) name withArgs:(NSArray*) args error:(NSError **) error
+- (NSMutableDictionary *) processFunctionFromJS:(NSString *) name withArgs:(NSArray*) args error:(NSError **) error
 {
-    
-    if ([name compare:@"sayHello" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    {
-        if (args.count > 0)
-        {
-            return [NSString stringWithFormat:@"Hello %@ !", [args objectAtIndex:0]];
-        }
-        else
-        {
-            NSString *resultStr = [NSString stringWithFormat:@"Missing argument in function %@", name];
-            [self createError:error withCode:-1 withMessage:resultStr];
-            return nil;
-        }
-    }
-    else
-    {
+    NSLog(@"--From JS: %@(%@)", name, [args componentsJoinedByString:@","]);
+
+    //Make sure the correct number of agrs were passed & that the function exists
+    int numArgs;
+    if([name isEqualToString:@"echo"])
+        numArgs = 1;
+    else if([name isEqualToString:@"getPos"])
+        numArgs = 0;
+    else if([name isEqualToString:@"keychainLoad"])
+        numArgs = 0;
+    else if([name isEqualToString:@"keychainDelete"])
+        numArgs = 1;
+    else if([name isEqualToString:@"keychainSet"])
+        numArgs = 2;
+    else if([name isEqualToString:@"getTableInfo"])
+        numArgs = 0;
+    else {
         NSString *resultStr = [NSString stringWithFormat:@"Function '%@' not found", name];
         [self createError:error withCode:-1 withMessage:resultStr];
         return nil;
     }
+    
+    if(args.count != numArgs) {
+        NSString *resultStr = [NSString stringWithFormat:@"Function '%@' expects %d arguments but received %d", name, numArgs, (int) args.count];
+        [self createError:error withCode:-1 withMessage:resultStr];
+        return nil;
+    }
+    
+    NSMutableDictionary *ret = nil;
+    if([name isEqualToString:@"echo"])
+        ret = [self jsAPI_echo: [args objectAtIndex:0]];
+    else if([name isEqualToString:@"getPos"])
+        ret = [self jsAPI_getPos];
+    else if([name isEqualToString:@"keychainLoad"])
+        ret = [self jsAPI_keychainLoad];
+    else if([name isEqualToString:@"keychainDelete"])
+        ret = [self jsAPI_keychainDelete: [args objectAtIndex:0]];
+    else if([name isEqualToString:@"keychainSet"])
+        ret = [self jsAPI_keychainSet: [args objectAtIndex:0] withVal: [args objectAtIndex:1]];
+    else if([name isEqualToString:@"getTableInfo"])
+        ret = [self jsAPI_getTableInfo];
+    return ret;
+}
+
+- (NSMutableDictionary *) jsAPI_echo:(NSString *) text
+{
+    NSMutableDictionary *ret = [NSMutableDictionary dictionary];
+    [ret setObject:text forKey:@"_"];
+    return ret;
+}
+
+- (NSMutableDictionary *) jsAPI_getPos
+{
+    NSMutableDictionary *ret = [NSMutableDictionary dictionary];
+    [ret setValue:[NSNumber numberWithDouble:locationDelegate.location.coordinate.latitude] forKey:@"latitude"];
+    [ret setValue:[NSNumber numberWithDouble:locationDelegate.location.coordinate.longitude] forKey:@"longitude"];
+    [ret setValue:[NSNumber numberWithDouble:locationDelegate.location.horizontalAccuracy] forKey:@"accuracy"];
+    return ret;
+}
+
+- (NSMutableDictionary *) jsAPI_keychainLoad
+{
+    NSMutableDictionary *ret = [NSMutableDictionary dictionary];
+    return ret;
+}
+
+- (NSMutableDictionary *) jsAPI_keychainDelete:(NSString *) key
+{
+    return nil;
+}
+
+- (NSMutableDictionary *) jsAPI_keychainSet:(NSString *) key withVal:(id) val
+{
+    return nil;
+}
+
+- (NSMutableDictionary *) jsAPI_getTableInfo
+{
+    return nil;
 }
 
 - (void)viewDidLayoutSubviews {

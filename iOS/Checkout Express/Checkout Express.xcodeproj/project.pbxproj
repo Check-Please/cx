@@ -29,6 +29,7 @@
 		3C346CAF18510DF50048AFB5 /* icon-40pt.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CAC18510DF50048AFB5 /* icon-40pt.png */; };
 		3C346CB018510DF50048AFB5 /* icon-60pt.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CAD18510DF50048AFB5 /* icon-60pt.png */; };
 		3CFA0FD61851BCBB00EABA01 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CFA0FD41851BCBA00EABA01 /* WebViewController.m */; };
+		3CFA0FD918543BBD00EABA01 /* LocationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CFA0FD818543BBD00EABA01 /* LocationDelegate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,8 @@
 		3CFA0FD31851BCBA00EABA01 /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
 		3CFA0FD41851BCBA00EABA01 /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
 		3CFA0FD51851BCBB00EABA01 /* WebViewInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewInterface.h; sourceTree = "<group>"; };
+		3CFA0FD718543BBD00EABA01 /* LocationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocationDelegate.h; sourceTree = "<group>"; };
+		3CFA0FD818543BBD00EABA01 /* LocationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocationDelegate.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +150,8 @@
 				3C346C7F184EECD10048AFB5 /* Main.storyboard */,
 				3C346C82184EECD10048AFB5 /* chkexViewController.h */,
 				3C346C83184EECD10048AFB5 /* chkexViewController.m */,
+				3CFA0FD718543BBD00EABA01 /* LocationDelegate.h */,
+				3CFA0FD818543BBD00EABA01 /* LocationDelegate.m */,
 				3C346C85184EECD10048AFB5 /* Images.xcassets */,
 				3C346C74184EECD10048AFB5 /* Supporting Files */,
 			);
@@ -239,6 +244,9 @@
 							com.apple.Keychain = {
 								enabled = 1;
 							};
+							com.apple.iCloud = {
+								enabled = 1;
+							};
 						};
 					};
 					3C346C8A184EECD10048AFB5 = {
@@ -302,6 +310,7 @@
 				3C346C84184EECD10048AFB5 /* chkexViewController.m in Sources */,
 				3C346C7A184EECD10048AFB5 /* main.m in Sources */,
 				3CFA0FD61851BCBB00EABA01 /* WebViewController.m in Sources */,
+				3CFA0FD918543BBD00EABA01 /* LocationDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

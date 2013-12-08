@@ -38,7 +38,7 @@ var socket = socket || {};
 			if(timeWaited > 9000)
 				mvc.err("Could not connect to server");
 			else {
-				var wait = Math.ceil(waitForLoad/10+20);
+				var wait = Math.ceil(timeWaited/10+20);
 				setTimeout(socket.init, wait, token, timeWaited+wait)
 			}
 		}

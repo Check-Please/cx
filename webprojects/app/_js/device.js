@@ -74,18 +74,22 @@ var device = device || {};
 	} else
 		device.ajax = ajax;
 
-	/**	Determines the key for the table
+	/**	Determines the information which will identify the table for the
+	 *	server
 	 *
-	 *	@param	callback A callback function. The first parameter is the key.
-	 *					 If no key can be found, null is passed as the first
-	 *					 as the first parameter, and the second is an error
-	 *					 message.
+	 *	@param	callback	A callback function. The first parameter is the
+	 *						information.  If no information can be found,
+	 *						null is passed as the first as the first
+	 *						parameter, the second is an error code, and the
+	 *						third is an error message.  So far, the
+	 *						following codes are in use:
+	 *							0 - No table in URL
 	 */
-	device.getTableKey = function(callback)
+	device.getTableInfo = function(callback)
 	{
 		var q = window.location.search;
 		if(q.length == 0)
-			callback(null, "No table specified in the URL.");
+			callback(null, 0, "No table specified in the URL.");
 		var i = q.indexOf('&');
 		if(i == -1)
 			callback(q.slice(1));
@@ -113,33 +117,59 @@ var device = device || {};
 			return q;
 	}
 
-	/**	Gets the location of the user.
+	
+	/**	Gets the location of the user with no time restrictions on the speed
+	 *	at which the callback is called.
 	 *
-	 *	Must call the callback function within about 1000 ms
+	 *	@param	callback	The callback function.  Takes an object as its
+	 *						sole parameter.  The object has the following:
+	 *								latitude, longitude, accuracy
+ 	 *								code, message
+	 *						The last two are used for errors, and code must
+	 *						follow PositionError.code
+	 */
+	device.getPosInner = function(callback) {
+		if(navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function(pos) {
+				callback(pos.coords);
+			}, function(err) {
+				callback(err);
+			}, {enableHighAccuracy: true, maximumAge: 0});
+		} else
+			callback({code: 2, message:
+				"No geolocation available.  Please upgrade your browser"});
+	};
+
+	/**	Gets the location of the user, calling the callback quickly.
+	 *
+	 *	Must call the callback function within about 1000 ms.  However, even
+	 *	if the time expires this function should keep trying to get the
+	 *	location in the background.
 	 *
 	 *	@param	callback	A callback function.  The parameters are:
-	 *							latitude, longitude, accuracy, errCode,errMsg
-	 *						If no location should be found, the first three
+	 *								latitude, longitude, accuracy[,
+	 *									errCode, errMsg]
+	 *						If no location should be found, the first four
 	 *						will be undefined.  If a location is found, the
 	 *						last two will be.  The error codes follow those
 	 *					 	of PositionError.code
 	 */
 	device.getPos = function(callback)
 	{
-		if(navigator.geolocation) {
-			var ret = {code: 3, message: "Still waiting for user decision"};
-			navigator.geolocation.getCurrentPosition(function(pos) {
-				ret = pos.coords;
-			}, function(err) {
-				ret = err;
-			}, {enableHighAccuracy: true, maximumAge: 0});
-			setTimeout(function() {
-				callback(	ret.latitude, ret.longitude, ret.accuracy,
-							ret.code, ret.message);
-			}, 1000);
-		} else
-			callback(undefined, undefined, undefined, 2,
-				"No geolocation available.  Please upgrade your browser");
+		var ret = {code: 3, message: "Still waiting for user decision"};
+		var timeoutID = undefined;
+		function callCallback() {
+			clearTimeout(timeoutID);
+			timeoutID = undefined;
+			callback(	ret.latitude, ret.longitude, ret.accuracy,
+						ret.code, ret.message);
+		}
+		device.getPosInner(function(resp) {
+			ret = resp;
+			if(timeoutID != null)
+				callCallback();
+		});
+		setTimeout(callCallback, 1000);
 	};
 
 	/**	Gets some sort of hash identifying the device/user
@@ -175,10 +205,7 @@ var device = device || {};
 			if(arguments.length == 1) {
 				//GET
 				v = localStorage.getItem(k);
-				if(v != undefined)
-					return JSON.parse(v);
-				else
-					return undefined;
+				return v && JSON.parse(v);
 			} else {
 				//SET
 				if(v !== undefined)

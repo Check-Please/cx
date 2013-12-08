@@ -19,7 +19,7 @@
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Subclass must implement getInitialPageName function" userInfo:nil];
 }
 
-- (id) processFunctionFromJS:(NSString *) name withArgs:(NSArray*) args error:(NSError **) error
+- (NSMutableDictionary *) processFunctionFromJS:(NSString *) name withArgs:(NSArray*) args error:(NSError **) error
 {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Subclass must implement processFunctionFromJS function" userInfo:nil];
 }
@@ -130,53 +130,35 @@
 - (void) callFunction:(NSString *) name withArgs:(NSArray *) args callbackKey:(NSString *) callbackKey
 {
     NSError *error;
+    NSMutableDictionary *retVal = [self processFunctionFromJS:name withArgs:args error:&error];
     
-    id retVal = [self processFunctionFromJS:name withArgs:args error:&error];
-    
-    if (error != nil) {
-        NSString *resultStr = [NSString stringWithString:error.localizedDescription];
-        [self callErrorCallback:callbackKey withMessage:resultStr];
-    } else {
-        [self callSuccessCallback:callbackKey withRetValue:retVal forFunction:name];
-    }
-    
+    if (error == nil)
+        [self returnToJS:callbackKey withVal:retVal];
+    else
+        [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"iOS.reenter(\"%@\", false, %@);",callbackKey ,[NSString stringWithString:error.localizedDescription]]];
 }
 
--(void) callErrorCallback:(NSString *) callbackKey withMessage:(NSString *) msg
+-(void) returnToJS:(NSString *) callbackKey withVal:(NSMutableDictionary *) ret
 {
-    [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"iOS.reenter(\"%@\", false, %@);",callbackKey ,msg]];
+    if(ret == nil)
+        [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"iOS.reenter(\"%@\", true);",callbackKey]];
+    else {
+        NSError *jsonError;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:ret options:0 error:&jsonError];
     
-}
+        if (jsonError != nil) {
+            //call error callback function here
+            NSLog(@"Error creating JSON from the response  : %@",[jsonError localizedDescription]);
+            return;
+        }
+    
+        NSString *jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 
--(void) callSuccessCallback:(NSString *) callbackKey withRetValue:(id) retValue forFunction:(NSString *) funcName
-{
-    NSMutableDictionary *resultDict = [NSMutableDictionary dictionary];
-    [resultDict setObject:retValue forKey:@"result"];
-    [self callJSFunction:callbackKey withArgs:resultDict];
-    
-}
-
--(void) callJSFunction:(NSString *) callbackKey withArgs:(NSMutableDictionary *) args
-{
-    NSError *jsonError;
-    
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:args options:0 error:&jsonError];
-    
-    if (jsonError != nil)
-    {
-        //call error callback function here
-        NSLog(@"Error creating JSON from the response  : %@",[jsonError localizedDescription]);
-        return;
+        if (jsonStr == nil)
+            NSLog(@"jsonStr is null. count = %d", (int) [ret count]);
+        else
+            [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"iOS.reenter(\"%@\", true, %@);",callbackKey,jsonStr]];
     }
-    
-    NSString *jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-
-    if (jsonStr == nil)
-    {
-        NSLog(@"jsonStr is null. count = %d", [args count]);
-    }
-    
-    [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"iOS.reenter(\"%@\", true, %@);",callbackKey,jsonStr]];
 }
 
 - (void) createError:(NSError**) error withMessage:(NSString *) msg
