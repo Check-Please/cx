@@ -28,8 +28,7 @@
 		if(mutex)
 			if(!stealMutex)
 				return;
-		if(_DEBUG_)
-			assert(!mutex || stealMutex);
+		{{ASSERT: !mutex || stealMutex}};
 		mutex = true;
 		try {
 
@@ -65,8 +64,8 @@
 			var $view = $("#view");
 			if((currView != null) && (currView.unbuild != null))
 				currView.unbuild($view, view);
-			if(_DEBUG_) {
-				assert($("#view > :visible").length == 0);
+			if({{DEBUG}}) {
+				{{ASSERT: $("#view > :visible").length == 0}};
 				window.DEBUG_VAR = $("#view > *");
 			}
 			window.location.hash = "#"+view.viewName;
@@ -75,9 +74,9 @@
 			$("body").addClass(view.viewName);
 			if(view.build != null)
 				view.build($view, currView);
-			if(_DEBUG_) {
+			if({{DEBUG}}) {
 				window.DEBUG_VAR.each(function() {
-					assert($(this).parent("#view").length == 1);
+					{{ASSERT: $(this).parent("#view").length == 1}};
 				});
 				window.DEBUG_VAR = undefined;
 				delete window.DEBUG_VAR;

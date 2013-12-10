@@ -1,77 +1,5 @@
 import os, shutil, errno, re, csv, getopt, sys, subprocess
-
-#############################################################################
-# FILE UTILS
-#############################################################################
-
-# The functions here serve as an abstraction over the various ways to
-# interact with the file system (os, shutil, open).  All paths passed into
-# any of these functions should be specified relative to the root directory
-# of the project.  The paths should be formated as a unix path
-
-def expandPath(path):
-    return os.path.relpath(os.path.join(os.path.dirname(__file__),"..",path))
-
-def ls(path):
-    return os.listdir(expandPath(path))
-
-def mkdir(path):
-    return os.mkdir(expandPath(path))
-
-def isdir(path):
-    return os.path.isdir(expandPath(path))
-
-def cp_r(src, dest):
-    src = expandPath(src)
-    dest = expandPath(dest)
-    if os.path.isdir(src):
-        shutil.copytree(src, dest)
-    else:
-        shutil.copy(src, dest)
-
-def rm_r(path):
-    path = expandPath(path)
-    if os.path.isdir(path):
-        return shutil.rmtree(path)
-    else:
-        return os.remove(path)
-
-def exists(path):
-    return os.path.exists(expandPath(path));
-
-def readfile(path):
-    return open(expandPath(path), "r")
-
-def writefile(path):
-    return open(expandPath(path), "w")
-
-def appendfile(path):
-    return open(expandPath(path), "a")
-
-def sass(src, dest):
-    return subprocess.call(["sass", "--update",
-                            expandPath(src)+":"+expandPath(dest)])
-
-def compressJS(path, native):
-    path = expandPath(path)
-    proc = subprocess.Popen(["uglifyjs", path, "-o", path, "-c", "-m"
-                ]+(["--screw-ie8"] if native else []),
-            stderr=subprocess.PIPE);
-
-    ignoreNext = False;
-    for line in proc.stderr:
-        if re.match(r'WARN: Condition always (?:true|false) \[',
-                                                    line.strip()) != None:
-            ignoreNext = True;
-        elif ignoreNext:
-            ignoreNext = False;
-        else:
-            sys.stderr.write(line);
-    return proc.returncode;
-
-#############################################################################
-# Helper Methods
-#############################################################################
+import bash, macros
 
 javaTmpltDir = "server/Checkout Express/src/templates" # This is ugly. w/e...
 tmpltExt = ".tmplt"
@@ -101,8 +29,8 @@ webServer = "https://www.chkex.com";
 """
 def makeWebXML(src, dest):
     print "Building web.xml..."
-    infil = readfile(src);
-    outfl = writefile(dest);
+    infil = bash.readfile(src);
+    outfl = bash.writefile(dest);
 
     outfl.write("<?xml version=\"1.0\" encoding=\"UTF-8\" "+
                 "standalone=\"no\"?><web-app "+
@@ -202,7 +130,7 @@ def makeWebXML(src, dest):
     @return A 2-tuple of lists of strings, first keys then values
 """
 def loadBuildTemplate(path):
-    infil = readfile(path);
+    infil = bash.readfile(path);
     keys = [];
     vals = [];
     for row in csv.reader(infil):
@@ -210,30 +138,6 @@ def loadBuildTemplate(path):
         vals.append(row[1]);
     infil.close();
     return keys, vals;
-
-""" Runs build-time templating on a file
-
-    Also replaces any "\r\n" with "\n".  Those "\r"'s were wreaking havok on
-    everything outside the "_raw" folder (because of the mixed formatting),
-    and this is as good a time as any to remove them
-
-    @param path The file to run templating over
-    @param buildTemplate A 2-tuple string lists, first keys then values
-"""
-def runBuildTemplate(path, buildTemplate):
-    keys, vals = buildTemplate;
-    infil = readfile(path);
-    content = infil.read();
-    infil.close();
-    content = content.replace("\r\n", "\n");
-    # The following loop takes time proportional to the number of keys.  This
-    # could be made more efficent by searching for r'{{.*?}}' and seeing if
-    # any key was matched
-    for i in xrange(0, len(keys)):
-        content = content.replace("{{"+keys[i]+"}}", vals[i])
-    outfil = writefile(path);
-    outfil.write(content);
-    outfil.close();
 
 """ Makes sense of the raw template files
 
@@ -243,9 +147,9 @@ def runBuildTemplate(path, buildTemplate):
 """
 def compileTemplateInner(src):
         print "Compiling template \""+src+"\"..."
-        assert(exists(src+tmpltExt))
-        assert(exists(src+tspecExt))
-        sfil = readfile(src+tspecExt);
+        assert(bash.exists(src+tmpltExt))
+        assert(bash.exists(src+tspecExt))
+        sfil = bash.readfile(src+tspecExt);
         params = [];
         types = [];
         for line in sfil:
@@ -269,7 +173,7 @@ def compileTemplateInner(src):
         sfil.close();
 
         content = "";
-        tfil = readfile(src+tmpltExt);
+        tfil = bash.readfile(src+tmpltExt);
         tmplt = tfil.read().rstrip();
         tfil.close();
         tokens = re.split(r'(?:\{\{|\}\})', tmplt);
@@ -313,15 +217,15 @@ def compileTemplateToJava(src, package):
     className = className[0].upper() + className[1:];
     packagePath = javaTmpltDir;
     packageName = "templates";
-    if not exists(packagePath):
-        mkdir(packagePath);
+    if not bash.exists(packagePath):
+        bash.mkdir(packagePath);
     for pack in package:
         packagePath += "/"+pack;
         packageName += "."+pack;
-        if not exists(packagePath):
-            mkdir(packagePath);
+        if not bash.exists(packagePath):
+            bash.mkdir(packagePath);
 
-    outfil = writefile(packagePath + "/" + className + ".java");
+    outfil = bash.writefile(packagePath + "/" + className + ".java");
     outfil.write(   "package "+packageName+";\n\n"+
                     "public class "+className+" {\n"+
                     "\tpublic static String run(");
@@ -337,29 +241,30 @@ def compileTemplateToJava(src, package):
 """ Compiles the templates which are only used server side
 
     @param src The folder containing the templates
-    @param buildTemplate A 2-tuple string lists, first keys then values
+    @param mVars A dictionary from macro constant names to values
+    @param mFuns A dictionary from macro function names to regex
     @param package  The package for the templates, formatted as a list of
                     strings.  The package "templates" is implied
 """
-def compileServerOnlyTemplates(src, buildTemplate, package=[]):
+def compileServerOnlyTemplates(src, mVars, mFuns, package=[]):
     tmpPath = src+"/"+tmpFolder;
-    if not exists(tmpPath):
-        mkdir(tmpPath);
-    for fil in ls(src):
+    if not bash.exists(tmpPath):
+        bash.mkdir(tmpPath);
+    for fil in bash.ls(src):
         path = src+"/"+fil;
-        if isdir(path) and fil != tmpFolder:
-            compileServerOnlyTemplates(path, buildTemplate, package+[fil]);
+        if bash.isdir(path) and fil != tmpFolder:
+            compileServerOnlyTemplates(path, mVars, mFuns, package+[fil]);
         elif fil.endswith(tmpltExt):
             fil = fil[:len(fil)-len(tmpltExt)];
-            assert(exists(src+"/"+fil+".tspec"));
+            assert(bash.exists(src+"/"+fil+".tspec"));
             tmpTmplt = tmpPath+"/"+fil+".tmplt"; 
             tmpTspec = tmpPath+"/"+fil+".tspec"; 
-            cp_r(src+"/"+fil+".tmplt", tmpTmplt);
-            cp_r(src+"/"+fil+".tspec", tmpTspec);
-            runBuildTemplate(tmpTmplt, buildTemplate);
-            runBuildTemplate(tmpTspec, buildTemplate);
+            bash.cp_r(src+"/"+fil+".tmplt", tmpTmplt);
+            bash.cp_r(src+"/"+fil+".tspec", tmpTspec);
+            macros.run(tmpTmplt, mVars, mFuns);
+            macros.run(tmpTspec, mVars, mFuns);
             compileTemplateToJava(tmpPath+"/"+fil, package);
-    rm_r(tmpPath);
+    bash.rm_r(tmpPath);
 
 """ Comples a template into a JS file
 
@@ -372,7 +277,7 @@ def compileTemplateToJS(src, dest, package=[]):
     types, params, content = compileTemplateInner(src);
     funName = src[src.rfind("/")+1:];
     funName = funName[0].lower() + funName[1:];
-    outfil = writefile(dest);
+    outfil = bash.writefile(dest);
     outfil.write("var templates = templates || {};\n")
     packageName = "templates";
     for pack in package:
@@ -393,10 +298,10 @@ def compileTemplateToJS(src, dest, package=[]):
 """
 def compileWebTemplates(path, parentsOfT, parentsInT=[]):
     jsPath = path + "/.."*len(parentsInT) + "/../" + jsFolder;
-    if not exists(jsPath):
-        mkdir(jsPath);
-    for fil in ls(path):
-        if isdir(path+"/"+fil):
+    if not bash.exists(jsPath):
+        bash.mkdir(jsPath);
+    for fil in bash.ls(path):
+        if bash.isdir(path+"/"+fil):
             compileWebTemplates(path+"/"+fil, parentsOfT, parentsInT+[fil]);
         elif fil.endswith(tmpltExt):
             fil = fil[:len(fil)-len(tmpltExt)];
@@ -408,28 +313,24 @@ def compileWebTemplates(path, parentsOfT, parentsInT=[]):
 """ Compiles the contents of the folder
 
     In more detail, the following is done:
-        build-time templating
         renaming any index.html files and placing them thier "_raw" folder
         sass -> css compilation
         template compilation
 
     @param path The path of the folder to run preprocessing over
-    @param buildTemplate A 2-tuple of lists of strings, first keys then values
     @param parents  A list of parent folders (including the current folder),
                     leading back to the root of the compilation
 """
-def compileFolder(path, buildTemplate, parents=[]):
-    for fil in ls(path):
+def compileFolder(path, parents=[]):
+    for fil in bash.ls(path):
         fpath = path+"/"+fil;
-        if isdir(fpath):
+        if bash.isdir(fpath):
             if not fil in noTemplating:
-                compileFolder(fpath, buildTemplate, parents+[fil]);
-        else:
-            runBuildTemplate(fpath, buildTemplate);
-    if isdir(path+"/"+styleFolder):
-        cp_r(path+"/"+styleFolder, path+"/"+cssFolder);
-        sass(path+"/"+cssFolder, path+"/"+cssFolder);
-    if isdir(path+"/"+templateFolder):
+                compileFolder(fpath, parents+[fil]);
+    if bash.isdir(path+"/"+styleFolder):
+        bash.cp_r(path+"/"+styleFolder, path+"/"+cssFolder);
+        bash.sass(path+"/"+cssFolder, path+"/"+cssFolder);
+    if bash.isdir(path+"/"+templateFolder):
         compileWebTemplates(path+"/"+templateFolder, parents);
 
 """ Deletes the contents of a folder
@@ -441,64 +342,13 @@ def compileFolder(path, buildTemplate, parents=[]):
 def clearFolder(path, protectedList=None):
     protected = set(['.gitignore']);
     if protectedList != None:
-        infil = readfile(protectedList);
+        infil = bash.readfile(protectedList);
         for row in csv.reader(infil):
             protected |= set(row);
         infil.close()
-    for fil in ls(path):
+    for fil in bash.ls(path):
         if not fil in protected:
-            rm_r(path+"/"+fil);
-
-""" Adds some variables corresponding to the conditions under which the files
-    were built.
-
-    @param path The path of the files to add variables to
-    @param plat The platform for which the files were built
-    @param debug If the --debug flag was set
-    @param local If the --local flag was set
-    @param server   The value specified by --server.  If no value was
-                    specified, one is infered
-"""
-def addBuildVars(path, plat, debug, local, server):
-    if isdir(path):
-        for fil in ls(path):
-            addBuildVars(path+"/"+fil, plat, debug, local, server);
-    else:
-        native = plat != webPlat;
-        if not native:
-            server = "";
-        elif server == None:
-            server = localServer if local else webServer;
-        infil = readfile(path);
-        content = "";
-        failedIf = False;
-        for line in infil:
-            l = line.strip();
-            if l == "END_IF":
-                failedIf = False;
-            elif re.match(r'^IF(?:_NOT)?_[A-Z]+$', l) != None:
-                neg = re.match(r'^IF_NOT_', l) != None;
-                var = re.sub(r'IF(?:_NOT)_', "", l);
-                val =  (native if var == "NATIVE" else
-                        debug if var == "DEBUG" else
-                        local if var == "LOCAL" else
-                        None);
-                failedIf = val == neg;
-            elif not failedIf:
-                content += line;
-        infil.close();
-        content =   re.sub(r'\b_PLATFORM_\b', plat,
-                    re.sub(r'\b_NATIVE_\b', "true" if native else "false",
-                    re.sub(r'\b_DEBUG_\b', "true" if debug else "false",
-                    re.sub(r'\b_LOCAL_\b', "true" if local else "false",
-                    re.sub(r'\b_SERVER_\b', server,
-                    content)))));
-        outfil = writefile(path);
-        outfil.write(content);
-        outfil.close();
-
-
-        
+            bash.rm_r(path+"/"+fil);
 
 """ Merges some files and transfers them to their final destination
 
@@ -508,26 +358,26 @@ def addBuildVars(path, plat, debug, local, server):
     @param dest The root of the folder which 
     @param plat The platform which the resulting files will run on
     @param debug Whether or not the --debug flag was specified
-    @param local If the app will be running off of localhost
-    @param server The server which the app should use for things like ajax
+    @param mVars A dictionary from macro constant names to values
+    @param mFuns A dictionary from macro function names to regex
     @param parents  A list of parent folders, leading back to the root of the
                     transfer
     @param merge    Whether or not the files in the folder should be merged
                     into a single file
 """
-def transferLeaf(src, dest, plat, debug, local, server, parents, merge):
+def transferLeaf(src, dest, plat, debug, mVars, mFuns, parents, merge):
     if merge:
         assert(len(parents) > 0);
-    isDir = isdir(src)
-    wantsBuildVars = not (isDir and (os.path.basename(src) in noTemplating));
+    isDir = bash.isdir(src)
+    wantsMacros = not (isDir and (os.path.basename(src) in noTemplating));
     ext = src[src.rfind("/_")+2:] if isDir else src[src.rfind(".")+1:];
     outPath = dest+("/"+ext if isDir else "");
     for parent in parents:
-        if not exists(outPath):
-            mkdir(outPath);
+        if not bash.exists(outPath):
+            bash.mkdir(outPath);
         outPath += "/" + parent;
-    if not merge and not exists(outPath):
-        mkdir(outPath);
+    if not merge and not bash.exists(outPath):
+        bash.mkdir(outPath);
 
     if isDir:
         # Get list of files to transfer 
@@ -537,50 +387,50 @@ def transferLeaf(src, dest, plat, debug, local, server, parents, merge):
         # Actually transfer
         if merge:
             ofpath = outPath+"."+ext;
-            outfil = writefile(ofpath);
+            outfil = bash.writefile(ofpath);
             i = 0;
             while i < len(baseFolders):
                 baseFolder = src+baseFolders[i];
-                if exists(baseFolder):
-                    fils = ls(baseFolder);
+                if bash.exists(baseFolder):
+                    fils = bash.ls(baseFolder);
                     oFil = baseFolder+"/"+orderFile;
-                    if exists(oFil):
-                        oFilReader = readfile(oFil);
+                    if bash.exists(oFil):
+                        oFilReader = bash.readfile(oFil);
                         o = oFilReader.read().strip().split();
                         oFilReader.close();
                         fils = o+list(set(fils).difference(o));
                     for fil in fils:
                         fname = baseFolder+"/"+fil;
-                        if isdir(fname):
+                        if bash.isdir(fname):
                             if fil[0] != '_':
                                 baseFolders.insert(i+1, fname[len(src):]);
                         elif fil.endswith("."+ext):
-                            infil = readfile(fname);
+                            infil = bash.readfile(fname);
                             outfil.write(infil.read()+"\n");
                             infil.close()
                 i += 1;
             outfil.close();
-            if wantsBuildVars:
-                addBuildVars(ofpath, plat, debug, local, server);
+            if wantsMacros:
+                macros.run(ofpath, mVars, mFuns);
             if ext == "js" and not debug:
                 print "\tCompressing \""+ofpath+"\"..."
-                compressJS(ofpath, (plat != webPlat));
+                bash.compressJS(ofpath, (plat != webPlat));
         else:
             for baseFolder in baseFolders:
                 baseFolder = src+baseFolder;
-                if exists(baseFolder):
-                    for fil in ls(baseFolder):
+                if bash.exists(baseFolder):
+                    for fil in bash.ls(baseFolder):
                         fname = baseFolder+"/"+fil;
-                        if fil[0] != '_' or not isdir(fname):
+                        if fil[0] != '_' or not bash.isdir(fname):
                             oPath = outPath+"/"+fil;
-                            cp_r(fname, oPath);
-                            if wantsBuildVars:
-                                addBuildVars(oPath,plat,debug,local,server);
+                            bash.cp_r(fname, oPath);
+                            if wantsMacros:
+                                macros.run(oPath, mVars, mFuns);
     else:
         oPath = outPath + ("."+ext if merge else "");
-        cp_r(src, oPath);
-        if wantsBuildVars:
-            addBuildVars(oPath, plat, debug, local, server);
+        bash.cp_r(src, oPath);
+        if wantsMacros:
+            macros.run(oPath, mVars, mFuns);
 
 """ Takes the compiled files and places them in their final directory
 
@@ -590,37 +440,37 @@ def transferLeaf(src, dest, plat, debug, local, server, parents, merge):
     @param dest The root of the folder to transfer to the final directory
     @param plat The platform which the resulting files will run on
     @param debug Whether or not the --debug flag was specified
-    @param local If the app will be running off of localhost
-    @param server The server which the app should use for things like ajax
+    @param mVars A dictionary from macro constant names to values
+    @param mFuns A dictionary from macro function names to regex
     @param foldersToFollow  A set-like object which specifies if a folder
                             should be recursed upon
     @param parents  A list of parent folders, leading back to the root of the
                     transfer
 """
-def transferFls(src,dest,plat,debug,local,server,foldersToFollow,parents=[]):
+def transferFls(src,dest,plat,debug,mVars,mFuns,foldersToFollow,parents=[]):
     if len(parents) == 0:
         print "Transfering files for "+plat+"..."
-    for fil in ls(src):
+    for fil in bash.ls(src):
         fpath = src + "/" + fil;
-        if isdir(fpath):
+        if bash.isdir(fpath):
             if fil[0] == "_":
                 if fil == rawFolder:
                     dpath = dest;
                     for parent in parents:
                         dpath += "/"+parent;
-                        if not exists(dpath):
-                            mkdir(dpath);
-                    for f in ls(fpath):
-                        cp_r(fpath+"/"+f, dpath+"/"+f);
+                        if not bash.exists(dpath):
+                            bash.mkdir(dpath);
+                    for f in bash.ls(fpath):
+                        bash.cp_r(fpath+"/"+f, dpath+"/"+f);
                 elif not fil in ignoreFolders:
-                    transferLeaf(fpath, dest, plat, debug, local, server,
+                    transferLeaf(fpath, dest, plat, debug, mVars, mFuns,
                                             parents, fil in mergeFolders);
             elif fil in foldersToFollow:
-                transferFls(fpath, dest, plat, debug, local, server, uSet,
+                transferFls(fpath, dest, plat, debug, mVars, mFuns, uSet,
                                                             parents+[fil])
     htmlPath = src+"/"+indexHTML;
-    if exists(htmlPath):
-        transferLeaf(htmlPath,dest,plat,debug,local,server,parents,True);
+    if bash.exists(htmlPath):
+        transferLeaf(htmlPath,dest,plat,debug,mVars,mFuns,parents,True);
 
 #############################################################################
 # Executed liness
@@ -637,7 +487,7 @@ for (op, val) in getopt.getopt(sys.argv[1:], "lds", ["debug", "local",
         server = val;
 
 projectsForApp = set([]);
-projectsForAppFil = readfile("build/app-web-projects.csv");
+projectsForAppFil = bash.readfile("build/app-web-projects.csv");
 for row in csv.reader(projectsForAppFil):
     projectsForApp |= set(row);
 projectsForAppFil.close();
@@ -645,25 +495,33 @@ projectsForAppFil.close();
 makeWebXML("server/servlet-list.csv",
         "server/Checkout Express/war/WEB-INF/web.xml");
 
-buildTemplate = loadBuildTemplate("build/build-vars.csv");
-if exists(javaTmpltDir):
-    rm_r(javaTmpltDir);
-compileServerOnlyTemplates("server/templates", buildTemplate);
+mVars, mFuns = macros.load("build/macros");
+mVars['DEBUG'] = "true" if debug else "false";
+mVars['LOCAL'] = "true" if local else "false";
+if bash.exists(javaTmpltDir):
+    bash.rm_r(javaTmpltDir);
+compileServerOnlyTemplates("server/templates", mVars, mFuns);
 
 platforms = ["web", "iOS"];
 platformPaths = ["server/Checkout Express/war", "iOS/Checkout Express/www"];
 
-if exists(tmpFolder):
-    rm_r(tmpFolder);
-cp_r("webprojects", tmpFolder);
-compileFolder(tmpFolder, buildTemplate);
+if bash.exists(tmpFolder):
+    bash.rm_r(tmpFolder);
+bash.cp_r("webprojects", tmpFolder);
+compileFolder(tmpFolder);
 for i in xrange(0, len(platforms)):
-    if exists(platformPaths[i]):
+    if bash.exists(platformPaths[i]):
         clearFolder(platformPaths[i],
             "server/protected_war.csv" if i == 0 else None)
     else:
-        mkdir(platformPaths[i])
-    transferFls(tmpFolder, platformPaths[i], platforms[i], debug, local,
-                    server, uSet if i == 0 else projectsForApp);
+        bash.mkdir(platformPaths[i])
+    plat = platforms[i];
+    native = plat != webPlat;
+    mVars['PLATFORM'] = plat;
+    mVars['NATIVE'] = "true" if native else "false";
+    mVars['SERVER'] = "" if not native else (server if server != None else (
+                                    localServer if local else webServer)); 
+    transferFls(tmpFolder, platformPaths[i], plat, debug, mVars, mFuns,
+                                        uSet if i == 0 else projectsForApp);
 
-rm_r(tmpFolder);
+bash.rm_r(tmpFolder);

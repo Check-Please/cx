@@ -9,7 +9,7 @@
 	"use strict";
 
 	window.onload = function() {
-		if(!_NATIVE_) {
+		if(!{{NATIVE}}) {
 			if((window.location.hostname != "localhost") &&
 						(window.location.protocol != "https:"))
 				window.location.href = "https:" +
@@ -17,17 +17,17 @@
 			if(navigator.userAgent.indexOf("iPhone") != -1)
 				$("body").addClass("platform-iOS");
 		} else
-			$("body").addClass("platform-_PLATFORM_");
+			$("body").addClass("platform-{{PLATFORM}}");
 		setTimeout(window.onresize, 0);
 		inParallel([device.getTableInfo, device.getPos], function(tInfo, pos) {
-			if(!_NATIVE_) {
+			if(!{{NATIVE}}) {
 				if(tInfo[1] == 0)
 					return(window.location = "http://"+window.location.host
 														+ "/website.html");
 			}
 			tInfo = tInfo[0] || "";
 			device.ajax.send("cx", "init", {
-				isNative: _NATIVE_,
+				isNative: {{NATIVE}},
 				tableInfo: tInfo,
 				clientID: device.getClientID(),
 				platform: device.getPlatform(),

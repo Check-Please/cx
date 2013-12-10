@@ -167,7 +167,7 @@ mvc.views = mvc.views || {};
 				$view = $(templates.pay(device.getCCs().map(function(cc) {
 					var info = device.getCC(cc.key);
 					if(info === undefined) {
-						if(_DEBUG_)
+						if({{DEBUG}})
 							console.log("Warning: missing credit card data "+
 										"with key "+cc.key);
 						return "";

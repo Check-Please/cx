@@ -17,8 +17,8 @@ var socket = socket || {};
 	//
 	//
 	//You've been warned.
-	if(_NATIVE_) device.ajax.get("_ah/channel/jsapi", {}, function(code) {
-		code = code.replace(/\/_ah/g, "_SERVER_/_ah");//I WARNED YOU
+	if({{NATIVE}}) device.ajax.get("_ah/channel/jsapi", {}, function(code) {
+		code = code.replace(/\/_ah/g, "{{SERVER}}/_ah");//I WARNED YOU
 		var $script=$("<script>");//This is going exactly where you think
 		$script.attr("type", "text/JavaScript");
 		$script[0].innerHTML = code;
