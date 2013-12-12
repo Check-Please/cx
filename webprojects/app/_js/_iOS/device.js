@@ -7,19 +7,24 @@
 		});
 */	};
 	var kc;
-	iOS.call("keychainLoad", [], function(keychain) { kc = keychain; });
+	iOS.call("getKeychain", [], function(kcStr){
+		try {
+			kc = JSON.parse(kcStr);
+		} catch(e) {
+			kc = {};
+		}
+	});
 	device.accData = function(k, v) {
+		{{ASSERT: k.match(/^[_0-9a-z]*$/i)}};
 		if(arguments.length == 1)
-			return kc[k] && JSON.parse(kc[k]);
+			return kc[k];
 		else {
 			if(v === undefined) {
-				delete kc[k];
-				iOS.call("keychainDelete", [k]);
-			} else {
-				v = JSON.stringify(v);
+				if(kc.hasOwnProperty(k))
+					delete kc[k];
+			} else
 				kc[k] = v;
-				iOS.call("keychainSet", [k, v]);
-			}
+			iOS.call("setKeychain", [JSON.stringify(kc)]);
 			return v;
 		}
 	};
@@ -27,7 +32,6 @@
 	device.ccPassAllowed = op.id.c(false);
 	device.getPosInner = function(callback) {
 		iOS.call("getPos", [], function(pos) {
-			
 			callback(pos);
 		}, function(err) {
 			callback(err);

@@ -201,6 +201,7 @@ var device = device || {};
 	function buildStorageAtopLocalData(rewriteKey)
 	{
 		return function(k, v) {
+			{{ASSERT: k.match(/^[_0-9a-z]*$/i)}};
 			k = rewriteKey(k);
 			if(arguments.length == 1) {
 				//GET
@@ -373,7 +374,7 @@ var device = device || {};
 			ciphertext = ciphertext.trim();
 			var k;
 			do {
-				k = "card::"+randStr();
+				k = "card_"+randStr();
 			} while(device.accData(k) !== undefined);
 			var preview = pan.slice(-4);
 			while(preview.length < pan.length)

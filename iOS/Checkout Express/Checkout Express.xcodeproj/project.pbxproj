@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3C11D99A18573844008CCAD3 /* KeychainItemWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C11D99918573844008CCAD3 /* KeychainItemWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		3C346C6E184EECD10048AFB5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C346C6D184EECD10048AFB5 /* Foundation.framework */; };
 		3C346C70184EECD10048AFB5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C346C6F184EECD10048AFB5 /* CoreGraphics.framework */; };
 		3C346C72184EECD10048AFB5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C346C71184EECD10048AFB5 /* UIKit.framework */; };
@@ -43,6 +44,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3C11D99818573844008CCAD3 /* KeychainItemWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainItemWrapper.h; sourceTree = "<group>"; };
+		3C11D99918573844008CCAD3 /* KeychainItemWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainItemWrapper.m; sourceTree = "<group>"; };
 		3C346C6A184EECD10048AFB5 /* Checkout Express.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Checkout Express.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C346C6D184EECD10048AFB5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3C346C6F184EECD10048AFB5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -141,6 +144,8 @@
 		3C346C73184EECD10048AFB5 /* Checkout Express */ = {
 			isa = PBXGroup;
 			children = (
+				3C11D99818573844008CCAD3 /* KeychainItemWrapper.h */,
+				3C11D99918573844008CCAD3 /* KeychainItemWrapper.m */,
 				3CFA0FD31851BCBA00EABA01 /* WebViewController.h */,
 				3CFA0FD41851BCBA00EABA01 /* WebViewController.m */,
 				3CFA0FD51851BCBB00EABA01 /* WebViewInterface.h */,
@@ -308,6 +313,7 @@
 			files = (
 				3C346C7E184EECD10048AFB5 /* chkexAppDelegate.m in Sources */,
 				3C346C84184EECD10048AFB5 /* chkexViewController.m in Sources */,
+				3C11D99A18573844008CCAD3 /* KeychainItemWrapper.m in Sources */,
 				3C346C7A184EECD10048AFB5 /* main.m in Sources */,
 				3CFA0FD61851BCBB00EABA01 /* WebViewController.m in Sources */,
 				3CFA0FD918543BBD00EABA01 /* LocationDelegate.m in Sources */,

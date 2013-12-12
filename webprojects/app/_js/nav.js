@@ -33,10 +33,10 @@
 		try {
 
 			//Navigate to special pages
+			var isFeedback = view == mvc.views.feedback;
 			if((mvc.err() != null) && (view != mvc.views.error))
 				return goToView(mvc.views.error, true);
-			var isFeedback = view == mvc.views.feedback;
-			if((mvc.paid() || mvc.done()) && !isFeedback)
+			else if((mvc.paid() || mvc.done()) && !isFeedback)
 				return goToView(mvc.views.feedback, true);
 
 			//Handle redirection

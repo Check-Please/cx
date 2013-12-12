@@ -8,6 +8,7 @@
 
 
 #import "chkexViewController.h"
+#import "KeychainItemWrapper.h"
 
 @interface chkexViewController ()
 
@@ -37,12 +38,10 @@
         numArgs = 1;
     else if([name isEqualToString:@"getPos"])
         numArgs = 0;
-    else if([name isEqualToString:@"keychainLoad"])
+    else if([name isEqualToString:@"getKeychain"])
         numArgs = 0;
-    else if([name isEqualToString:@"keychainDelete"])
+    else if([name isEqualToString:@"setKeychain"])
         numArgs = 1;
-    else if([name isEqualToString:@"keychainSet"])
-        numArgs = 2;
     else if([name isEqualToString:@"getTableInfo"])
         numArgs = 0;
     else {
@@ -62,12 +61,10 @@
         ret = [self jsAPI_echo: [args objectAtIndex:0]];
     else if([name isEqualToString:@"getPos"])
         ret = [self jsAPI_getPos];
-    else if([name isEqualToString:@"keychainLoad"])
-        ret = [self jsAPI_keychainLoad];
-    else if([name isEqualToString:@"keychainDelete"])
-        ret = [self jsAPI_keychainDelete: [args objectAtIndex:0]];
-    else if([name isEqualToString:@"keychainSet"])
-        ret = [self jsAPI_keychainSet: [args objectAtIndex:0] withVal: [args objectAtIndex:1]];
+    else if([name isEqualToString:@"getKeychain"])
+        ret = [self jsAPI_getKeychain];
+    else if([name isEqualToString:@"setKeychain"])
+        ret = [self jsAPI_setKeychain: [args objectAtIndex:0]];
     else if([name isEqualToString:@"getTableInfo"])
         ret = [self jsAPI_getTableInfo];
     return ret;
@@ -89,24 +86,24 @@
     return ret;
 }
 
-- (NSMutableDictionary *) jsAPI_keychainLoad
+- (NSMutableDictionary *) jsAPI_getKeychain
 {
     NSMutableDictionary *ret = [NSMutableDictionary dictionary];
+    KeychainItemWrapper *kc = [[KeychainItemWrapper alloc] initWithIdentifier:@"id" accessGroup:nil];
+    [ret setObject:[kc objectForKey:(__bridge id) kSecValueData] forKey:@"_"];
     return ret;
 }
 
-- (NSMutableDictionary *) jsAPI_keychainDelete:(NSString *) key
+- (NSMutableDictionary *) jsAPI_setKeychain:(NSString *) val
 {
-    return nil;
-}
-
-- (NSMutableDictionary *) jsAPI_keychainSet:(NSString *) key withVal:(id) val
-{
+    KeychainItemWrapper *kc = [[KeychainItemWrapper alloc] initWithIdentifier:@"id" accessGroup:nil];
+    [kc setObject:val forKey:(__bridge id) kSecValueData];
     return nil;
 }
 
 - (NSMutableDictionary *) jsAPI_getTableInfo
 {
+    
     return nil;
 }
 
