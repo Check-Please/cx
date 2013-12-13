@@ -90,11 +90,13 @@ var device = device || {};
 		var q = window.location.search;
 		if(q.length == 0)
 			callback(null, 0, "No table specified in the URL.");
-		var i = q.indexOf('&');
-		if(i == -1)
-			callback(q.slice(1));
-		else
-			callback(q.slice(1, i));
+		else {
+			var i = q.indexOf('&');
+			if(i == -1)
+				callback(q.slice(1));
+			else
+				callback(q.slice(1, i));
+		}
 	};
 
 	/**	Gets the ID for jsconsole
@@ -206,7 +208,7 @@ var device = device || {};
 			if(arguments.length == 1) {
 				//GET
 				v = localStorage.getItem(k);
-				return v && JSON.parse(v);
+				return v == undefined ? undefined : JSON.parse(v);
 			} else {
 				//SET
 				if(v !== undefined)
@@ -335,7 +337,7 @@ var device = device || {};
 	 *	@return	The ciphertext
 	 */
 	device.encrypt = function(plaintext, password) {
-		return sjcl.encrypt(password, plaintext, {iter: 50000});
+		return sjcl.encrypt(password, plaintext, {iter: 10000});
 	};
 
 	/**	Decrypts some ciphertext which was encrypted with device.encrypt()
@@ -346,7 +348,7 @@ var device = device || {};
 	 */
 	device.decrypt = function(ciphertext, password) {
 		try {
-			return sjcl.decrypt(password, ciphertext, {iter: 50000});
+			return sjcl.decrypt(password, ciphertext, {iter: 10000});
 		} catch(e) {
 			return null;
 		}

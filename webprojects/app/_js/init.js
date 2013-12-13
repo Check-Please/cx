@@ -19,7 +19,7 @@
 		} else
 			$("body").addClass("platform-{{PLATFORM}}");
 		setTimeout(window.onresize, 0);
-		inParallel([device.getTableInfo, device.getPos], function(tInfo, pos) {
+		inParallel([device.getTableInfo,device.getPos], function(tInfo,pos) {
 			if(!{{NATIVE}}) {
 				if(tInfo[1] == 0)
 					return(window.location = "http://"+window.location.host
