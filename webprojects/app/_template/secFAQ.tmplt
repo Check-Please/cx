@@ -9,7 +9,7 @@
 
 <h2><strong>Q:</strong> How do you encrypt credit card information?</h2>
 
-<p><strong>A:</strong> First, we encrypt your information using a password that only our servers know.  Then, if you specify your own password, we encrypt your credit card information using that password.  Finally, if your device has secure storage capabilities built in, we use those to encrypt your information a final time.</p>
+<p><strong>A:</strong> First, we encrypt your information using a password that only our servers know.  Then, if you specify your own password, we encrypt your information again using that password.  Finally, if your device has secure storage capabilities built in, we use those to encrypt your information a final time.</p>
 
 <h2><strong>Q:</strong> What password?  I wasn't asked for a password.</h2>
 
@@ -18,12 +18,6 @@
 <h2><strong>Q:</strong> Someone stole my phone and they're using it to pay for their meals with my Checkout Express information.  What do I do?</h2>
 
 <p><strong>A:</strong> You should get your device remotely wiped immediately.  If this is not possible or does not solve the problem, email <a href="mailto:sjelin@chkex.com">sjelin@chkex.com</a> and we can sort this all out.  We can make any previously stored information about your cards for Checkout Express useless in future transactions.   You will not need to cancel your credit card.</p>
-
-<h2><strong>Q:</strong> What if I <span>want</span> to use a password?  I don't trust the built in security of my device</h2>
-
-<p><strong>A:</strong> We're working on this.  If you want this to be a priority of ours, email <a href="mailto:sjelin@chkex.com">sjelin@chkex.com</a>.</p>
-
-<p>However, keep in mind that in order to have a chance of breaking though your devices security measures, they would need unrestricted access to your device (they would probably need to physically steal it).  And even if a hacker breaks through the built in security measures of your device, they won't get your actual credit card information.  What they'll get is more or less a code which lets them pay through Checkout Express, and not through any other service.  What's more, we can easily invalidate this code on our side if you ask us to (see the previous question).</p>
 
 <h2><strong>Q:</strong> What do I do if I forgot my password?</h2>
 
@@ -41,7 +35,7 @@
 
 <h2><strong>Q:</strong> How do you transmit credit card information?</h2>
 
-<p><strong>A:</strong> Information is encrypted using an algorithm called "RSA" before it travels over any network.  In many cases, cryptography is built into the actual protocols the network uses.  This is the industry standard method for securely sending information over a network.</p>
+<p><strong>A:</strong> Information is transmited using a cryptographic protocal, either "TLS" or "SSL".  The exact details may depend on your device.  This is the industry standard method for securely sending information over a network.</p>
 
 <h2><strong>Q:</strong> How is the credit card information charged?</h2>
 

@@ -104,11 +104,23 @@
 - (NSMutableDictionary *) jsAPI_getTableInfo
 {
     
-    return nil;
+    NSMutableDictionary *ret = [NSMutableDictionary dictionary];
+    NSArray *uuids = [NSArray array];
+    NSArray *rssis = [NSArray array];
+    [ret setValue:uuids forKey:@"uuids"];
+    [ret setValue:rssis forKey:@"rssis"];
+    return ret;
 }
 
 - (void)viewDidLayoutSubviews {
-    webView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+    webView.frame = CGRectMake(0, 20, self.view.frame.size.width, self.view.frame.size.height-20);
+}
+
+//Disable landscape
+- (NSUInteger) supportedInterfaceOrientations {
+    // Return a bitmask of supported orientations. If you need more,
+    // use bitwise or (see the commented return).
+    return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
 }
 
 @end

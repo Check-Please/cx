@@ -10,11 +10,13 @@ import com.google.appengine.api.datastore.KeyFactory;
 
 public class Globals extends AbstractKind
 {
+
 	protected String kindName() { return getKind(); }
 	public static String getKind() { return "globals"; }
 
 	Long ticketKeysBuilt;
 	public static final long defaultID = 1L;
+	public static final long minSupportedVersion = 1L;
 
 	public Globals(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
 	public Globals(Entity e) { super(e); }

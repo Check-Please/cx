@@ -1,11 +1,11 @@
 (function() {
-
 	device.getTableInfo = function(c) {
-		c("IKA");
-/*		iOS.call("getTableInfo", [], c, function(err) {
+		iOS.call("getTableInfo", [], function(tInfo) {
+			c(JSON.stringify(tInfo));
+		}, function(err) {
 			c(null, err.code, err.message);
 		});
-*/	};
+	};
 	var kc;
 	iOS.call("getKeychain", [], function(kcStr){
 		try {

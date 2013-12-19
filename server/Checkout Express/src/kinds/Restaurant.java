@@ -1,5 +1,7 @@
 package kinds;
 
+import java.util.List;
+
 import utils.HttpErrMsg;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -71,5 +73,10 @@ public class Restaurant extends AbstractAccount
 		address = (String) e.getProperty("address");
 		email = (String) e.getProperty("email");
 		style = (String) e.getProperty("style");
+	}
+
+	public String findTable(List<String> uuids, List<Double> rssis)
+	{
+		return "IKA";
 	}
 }

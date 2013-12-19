@@ -34,12 +34,14 @@
 				lat: pos[0],
 				"long": pos[1],
 				accuracy: pos[2],
+				versionNum: {{VERSION_NUM}}
 			}, function(data) {
 				data = JSON.parse(data);
 				if(data.errCode != null) {
 					mvc.init({err:	data.errCode == 0 ? "noKey" :
 									data.errCode == 1 ? "invalidKey" :
 									data.errCode == 2 ? "empty" :
+									data.errCode == 5 ? "reqUpdate" :
 														"500"});
 					loading.init();
 					mvc.err.notify();

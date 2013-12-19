@@ -8,9 +8,9 @@
 		{{(selected ?}}
 			Splitting with {{others}} other{{(others != 1 ? "s" : "")}}
 		{{: others == 1 ?}}
-			Someone else is paying for this
+			1 other person is paying for this
 		{{:}}
-			{{others}} others are splitting this
+			{{others}} other people are splitting this
 		{{)}}
 	</div>
 </li>

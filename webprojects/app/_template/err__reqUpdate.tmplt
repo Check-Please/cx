@@ -1,0 +1,4 @@
+<div id="err">
+	<h1>Update Required</h1>
+	<p>An update is required in order to communicate with the server.  Please {{howToUpdate}}</p>
+</div>

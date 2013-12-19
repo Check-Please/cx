@@ -9,7 +9,15 @@ mvc.views = mvc.views || {};
 	mvc.views.error = {
 		build: function($trgt) {
 			var err = mvc.err();
-			$trgt.append($((templates["err__"+err] ||
+			if(err == "reqUpdate")
+				$trgt.append($(templates.err__reqUpdate(
+					!{{NATIVE}} ? "reload the page" :
+					"{{PLATFORM}}"=="iOS" ? "check the appstore for the " +
+											"latest version of this app" :
+											"download the latest version " +
+											"of this app")));
+			else
+				$trgt.append($((templates["err__"+err] ||
 												templates.err.c(err))()));
 			var reload = {{NATIVE}} && reloadsAllowed &&
 									(err == "reload" || err == "timeout");
