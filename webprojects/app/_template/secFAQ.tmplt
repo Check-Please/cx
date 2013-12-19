@@ -35,7 +35,7 @@
 
 <h2><strong>Q:</strong> How do you transmit credit card information?</h2>
 
-<p><strong>A:</strong> Information is transmited using a cryptographic protocal, either "TLS" or "SSL".  The exact details may depend on your device.  This is the industry standard method for securely sending information over a network.</p>
+<p><strong>A:</strong> Information is transmitted using a cryptographic protocol, either "TLS" or "SSL".  The exact details may depend on your device.  This is the industry standard method for securely sending information over a network.</p>
 
 <h2><strong>Q:</strong> How is the credit card information charged?</h2>
 
