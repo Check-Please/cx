@@ -19,6 +19,8 @@
 		} else
 			$("body").addClass("platform-{{PLATFORM}}");
 		setTimeout(window.onresize, 0);
+		if("{{PLATFORM}}" == "iOS")
+			device.iOSTitleBar("Loading...");
 		inParallel([device.getTableInfo,device.getPos], function(tInfo,pos) {
 			if(!{{NATIVE}}) {
 				if(tInfo[1] == 0)
@@ -70,17 +72,22 @@
 					$css.attr("type", "text/css");
 					$css.attr("rel", "Stylesheet");
 					$css.attr("media", "all");
-					$css.attr("href", "cx_custom/"+data.restrStyle+".css");
+					$css.attr("href",
+							"cx_custom/"+data.restrStyle+".css");
 					$("head").append($css);
 					var $img = $("<img>");
 					$img.attr("src",
-								"cx_custom/"+data.restrStyle+"_header.png");
+							"cx_custom/"+data.restrStyle+"_header.png");
 					$("#header").append($img);
 				}
 				loading.init();
 				window.onhashchange();
 				mvc.views.error.allowReload();
-			}, mvc.err.c("Couldn't contact the server"));
+			}, function() {
+				mvc.init({err: "Couldn't connect to the server"});
+				loading.init();
+				mvc.err.notify();
+			});
 		});
 		if(device.getDebugID() != null) {
 			var $script = $("<script>");

@@ -47,24 +47,41 @@ function ajax(method, url, rawData, callback, failFunc, boringUpdate)
 		//variable keep track of if we've seen state 4 yet, and sending extra
 		//state 4s onto the boring update function.
 		var stateFourSeen = false;
+IF_DEBUG
+		var stack;
+		try {
+			throw new Error();
+		} catch(e) {
+			stack = e.stack;
+		}
+END_IF
 		xmlhttp.onreadystatechange = function ()
 		{
-			if((xmlhttp.readyState == 4) && !stateFourSeen) {
-				stateFourSeen = true;
-				if(xmlhttp.status == 200) {
-					if(callback != null)
-						callback(xmlhttp.responseText, xmlhttp);
-				} else if(failFunc != null) {
-					var msg = xmlhttp.statusText;
-					if(msg.substr(0,3) == "404")
-						msg = msg.substr(3);
-					msg = msg.trim();
-					failFunc(xmlhttp.status, xmlhttp.statusText,
-							xmlhttp.responseText, xmlhttp);
+IF_DEBUG
+			try {
+END_IF
+				if((xmlhttp.readyState == 4) && !stateFourSeen) {
+					stateFourSeen = true;
+					if(xmlhttp.status == 200) {
+						if(callback != null)
+							callback(xmlhttp.responseText, xmlhttp);
+					} else if(failFunc != null) {
+						var msg = xmlhttp.statusText;
+						if(msg.substr(0,3) == "404")
+							msg = msg.substr(3);
+						msg = msg.trim();
+						failFunc(xmlhttp.status, xmlhttp.statusText,
+								xmlhttp.responseText, xmlhttp);
+					}
+				} else if(boringUpdate != null) {
+					boringUpdate(xmlhttp.readyState, xmlhttp);
 				}
-			} else if(boringUpdate != null) {
-				boringUpdate(xmlhttp.readyState, xmlhttp);
+IF_DEBUG
+			} catch(e) {
+				console.log("Stack for ajax call:\n\n"+stack);
+				throw e;
 			}
+END_IF
 		}
 	}
 	method = method.toUpperCase();

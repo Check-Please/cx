@@ -162,6 +162,7 @@ mvc.views = mvc.views || {};
 	}
 
 	mvc.views.pay = {
+		title: "Pay",
 		build: function($trgt) {
 			if(!$view) {
 				$view = $(templates.pay(device.getCCs().map(function(cc) {

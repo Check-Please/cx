@@ -77,6 +77,6 @@ public class Restaurant extends AbstractAccount
 
 	public String findTable(List<String> uuids, List<Double> rssis)
 	{
-		return "IKA";
+		return "OZ";
 	}
 }

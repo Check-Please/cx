@@ -9,8 +9,15 @@
 	"use strict";
 
 	var currView = null;
-	var hashchangeSupport = "onhashchange" in window;
 	var unloading = false;
+
+	var hashchangeSupport = "onhashchange" in window;
+	function viewFromHash() {
+		return mvc.views[location.hash.slice(1)] || mvc.views.receipt;
+	}
+	window.onhashchange = function() {
+		goToView(viewFromHash());
+	}
 
 	var mutex = false;
 	/*	Goes to a specific view.  Really the core of the module
@@ -31,7 +38,6 @@
 		{{ASSERT: !mutex || stealMutex}};
 		mutex = true;
 		try {
-
 			//Navigate to special pages
 			var isFeedback = view == mvc.views.feedback;
 			if((mvc.err() != null) && (view != mvc.views.error))
@@ -41,7 +47,7 @@
 
 			//Handle redirection
 			if(view.redirect) {
-				var redirect = view.redirect();
+				var redirect = view.redirect(currView);
 				if(redirect != null)
 					return goToView(redirect, true);
 			}
@@ -59,6 +65,12 @@
 							mvc.err("reload");
 					});
 			}
+
+			//Update iOS Title Bar
+			if("{{PLATFORM}}" == "iOS")
+				device.iOSTitleBar(view.title,
+							view == mvc.views.pay ? mvc.views.receipt.title
+							: null);
 
 			//Actually transition from old view to new view
 			var $view = $("#view");
@@ -165,9 +177,5 @@
 			device.ajax.send("cx","close",{connectionID:mvc.connectionID()});
 		}
 	};
-
-	window.onhashchange = function() {
-		goToView(mvc.views[location.hash.slice(1)] || mvc.views.receipt);
-	}
 
 })();

@@ -32,7 +32,7 @@
  *	should be called so that the listeners will be called.
  *
  *	There are also three utility functions included in this file: mvc.init,
- *	mvc.processedSplit, and mvc.processedItems
+ *	mvc.errASAP, mvc.processedSplit, and mvc.processedItems
  *
  *	@owner sjelin
  */
@@ -43,10 +43,14 @@ var mvc = {};
 	"use strict";
 
 	var inited = false;
+	var initListeners = [];
 
 	mvc.inited = function() {
 		{{ASSERT: arguments.length == 0}};
 		return inited;
+	}
+	mvc.inited.listen = function(fun) {
+		initListeners.push(fun);
 	}
 
 	var vals;
@@ -54,14 +58,16 @@ var mvc = {};
 		'items', 'split', 'selection', 'tip', 'contract', 'loadMsg', 'paid',
 		'done', 'err'].forEach(function(name) {
 		function myNotify(old) {
-			{{ASSERT: inited}};
+			{{ASSERT: inited && "Notify"}};
 			old = arguments.length ? old : vals[name];
 			ls.each(function(f) { f(old); });
 		}
 
 		var ls = [];
 		mvc[name] = function(v) {
-			{{ASSERT: inited}};
+			if(!inited)
+				console.log("NAME:"+name+", OLD:"+old+", VAL:"+v);
+			{{ASSERT: inited && "Access"}};
 			if(arguments.length > 0) {
 				var old = vals[name];
 				vals[name] = v;
@@ -83,6 +89,15 @@ var mvc = {};
 		for(var view in mvc.views)
 			mvc.views[view].viewName = view;
 		inited = true;
+		initListeners.each(function(f) {f(false);});
+	};
+
+	mvc.errASAP = function(v)
+	{
+		if(mvc.inited())
+			mvc.err(v);
+		else
+			mvc.inited.listen(function() {mvc.err(v);});
 	};
 
 	mvc.processedSplit = function()

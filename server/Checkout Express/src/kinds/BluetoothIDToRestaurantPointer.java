@@ -5,15 +5,15 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 
-public class BluetoothUUIDToRestaurantPointer extends AbstractKind
+public class BluetoothIDToRestaurantPointer extends AbstractKind
 {
 	protected String kindName() { return getKind(); }
 	public static String getKind() { return "bu_to_r_ptr"; }
 	String restaurant;
-	public BluetoothUUIDToRestaurantPointer(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
-	public BluetoothUUIDToRestaurantPointer(Entity e) { super(e); }
+	public BluetoothIDToRestaurantPointer(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
+	public BluetoothIDToRestaurantPointer(Entity e) { super(e); }
 
-	public BluetoothUUIDToRestaurantPointer(Key k, String restr)
+	public BluetoothIDToRestaurantPointer(Key k, String restr)
 	{
 		setKey(k);
 		this.restaurant = restr;

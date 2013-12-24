@@ -8,7 +8,6 @@
 	<a class="delete">Delete Card</a>
 
 	<form class="unencrypted-cc">
-		<p>No Password required for this card</p>
 		{{cvv}}
 	</form>
 

@@ -80,19 +80,25 @@ def run(path, consts, funs):
 def runOnFile(path, consts, funs):
     infil = bash.readfile(path);
     content = "";
-    failedIf = False;
+    ifs = [];
     consts['FILE_NAME'] = os.path.basename(path);
     lNum = 1;
     for line in infil:
         l = line.strip();
         if l == "END_IF":
-            failedIf = False;
+            ifs.pop();
+        elif re.match(r'^IF_[A-Z]+_IS(?:_NOT)? .+', l) != None:
+            neg = re.match(r'^IF_[A-Z]+_IS_NOT .+', l) != None;
+            var = re.sub(r'^IF_([A-Z]+)_IS(?:_NOT)? .+', r'\1', l);
+            ifs.append((consts[var] ==
+                            re.sub(r'^IF_[A-Z]+_IS(?:_NOT)? (.+)', r'\1', l)
+                        if var in consts else False) != neg);
         elif re.match(r'^IF(?:_NOT)?_[A-Z]+$', l) != None:
             neg = re.match(r'^IF_NOT_', l) != None;
-            var = re.sub(r'IF(?:_NOT)_', "", l);
+            var = re.sub(r'IF(?:_NOT)?_', "", l);
             val =  var in consts and consts[var] == "true";
-            failedIf = val == neg;
-        elif not failedIf:
+            ifs.append(val != neg);
+        elif reduce(lambda x,y: x and y, ifs, True):
             content += runOnText(line, consts, funs, lNum); 
         lNum += 1;
     infil.close();
@@ -114,6 +120,7 @@ def runOnText(text, consts, funs, lNum=None):
         i = 0;
         # The following allows me to assign i as part of a condition
         while [i for i in [text.find("{{", i)] if (i != -1)]:
+            # Find closing curlies
             j = i+1;
             while [j for j in [text.find("}}", j+1)] if (j != -1)]:
                 oc = False;
@@ -138,6 +145,7 @@ def runOnText(text, consts, funs, lNum=None):
                         cc = False;
                 if nOpen == 0:
                     break;
+            # Run comand
             if j != -1:
                 cmd = text[i+2:j].strip();
                 replaceText = None;
@@ -157,6 +165,7 @@ def runOnText(text, consts, funs, lNum=None):
                         bc = False;# Block comment
                         op = 0;# Open parenthesss
                         ob = 0;# Open bracket
+                        oc = 0;# Open curly
                         for l in xrange(k+1,len(cmd)):
                             c = cmd[l];
                             if lc:
@@ -188,7 +197,12 @@ def runOnText(text, consts, funs, lNum=None):
                                     ob += 1;
                                 elif c == ']':
                                     ob -= 1;
-                                if c!=',' or dq or sq or op!=0 or ob!=0:
+                                elif c == '{':
+                                    oc += 1;
+                                elif c == '}':
+                                    oc -= 1;
+                                if (c != ',' or dq or sq or op != 0 or
+                                        ob != 0 or oc != 0):
                                     arg.append(c);
                                 else:
                                     args.append(''.join(arg).strip());
@@ -197,8 +211,9 @@ def runOnText(text, consts, funs, lNum=None):
                         srcRegex = "";
                         for a in args:
                             srcRegex += "(.{"+str(len(a))+"})";
-                        replaceText = re.sub(re.compile(srcRegex), funs[fun],
-                                            ''.join(args));
+                        replaceText = re.sub(
+                                        re.compile(srcRegex,flags=re.DOTALL),
+                                        funs[fun], ''.join(args));
                 if replaceText != None:
                     text = text[:i]+replaceText+text[j+2:];
                     doAnotherPass = True;

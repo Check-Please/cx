@@ -104,8 +104,7 @@ var device = device || {};
 	 *	@return	The ID for jsconsole.  If jsconsole is not being used,
 	 *			returns null
 	 */
-	device.getDebugID = function()
-	{
+	device.getDebugID = function() {
 		var paramName = "debugID";
 		var q = window.location.search;
 		var i = q.indexOf("&"+paramName+"=");
@@ -117,9 +116,20 @@ var device = device || {};
 			if(j != -1)
 				q = q.slice(0, j);
 			return q;
-	}
+	};
 
-	
+	/**	Sends information to the device about the current state of navigation
+	 *	in the app
+	 *
+	 *	@param	{String[]} history	Titles of pages which one could navigate
+	 *								to by hitting the back button repeatedly.
+	 *								The highest index is the current page.
+	 *	@param	{boolean} allowNav	If the app should allow the user to do
+	 *								some sort of extra navigation (e.g. go
+	 *								back).
+	 */
+	device.updateNav = function(/*history, allowNav*/) { }
+
 	/**	Gets the location of the user with no time restrictions on the speed
 	 *	at which the callback is called.
 	 *

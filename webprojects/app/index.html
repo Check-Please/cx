@@ -27,7 +27,9 @@ END_IF
 		<script type="text/JavaScript" src="js/app.js"></script>
 	</head>
 	<body class="tall">
+IF_PLATFORM_IS_NOT iOS
 		<div id="header"></div>
+END_IF
 		<div id="loadMsg" class="popup-bg">
 			<div class="popup-wrapper">
 				<p>Loading your order...</p>
@@ -44,10 +46,12 @@ END_IF
 			</div>
 		</div>
 		<div id="view"></div>
+IF_PLATFORM_IS_NOT iOS
 		<div id="footer">
 			<h5>Copyright &copy; 2013 by Martin Samuel Jelin</h5>
 			<span>Powered by</span>
 			<img src="img/app/cx.png"/>
 		</div>
+END_IF
 	</body>
 </html>

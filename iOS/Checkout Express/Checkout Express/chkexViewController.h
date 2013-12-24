@@ -12,5 +12,6 @@
 @interface chkexViewController : WebViewController
 {
     LocationDelegate *locationDelegate;
+    IBOutlet UINavigationItem *navItem;
 }
 @end

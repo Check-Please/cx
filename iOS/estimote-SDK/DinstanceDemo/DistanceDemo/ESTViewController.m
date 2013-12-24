@@ -86,6 +86,7 @@
 {
     if([beacons count] > 0)
     {
+        //Pick the selected becon
         if(!self.selectedBeacon)
         {
             // initially pick closest beacon
@@ -93,9 +94,9 @@
         }
         else
         {
+            // update beacon is same as initially selected one
             for (ESTBeacon* cBeacon in beacons)
             {
-                // update beacon it same as selected initially
                 if([self.selectedBeacon.major unsignedShortValue] == [cBeacon.major unsignedShortValue] &&
                    [self.selectedBeacon.minor unsignedShortValue] == [cBeacon.minor unsignedShortValue])
                 {

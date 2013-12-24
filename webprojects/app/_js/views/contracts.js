@@ -5,7 +5,8 @@
 
 mvc.views = mvc.views || {};
 (function() {
-	function cv(nextView, readonly) {
+	function cv(name, nextView, readonly) {
+		this.title = name;
 		this.nextView = nextView;
 		this.readonly = readonly === true;
 	};
@@ -37,6 +38,12 @@ mvc.views = mvc.views || {};
 		this.$view.find(".buttons").width(Math.ceil(len)+1+"px");
 	}
 
-	mvc.views.secFAQ = new cv(function() {return mvc.views.pay;}, true);
-	mvc.views.ccPolicy = new cv(function() {return mvc.views.pay;});
+	var nextViewFun = function() {
+		if(window.history && window.history.back)
+			window.history.back();
+		else
+			return mvc.views.pay;
+	};
+	mvc.views.secFAQ = new cv("Security FAQ", nextViewFun, true);
+	mvc.views.ccPolicy = new cv("Credit Card Policy", nextViewFun);
 })();

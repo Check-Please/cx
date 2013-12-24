@@ -1,6 +1,8 @@
 (function() {
 	device.getTableInfo = function(c) {
 		iOS.call("getTableInfo", [], function(tInfo) {
+			window.x = tInfo;
+			tInfo = {rssis: [], ids: []};
 			c(JSON.stringify(tInfo));
 		}, function(err) {
 			c(null, err.code, err.message);
@@ -37,4 +39,8 @@
 			callback(err);
 		});
 	};
+	device.iOSTitleBar = function(title, back)
+	{
+		iOS.call("setTitleBar", [title, back == null ? "" : back]);
+	}
 })();

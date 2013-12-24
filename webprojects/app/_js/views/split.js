@@ -22,6 +22,7 @@ mvc.views = mvc.views || {};
 
 	var $view = null;
 	mvc.views.split = {
+		title: "Split",
 		build: function($trgt) {
 			if(!$view) {
 				$view = $(templates.split("<REPLACE_ME />"));

@@ -28,7 +28,7 @@
     return @"app.html";
 }
 
-- (NSMutableDictionary *) processFunctionFromJS:(NSString *) name withArgs:(NSArray*) args error:(NSError **) error
+- (NSDictionary *) processFunctionFromJS:(NSString *) name withArgs:(NSArray*) args error:(NSError **) error
 {
     NSLog(@"--From JS: %@(%@)", name, [args componentsJoinedByString:@","]);
 
@@ -44,6 +44,8 @@
         numArgs = 1;
     else if([name isEqualToString:@"getTableInfo"])
         numArgs = 0;
+    else if([name isEqualToString:@"setTitleBar"])
+        numArgs = 2;
     else {
         NSString *resultStr = [NSString stringWithFormat:@"Function '%@' not found", name];
         [self createError:error withCode:-1 withMessage:resultStr];
@@ -56,7 +58,7 @@
         return nil;
     }
     
-    NSMutableDictionary *ret = nil;
+    NSDictionary *ret = nil;
     if([name isEqualToString:@"echo"])
         ret = [self jsAPI_echo: [args objectAtIndex:0]];
     else if([name isEqualToString:@"getPos"])
@@ -67,53 +69,62 @@
         ret = [self jsAPI_setKeychain: [args objectAtIndex:0]];
     else if([name isEqualToString:@"getTableInfo"])
         ret = [self jsAPI_getTableInfo];
+    else if([name isEqualToString:@"setTitleBar"])
+        ret = [self jsAPI_setTitleBar: [args objectAtIndex:0] withBack: [args objectAtIndex:1]];
     return ret;
 }
 
-- (NSMutableDictionary *) jsAPI_echo:(NSString *) text
+- (NSDictionary *) jsAPI_echo:(NSString *) text
 {
-    NSMutableDictionary *ret = [NSMutableDictionary dictionary];
-    [ret setObject:text forKey:@"_"];
-    return ret;
+    return @{@"_": text};
 }
 
-- (NSMutableDictionary *) jsAPI_getPos
+- (NSDictionary *) jsAPI_getPos
 {
-    NSMutableDictionary *ret = [NSMutableDictionary dictionary];
-    [ret setValue:[NSNumber numberWithDouble:locationDelegate.location.coordinate.latitude] forKey:@"latitude"];
-    [ret setValue:[NSNumber numberWithDouble:locationDelegate.location.coordinate.longitude] forKey:@"longitude"];
-    [ret setValue:[NSNumber numberWithDouble:locationDelegate.location.horizontalAccuracy] forKey:@"accuracy"];
-    return ret;
+    return @{@"latitude": [NSNumber numberWithDouble:locationDelegate.location.coordinate.latitude],
+            @"longitude": [NSNumber numberWithDouble:locationDelegate.location.coordinate.longitude],
+             @"accuracy": [NSNumber numberWithDouble:locationDelegate.location.horizontalAccuracy]};
 }
 
-- (NSMutableDictionary *) jsAPI_getKeychain
+- (NSDictionary *) jsAPI_getKeychain
 {
-    NSMutableDictionary *ret = [NSMutableDictionary dictionary];
     KeychainItemWrapper *kc = [[KeychainItemWrapper alloc] initWithIdentifier:@"id" accessGroup:nil];
-    [ret setObject:[kc objectForKey:(__bridge id) kSecValueData] forKey:@"_"];
-    return ret;
+    return @{@"_": [kc objectForKey:(__bridge id) kSecValueData]};
 }
 
-- (NSMutableDictionary *) jsAPI_setKeychain:(NSString *) val
+- (NSDictionary *) jsAPI_setKeychain:(NSString *) val
 {
     KeychainItemWrapper *kc = [[KeychainItemWrapper alloc] initWithIdentifier:@"id" accessGroup:nil];
     [kc setObject:val forKey:(__bridge id) kSecValueData];
     return nil;
 }
 
-- (NSMutableDictionary *) jsAPI_getTableInfo
+- (NSDictionary *) jsAPI_getTableInfo
 {
-    
-    NSMutableDictionary *ret = [NSMutableDictionary dictionary];
-    NSArray *uuids = [NSArray array];
+    NSArray *ids = [NSArray array];
     NSArray *rssis = [NSArray array];
-    [ret setValue:uuids forKey:@"uuids"];
-    [ret setValue:rssis forKey:@"rssis"];
-    return ret;
+    return @{@"ids": ids, @"rssis": rssis};
+}
+
+- (NSDictionary *) jsAPI_setTitleBar:(NSString *) title withBack: (NSString *) back
+{
+    [navItem setTitle:title];
+    //Back Button
+    return nil;
 }
 
 - (void)viewDidLayoutSubviews {
-    webView.frame = CGRectMake(0, 20, self.view.frame.size.width, self.view.frame.size.height-20);
+    webView.frame = CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64);
+}
+
+-(void) goBack
+{
+    [webView goBack];
+}
+
+- (IBAction)refresh:(id)sender
+{
+    [webView reload];
 }
 
 //Disable landscape

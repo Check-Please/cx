@@ -29,6 +29,10 @@
 		3C346CAE18510DF50048AFB5 /* icon-29pt.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CAB18510DF50048AFB5 /* icon-29pt.png */; };
 		3C346CAF18510DF50048AFB5 /* icon-40pt.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CAC18510DF50048AFB5 /* icon-40pt.png */; };
 		3C346CB018510DF50048AFB5 /* icon-60pt.png in Resources */ = {isa = PBXBuildFile; fileRef = 3C346CAD18510DF50048AFB5 /* icon-60pt.png */; };
+		3CD0A5E11869479A00DA0BFE /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CD0A5E01869479A00DA0BFE /* CoreLocation.framework */; };
+		3CD0A5E3186947AE00DA0BFE /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CD0A5E2186947AE00DA0BFE /* CoreBluetooth.framework */; };
+		3CD0A5E5186947C400DA0BFE /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CD0A5E4186947C400DA0BFE /* SystemConfiguration.framework */; };
+		3CD0A5F01869480500DA0BFE /* libEstimoteSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CD0A5EF1869480500DA0BFE /* libEstimoteSDK.a */; };
 		3CFA0FD61851BCBB00EABA01 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CFA0FD41851BCBA00EABA01 /* WebViewController.m */; };
 		3CFA0FD918543BBD00EABA01 /* LocationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CFA0FD818543BBD00EABA01 /* LocationDelegate.m */; };
 /* End PBXBuildFile section */
@@ -40,6 +44,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 3C346C69184EECD10048AFB5;
 			remoteInfo = "Checkout Express";
+		};
+		3CD0A5EB186947E200DA0BFE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3CD0A5E6186947E200DA0BFE /* DistanceDemo.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2FC6D46D17F42242007D8573;
+			remoteInfo = DistanceDemo;
+		};
+		3CD0A5ED186947E200DA0BFE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3CD0A5E6186947E200DA0BFE /* DistanceDemo.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2FC6D48E17F42243007D8573;
+			remoteInfo = DistanceDemoTests;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -73,6 +91,11 @@
 		3C346CAB18510DF50048AFB5 /* icon-29pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-29pt.png"; path = "Images/icon-29pt.png"; sourceTree = "<group>"; };
 		3C346CAC18510DF50048AFB5 /* icon-40pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-40pt.png"; path = "Images/icon-40pt.png"; sourceTree = "<group>"; };
 		3C346CAD18510DF50048AFB5 /* icon-60pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-60pt.png"; path = "Images/icon-60pt.png"; sourceTree = "<group>"; };
+		3CD0A5E01869479A00DA0BFE /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		3CD0A5E2186947AE00DA0BFE /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		3CD0A5E4186947C400DA0BFE /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		3CD0A5E6186947E200DA0BFE /* DistanceDemo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DistanceDemo.xcodeproj; path = "../estimote-SDK/DinstanceDemo/DistanceDemo.xcodeproj"; sourceTree = "<group>"; };
+		3CD0A5EF1869480500DA0BFE /* libEstimoteSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libEstimoteSDK.a; path = "Checkout Express/EstimoteSDK/libEstimoteSDK.a"; sourceTree = "<group>"; };
 		3CFA0FD31851BCBA00EABA01 /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
 		3CFA0FD41851BCBA00EABA01 /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
 		3CFA0FD51851BCBB00EABA01 /* WebViewInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewInterface.h; sourceTree = "<group>"; };
@@ -85,6 +108,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3CD0A5F01869480500DA0BFE /* libEstimoteSDK.a in Frameworks */,
+				3CD0A5E5186947C400DA0BFE /* SystemConfiguration.framework in Frameworks */,
+				3CD0A5E3186947AE00DA0BFE /* CoreBluetooth.framework in Frameworks */,
+				3CD0A5E11869479A00DA0BFE /* CoreLocation.framework in Frameworks */,
 				3C346C70184EECD10048AFB5 /* CoreGraphics.framework in Frameworks */,
 				3C346C72184EECD10048AFB5 /* UIKit.framework in Frameworks */,
 				3C346C6E184EECD10048AFB5 /* Foundation.framework in Frameworks */,
@@ -133,6 +160,11 @@
 		3C346C6C184EECD10048AFB5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3CD0A5EF1869480500DA0BFE /* libEstimoteSDK.a */,
+				3CD0A5E6186947E200DA0BFE /* DistanceDemo.xcodeproj */,
+				3CD0A5E4186947C400DA0BFE /* SystemConfiguration.framework */,
+				3CD0A5E2186947AE00DA0BFE /* CoreBluetooth.framework */,
+				3CD0A5E01869479A00DA0BFE /* CoreLocation.framework */,
 				3C346C6D184EECD10048AFB5 /* Foundation.framework */,
 				3C346C6F184EECD10048AFB5 /* CoreGraphics.framework */,
 				3C346C71184EECD10048AFB5 /* UIKit.framework */,
@@ -190,6 +222,15 @@
 				3C346C95184EECD10048AFB5 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		3CD0A5E7186947E200DA0BFE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3CD0A5EC186947E200DA0BFE /* DistanceDemo.app */,
+				3CD0A5EE186947E200DA0BFE /* DistanceDemoTests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -270,6 +311,12 @@
 			mainGroup = 3C346C61184EECD10048AFB5;
 			productRefGroup = 3C346C6B184EECD10048AFB5 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 3CD0A5E7186947E200DA0BFE /* Products */;
+					ProjectRef = 3CD0A5E6186947E200DA0BFE /* DistanceDemo.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				3C346C69184EECD10048AFB5 /* Checkout Express */,
@@ -277,6 +324,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		3CD0A5EC186947E200DA0BFE /* DistanceDemo.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = DistanceDemo.app;
+			remoteRef = 3CD0A5EB186947E200DA0BFE /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3CD0A5EE186947E200DA0BFE /* DistanceDemoTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = DistanceDemoTests.xctest;
+			remoteRef = 3CD0A5ED186947E200DA0BFE /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		3C346C68184EECD10048AFB5 /* Resources */ = {
@@ -448,7 +512,16 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Martin Jelin (43NR85RBYG)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Checkout Express/Checkout Express-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../EstimoteSDK/Headers",
+				);
 				INFOPLIST_FILE = "Checkout Express/Checkout Express-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/sjelin/Desktop/Work/cx/iOS/Checkout\\ Express/Checkout\\ Express/EstimoteSDK",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "1028D72F-7DDD-4E38-A37A-56368A7DD652";
 				WRAPPER_EXTENSION = app;
@@ -465,7 +538,16 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Checkout Express/Checkout Express-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../EstimoteSDK/Headers",
+				);
 				INFOPLIST_FILE = "Checkout Express/Checkout Express-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/sjelin/Desktop/Work/cx/iOS/Checkout\\ Express/Checkout\\ Express/EstimoteSDK",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "1028D72F-7DDD-4E38-A37A-56368A7DD652";
 				WRAPPER_EXTENSION = app;

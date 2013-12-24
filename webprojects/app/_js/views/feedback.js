@@ -14,6 +14,7 @@ mvc.views = mvc.views || {};
 	}
 
 	mvc.views.feedback = {
+		title: "Feedback",
 		build: function($trgt) {
 			if(!$view) {
 				$view = $(templates.feedback());

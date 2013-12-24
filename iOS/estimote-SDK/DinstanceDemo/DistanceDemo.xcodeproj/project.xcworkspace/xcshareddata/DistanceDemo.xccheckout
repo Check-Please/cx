@@ -5,7 +5,7 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>7E8283FC-142C-47F6-9D61-5B7606B4882C</string>
+	<string>D8F4744C-9172-4ED8-98DF-61AD05994B0F</string>
 	<key>IDESourceControlProjectName</key>
 	<string>DistanceDemo</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
@@ -21,7 +21,7 @@
 		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/Estimote/iOS-SDK.git</string>
+	<string>https://github.com/chkex/cx.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>

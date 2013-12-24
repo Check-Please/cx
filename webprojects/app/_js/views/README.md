@@ -11,6 +11,9 @@ displayed at the same time.  Views must implement the following interface:
 						assert(mvc.views[v].viewName == v);
 
 
+`title` -	Required.  The full name of the view, with proper capitalization
+			and spaces
+
 `build($trgt, oldView)` -	Optional, but highly recommended.  This function
 							is called every time the view is navigated to.
 							Its job is to populate the element `$trgt` with
@@ -30,10 +33,10 @@ displayed at the same time.  Views must implement the following interface:
 							navigated to.
 
 
-`redirect()` -	Optional.  Either returns null or another view.  If it
-				returns another view, that view is navigated to in place
-				of this one.  If not defined, equivalent to always
-				returning null
+`redirect(prevView)` -	Optional.  Either returns null or another view.  If
+						it returns another view, that view is navigated to in
+						place of this one.  If not defined, equivalent to
+						always returning null
 
 
 `nextView()` -	Optional.  Returns the view which should be navigated to

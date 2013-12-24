@@ -19,7 +19,7 @@
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Subclass must implement getInitialPageName function" userInfo:nil];
 }
 
-- (NSMutableDictionary *) processFunctionFromJS:(NSString *) name withArgs:(NSArray*) args error:(NSError **) error
+- (NSDictionary *) processFunctionFromJS:(NSString *) name withArgs:(NSArray*) args error:(NSError **) error
 {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Subclass must implement processFunctionFromJS function" userInfo:nil];
 }
@@ -130,7 +130,7 @@
 - (void) callFunction:(NSString *) name withArgs:(NSArray *) args callbackKey:(NSString *) callbackKey
 {
     NSError *error;
-    NSMutableDictionary *retVal = [self processFunctionFromJS:name withArgs:args error:&error];
+    NSDictionary *retVal = [self processFunctionFromJS:name withArgs:args error:&error];
     
     if (error == nil)
         [self returnToJS:callbackKey withVal:retVal];
@@ -138,7 +138,7 @@
         [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"iOS.reenter(\"%@\", false, %@);",callbackKey ,[NSString stringWithString:error.localizedDescription]]];
 }
 
--(void) returnToJS:(NSString *) callbackKey withVal:(NSMutableDictionary *) ret
+-(void) returnToJS:(NSString *) callbackKey withVal:(NSDictionary *) ret
 {
     if(ret == nil)
         [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"iOS.reenter(\"%@\", true);",callbackKey]];

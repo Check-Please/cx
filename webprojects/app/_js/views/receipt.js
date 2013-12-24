@@ -94,7 +94,15 @@ mvc.views = mvc.views || {};
 
 	var $splitBtn;
 	mvc.views.receipt = {
-		build: function($trgt) {
+		title: "Receipt",
+		build: function($trgt, oldView) {
+			if((oldView == mvc.views.split) && !mvc.views.split.valid()) {
+				device.ajax.send("cx/split", "cancel", {
+					tableKey: mvc.key(),
+					connectionID: mvc.connectionID()
+				}, $.noop);
+				mvc.split(null);
+			}
 			function setTipByPrct(prct) {
 				$tipBox.val(money.toStr(money.round(total*prct/100), ""));
 				updateTip();
@@ -135,8 +143,9 @@ mvc.views = mvc.views || {};
 				$view.show();
 			}
 		},
-		redirect: function() {
-			if((mvc.split() != null) && !mvc.views.split.valid())
+		redirect: function(prevView) {
+			if((mvc.split() != null) && (prevView != mvc.views.split) &&
+					!mvc.views.split.valid())
 				return mvc.views.split;
 		},
 		unbuild: function() {$view.hide();},

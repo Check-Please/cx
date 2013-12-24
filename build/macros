@@ -3,6 +3,6 @@
 
 {{VERSION_NUM}} = 1
 
-{{JS_WRAP}} = (code) -> (function() {code}).apply(this, arguments)
-{{JS_WRAP_NO_SCOPE}} = (code) -> do {code} while(false)
+{{JS_SCOPE}} = (code) -> (function() {code}).apply(this, arguments);
+{{JS_WRAP}} = (code) -> do {code} while(false)
 {{ASSERT}} = (cond) -> {{JS_WRAP: if({{DEBUG}}) assert(cond, "At {{FILE_NAME}}:{{LINE_NUM}}, condition \"{{ESCAPE: cond}}\" failed"); }}

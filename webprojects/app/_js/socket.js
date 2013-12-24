@@ -23,7 +23,7 @@ var socket = socket || {};
 		$script.attr("type", "text/JavaScript");
 		$script[0].innerHTML = code;
 		$("head").append($script);
-	}, mvc.err.c("Couldn't connect to the server"));
+	}, mvc.errASAP.c("Couldn't load communications with the server"));
 	//The web case was handled in index.html
 
 	//You think it's over don't you?
@@ -36,7 +36,7 @@ var socket = socket || {};
 			open(token);
 		else {
 			if(timeWaited > 9000)
-				mvc.err("Could not connect to server");
+				mvc.errASAP("Couldn't load communications with the server");
 			else {
 				var wait = Math.ceil(timeWaited/10+20);
 				setTimeout(socket.init, wait, token, timeWaited+wait)
