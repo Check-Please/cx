@@ -8,10 +8,13 @@
 #import "WebViewController.h"
 #import "LocationDelegate.h"
 #import <CoreLocation/CoreLocation.h>
+#import <ESTBeaconManager.h>
 
 @interface chkexViewController : WebViewController
 {
-    LocationDelegate *locationDelegate;
     IBOutlet UINavigationItem *navItem;
+    LocationDelegate *locationDelegate;
+    NSArray *bluetoothIDs;
+    NSArray *bluetoothRSSIs;
 }
 @end

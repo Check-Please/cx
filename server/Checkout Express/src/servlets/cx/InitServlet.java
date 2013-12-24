@@ -71,6 +71,14 @@ public class InitServlet extends PostServletBase
 	private static String deduceTableKey(JSONObject info, DatastoreService ds) throws JSONException {
 		JSONArray rawIDs = info.getJSONArray("ids");
 		JSONArray rawRSSIs = info.getJSONArray("rssis");
+// TEMP CODE FOR OZ
+		if(rawIDs.getString(0).equals("58844-63794"))//Light blue
+			return "OZ1";
+		else if(rawIDs.getString(0).equals("61149-28010"))//Light green
+			return "OZ2";
+		else if(rawIDs.getString(0).equals("18604-31050"))//Dark blue
+			return "OZ3";
+//END TEMP CODE FOR OZ
 		if(rawIDs.length() != rawRSSIs.length())
 			throw new JSONException("Number of IDs should equal the number of RSSIs");
 		Map<String, List<String>> restaurantUUIDs = new HashMap<String, List<String>>();

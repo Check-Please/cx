@@ -1,12 +1,19 @@
 (function() {
 	device.getTableInfo = function(c) {
-		iOS.call("getTableInfo", [], function(tInfo) {
-			window.x = tInfo;
-			tInfo = {rssis: [], ids: []};
-			c(JSON.stringify(tInfo));
-		}, function(err) {
-			c(null, err.code, err.message);
-		});
+		function attempt(nAttempts) {
+			iOS.call("getTableInfo", [], function(tInfo) {
+				if($.isEmptyObject(tInfo) && nAttempts < 20) {
+					setTimeout(attempt, 100, nAttempts+1); 
+				} else {
+					if($.isEmptyObject(tInfo))
+						tInfo = {rssis: [], ids: []};
+					c(JSON.stringify(tInfo));
+				}
+			}, function(err) {
+				c(null, err.code, err.message);
+			});
+		}
+		attempt(0);
 	};
 	var kc;
 	iOS.call("getKeychain", [], function(kcStr){

@@ -10,7 +10,8 @@
 #import "chkexViewController.h"
 #import "KeychainItemWrapper.h"
 
-@interface chkexViewController ()
+@interface chkexViewController () <ESTBeaconManagerDelegate>
+@property (nonatomic, strong) ESTBeaconManager* beaconManager;
 
 @end
 
@@ -18,10 +19,34 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    //Location
     locationDelegate = [[LocationDelegate alloc] init];
     [locationDelegate.locationManager startUpdatingLocation];
+
+    //Bluetooth
+    bluetoothIDs = nil;
+    bluetoothRSSIs = nil;
+    self.beaconManager = [[ESTBeaconManager alloc] init];
+    self.beaconManager.delegate = self;
+    self.beaconManager.avoidUnknownStateBeacons = YES;
+    ESTBeaconRegion* region = [[ESTBeaconRegion alloc] initRegionWithIdentifier:@"EstimoteSampleRegion"];
+    [self.beaconManager startRangingBeaconsInRegion:region];
 }
 
+-(void)beaconManager:(ESTBeaconManager *)manager
+     didRangeBeacons:(NSArray *)beacons
+            inRegion:(ESTBeaconRegion *)region
+{
+    NSMutableArray *ids = [NSMutableArray array];
+    NSMutableArray *rssis = [NSMutableArray array];
+    for(ESTBeacon *beacon in beacons) {
+        [ids addObject:[NSString stringWithFormat:@"%@-%@", beacon.major, beacon.minor]];
+        [rssis addObject:[NSNumber numberWithInteger:beacon.rssi]];
+    }
+    bluetoothIDs = ids;
+    bluetoothRSSIs = rssis;
+}
 
 - (NSString *) getInitialPageName
 {
@@ -101,9 +126,9 @@
 
 - (NSDictionary *) jsAPI_getTableInfo
 {
-    NSArray *ids = [NSArray array];
-    NSArray *rssis = [NSArray array];
-    return @{@"ids": ids, @"rssis": rssis};
+    if(bluetoothIDs == nil)
+        return @{};
+    return @{@"ids": bluetoothIDs, @"rssis": bluetoothRSSIs};
 }
 
 - (NSDictionary *) jsAPI_setTitleBar:(NSString *) title withBack: (NSString *) back
