@@ -5,11 +5,12 @@ The next section ("How to Set Up") tells you how to set up your computer/
 directory for doing work.
 
 As for information, you should probably check out the wiki.  These READMEs
-are for information you'll want close by while you code.  The wiki is more
-designed to bring someone up to speed on how something works in a general
-sense in case they've forgotten or are new to the project/team.  It contains
-information about the major design decisions and how various pieces of the
-software interact.  It also contains non-technical things, like Style Guides.
+are for low-level information you'll want close by while you code.  The wiki
+is more designed to bring someone up to speed on how something works in a
+larger sense in case they've forgotten or are new to the project/team.  It
+contains information about the major design decisions and how various pieces
+of the software interact.  It also contains non-technical things, like Style
+Guides.
 
 We also might have a chat room (depending on how far in the future you are).
 It will probably be at http://chkex.hipchat.com.  Feel free to ask questions
@@ -61,7 +62,20 @@ How to Set Up
 	yourself!  The actual work is done in python, you'll just need to write
 	a wrapper file
 
-License
+Layout of Project
+=================
+
+You'll find the following files/subfolders in this folder:
+
+*	`LICENSE` - The license file
+*	`README.md` - This readme.
+*	`build` - The folder containing the build code
+*	`iOS` - The folder containing the iOS projects
+*	`server` - The folder containing server code
+*	`webprojects` - The folder containing web code
+*	`scripts` - The folder containing internal scripts
+*	`misc` - The folder containing other stuff
+
 =======
 
 Copyright (C) 2013 Martin Jelin.  See the LICENSE file for license rights and
