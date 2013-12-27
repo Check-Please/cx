@@ -5,7 +5,7 @@ The following projects are in this folder:
 	might look like
 *	`app`
 	The app
-*	`base`
+*	`lib`
 	A JS library 
 *	`faq`
 	A FAQ page for restaurants
