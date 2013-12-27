@@ -62,8 +62,8 @@ How to Set Up
 	yourself!  The actual work is done in python, you'll just need to write
 	a wrapper file
 
-Layout of Project
-=================
+Layout of Folder
+================
 
 You'll find the following files/subfolders in this folder:
 

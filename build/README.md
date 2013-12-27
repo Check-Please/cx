@@ -1,9 +1,9 @@
 The goals of the builder are as follows:
 - Build the `web.xml` file for the server
-- Run some basic templating over all web files
+- Run some basic templating over web files
 - Compile `.scss` files into `.css` files
 - Compress `js` files, unless the `--debug` flag is specified
-- Compile template files
+- Compile web template files
 - Merge `js` and `css` files to reduce the number of requests to the server
 - Push files for all websites to the server
 - Push files for webapp to any smartphone apps
@@ -51,6 +51,48 @@ they undergo the following transfermations (in order):
 4.	The result is prepended with `servlets.`
 
 Thus, `Parent Folder - Kid` becomes `servlets.parent_folder.kid`
+
+Build-time templating syntax
+-----------------------------------------------------------------------------
+
+The macros for build-time templating are defined in the `macros` file in this
+folder.  There are two types of macros: constants and functions.
+
+Constants are defined using the syntax:
+
+	{{VAR_NAME}} = value
+
+The constant can then be subsituted into any file using the syntax
+`{{VAR_NAME}}`.  So, for instance, if you had the following in your `macros`
+folder:
+
+	{{DOMAIN_NAME}} = http://www.chkex.com
+
+And in your code you wrote:
+
+	alert("You are using {{DOMAIN_NAME}}");
+
+The resulting code would be:
+
+	alert("You are using {{DOMAIN_NAME}}");
+
+Funtions are defined similarly.  The following syntax is used:
+
+	{{FUN_NAME}} = (param1, param2, ...) -> replacement
+
+The function is then invoked for build-time substitution using the following
+syntax `{{FUN_NAME: param1, param2, ...}}`.  So for instance if you had the
+following in the `macros` folder:
+
+	{{ERR}} = (msg) -> alert(msg); throw new Error(msg);
+
+And in your code you wrote:
+
+	{{ERR: "BUG!"}}
+
+The resulting code would be:
+
+	alert("BUG!"); throw new Error("BUG!");
 
 Example of what happens to the files /webprojects/
 -----------------------------------------------------------------------------
