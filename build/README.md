@@ -124,7 +124,53 @@ comment.
 
 The `.tmplt` contains the contents of what the output from the template
 should look like.  However, expressions can be evaluated in the `.tmplt` file
-by using the syntax `{{expr}}`.
+by using the syntax `{{expr}}`.  So, for instance, if your `.tspec` file was:
+
+	@param title The title for a button
+
+And your `.tmplt` file was:
+
+	<button>{{title}}</button>
+
+Then runing the template with the parameter `Click Me` would result in:
+
+	<button>Click Me</button>
+
+However, expressions can be more complicated.  For instance, if you had a
+`.tspec` file:
+
+	@param {int} x
+	@param {int} y
+
+And a `.tmplt` file:
+
+	<p>Did you know that {{x}} + {{y}} = {{x+y}}?</p>
+
+Then if you used the parameters `1` and `2` you would get:
+
+	<p>Did you know that 1 + 2 = 3?</p>
+
+Not that it was important to specify the types for `x` and `y`, or else the
+java output would have thrown an error (since you can't add variables of type
+`Object`).  You can also use ternary statements.  For instance, if you had a
+`.tspec` file:
+
+	@param {boolean} loggedIn
+
+And a `.tmplt` file:
+
+	<a>
+		{{(loggedIn ? }}
+			Sign In
+		{{:}}
+			Sign Out
+		{{)}}
+	</a>
+
+Note the use of parentheses.  If you didn't use parentheses, the templating
+engine would have tried to evaluate `loggedIn ?` or `:` on their own without
+the larger context that they are part of one, continuous, larger expression.
+This would have thrown an error.
 
 Example of what happens to the files /webprojects/
 -----------------------------------------------------------------------------
