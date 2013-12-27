@@ -1,3 +1,10 @@
+Table of contents:
+
+*	[Getting Started](#getting-started)
+*	[How to Set Up](#how-to-set-up)  (i.e. installation guide)
+*	[Layout of Project](#layout-of-project) (i.e. what folder contains what)
+*	[License](#license)
+
 Getting Started
 ===============
 
@@ -62,8 +69,8 @@ How to Set Up
 	yourself!  The actual work is done in python, you'll just need to write
 	a wrapper file
 
-Layout of Folder
-================
+Layout of Project
+=================
 
 You'll find the following files/subfolders in this folder:
 
