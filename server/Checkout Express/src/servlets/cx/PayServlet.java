@@ -198,6 +198,8 @@ public class PayServlet extends PostServletBase
 	 *
 	 *	@param	query The query to find the ticket with
 	 *	@param	restr The username for the restaurant
+	 *	@param	tKey The key for the table
+	 *	@param	connectionID The connection of the payer
 	 *	@param	pan The principle account number
 	 *	@param	name The name on the card
 	 *	@param	expr The expiration date on the card
@@ -214,12 +216,14 @@ public class PayServlet extends PostServletBase
 	 *	@return true iff the payment is synchronous (i.e. true = the ticket has now been paid,
 	 *			false = the ticket as merely been set up to be paid later)
 	 */
-	private static boolean pay(JSONObject query, String restr, String pan, String name, String expr, String zip, String cvv, List<String> itemsToPay, List<Frac> paidFracs, List<TicketItem> items, long total, long tip, DatastoreService ds) throws JSONException, HttpErrMsg
+	private static boolean pay(JSONObject query, String restr, String tKey, String connectionID, String pan, String name, String expr, String zip, String cvv, List<String> itemsToPay, List<Frac> payFracs, List<TicketItem> items, long total, long tip, DatastoreService ds) throws JSONException, HttpErrMsg
 	{
 		String method = query.getString("method");
 		if(method.equals("oz")) {
 			Data d = new Data(MyUtils.get_NoFail(KeyFactory.createKey(Data.getKind(), restr), ds));
 			JSONObject msg = new JSONObject();
+			msg.put("tKey", tKey);
+			msg.put("cID", connectionID);
 			msg.put("items", new JSONArray(items.toString()));
 			msg.put("total", total);
 			msg.put("tip", tip);
@@ -228,8 +232,8 @@ public class PayServlet extends PostServletBase
 			msg.put("expr", expr);
 			msg.put("zip", zip);
 			msg.put("itemsToPay", new JSONArray(itemsToPay.toString()));
-			msg.put("paidFracNums", new JSONArray(Frac.getNums(paidFracs).toString()));
-			msg.put("paidFracDenoms", new JSONArray(Frac.getDenoms(paidFracs).toString()));
+			msg.put("payFracNums", new JSONArray(Frac.getNums(payFracs).toString()));
+			msg.put("payFracDenoms", new JSONArray(Frac.getDenoms(payFracs).toString()));
 			if(cvv != null)
 				msg.put("cvv", cvv);
 			ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(d.getClient(), msg.toString()));
@@ -353,7 +357,7 @@ public class PayServlet extends PostServletBase
 		//Pay
 		JSONObject query = new JSONObject(table.getQuery());
 		JSONObject ret = new JSONObject();
-		boolean sync = pay(query, table.getRestrUsername(), pan, name, expr, zip, cvv, itemsToPay, payFracs, items, total, tip, ds);
+		boolean sync = pay(query, table.getRestrUsername(), table.getKey().getName(), connectionID, pan, name, expr, zip, cvv, itemsToPay, payFracs, items, total, tip, ds);
 		config.FORBID_RETRIES = true;
 
 		closeConnection(table, connectionID, tip, ds);

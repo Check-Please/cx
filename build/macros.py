@@ -62,8 +62,8 @@ def load(path):
 """
 def run(path, consts, funs):
     if bash.isdir(path):
-        for fil in ls(path):
-            doMacros(path+"/"+fil, consts, funs);
+        for fil in bash.ls(path):
+            run(path+"/"+fil, consts, funs);
     else:
         content = runOnFile(path, consts, funs);
         outfil = bash.writefile(path);

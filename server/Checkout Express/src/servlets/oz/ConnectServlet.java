@@ -34,6 +34,7 @@ public class ConnectServlet extends PostServletBase
 		config.txnReq = false;
 		config.path = a(Data.getKind(), "restr");
 		config.exists = true;
+		config.securityType = SecurityType.REJECT;
 	}
 
 	public static final String channelID = "the_wizard";

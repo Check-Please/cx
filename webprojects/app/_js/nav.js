@@ -13,7 +13,7 @@
 
 	var hashchangeSupport = "onhashchange" in window;
 	function viewFromHash() {
-		return mvc.views[location.hash.slice(1)] || mvc.views.receipt;
+		return mvc.views[(location.hash||"").slice(1)] || mvc.views.receipt;
 	}
 	window.onhashchange = function() {
 		goToView(viewFromHash());

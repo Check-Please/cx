@@ -41,9 +41,14 @@ var money = {
 	}
 };
 
+if(!String.prototype.startsWith)
+	String.prototype.startsWith = function(pfx) {
+		return this.substr(0, pfx.length) == pfx;
+	};
+
 if(!String.prototype.endsWith)
-	String.prototype.endsWith = function(suffix) {
-		return this.indexOf(suffix, this.length-suffix.length) !== -1;
+	String.prototype.endsWith = function(sfx) {
+		return this.substr(-sfx.length) == sfx;
 	};
 
 if(!Array.toArray)

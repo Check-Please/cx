@@ -124,21 +124,6 @@ def makeWebXML(src, dest):
     outfl.close();
     infil.close();
 
-""" Gets the map for build-time templating
-
-    @param path The CSV file defining the substitutions
-    @return A 2-tuple of lists of strings, first keys then values
-"""
-def loadBuildTemplate(path):
-    infil = bash.readfile(path);
-    keys = [];
-    vals = [];
-    for row in csv.reader(infil):
-        keys.append(row[0]);
-        vals.append(row[1]);
-    infil.close();
-    return keys, vals;
-
 """ Makes sense of the raw template files
 
     @param src Path of the template file pair (file extention not included)
