@@ -94,6 +94,38 @@ The resulting code would be:
 
 	alert("BUG!"); throw new Error("BUG!");
 
+
+Run time templating
+-----------------------------------------------------------------------------
+
+Run time templating is done using our proprietary templating engine.  Our
+templating engine has very few features, and compiles to JS and Java.  The
+reasoning can be found on the wiki.  But here we decribe the syntax.
+
+Each template has two files associated to it: a `.tmplt` (pronounced
+"template") file and a `.tspec` (pronounced "t-spec", or "template
+specification") file.  The `.tspec` file defines the variables used in the
+template.  The `.tmplt` file defines the actual output of the file.
+
+`.tspec` files consist of a series of declarations.  Declarations can be
+formatted in any of the following ways:
+
+	@param varName
+	@param {type} varName
+	@param varName {type}
+	@param varName comment
+	@param {type} varName comment
+	@param varName {type} comment
+
+The `type` is only used for the java output.  If no type is specified, the
+type `Object` is used.  The comments can be as many lines as desired.  Any
+line which does not start with `@param` will be assumed to be part of a
+comment.
+
+The `.tmplt` contains the contents of what the output from the template
+should look like.  However, expressions can be evaluated in the `.tmplt` file
+by using the syntax `{{expr}}`.
+
 Example of what happens to the files /webprojects/
 -----------------------------------------------------------------------------
 
