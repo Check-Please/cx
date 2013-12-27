@@ -76,6 +76,7 @@ You'll find the following files/subfolders in this folder:
 *	`scripts` - The folder containing internal scripts
 *	`misc` - The folder containing other stuff
 
+License
 =======
 
 Copyright (C) 2013 Martin Jelin.  See the LICENSE file for license rights and
