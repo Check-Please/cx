@@ -160,11 +160,11 @@ java output would have thrown an error (since you can't add variables of type
 And a `.tmplt` file:
 
 	<a>
-		{{(loggedIn ? }}
+		{{ (loggedIn ? }}
 			Sign In
-		{{:}}
+		{{ : }}
 			Sign Out
-		{{)}}
+		{{ ) }}
 	</a>
 
 Note the use of parentheses.  If you didn't use parentheses, the templating
@@ -348,7 +348,7 @@ merged into `css/app.css`, the iPhone's version of the file would have files
 `app/_css/_iOS/*` merged into it, and other smartphone apps would have
 nothing merged into them.
 
-Compiling templates for the server
+Compiling run-time templates for the server
 -----------------------------------------------------------------------------
 
 Templates described in `server/templates/` are placed in the `templates`
