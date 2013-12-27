@@ -1,0 +1,4 @@
+<li>
+	<span class="name">{{name}}</span>
+	<span class="price">{{price}}</span>
+</li>

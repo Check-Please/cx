@@ -1,0 +1,24 @@
+<div class="ticket" title="{{tKey}}">
+	<div class="input">
+		<h1>Input</h1>
+		<div class="items"></div>
+		<div class="item">
+			<a>+</a> <label>New Item</label>
+		</div>
+	</div>
+	<div class="info">
+		<h1>Items<span></span></h1>
+		<ul class="items"></ul>
+		<h2>Summary</h2>
+		<p class="subtotal"><strong>Subtotal:</strong>		<span></span></p>
+		<p class="tax">		<strong>Tax:</strong>			<span></span></p>
+		<p class="service">	<strong>Service Charge:</strong><span></span></p>
+		<p class="discount"><strong>Discount:</strong>		<span></span></p>
+		<p class="tip">		<strong>Tip:</strong>			<span></span></p>
+		<p class="total">	<strong>Total:</strong>			<span></span></p>
+	</div>
+	<div class="payments">
+		<h1>Payments</h1>
+		<ul></ul>
+	</div>
+</div>

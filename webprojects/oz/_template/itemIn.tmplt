@@ -1,0 +1,3 @@
+<div class="item" itemID="{{id}}">
+	<a>&times;</a> <input type="text">{{shorthand}}</input>
+</div>
