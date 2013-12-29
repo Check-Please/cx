@@ -24,7 +24,7 @@
  *		mvc.{VAR_NAME}() - Get the value of a given variable
  *		mvc.{VAR_NAME}(val) - Set the value of a given variable
  *		mvc.{VAR_NAME}.listen(l) - Adds a listener for a given variable
- *		mvc.{VAR_NAME}.notify() - Calls all the listenrs for a given variable
+ *		mvc.{VAR_NAME}.notify() - Calls all listeners for a given variable
  *	camelCase is used for all these funtion names.  Note that the setter will
  *	automatically call the listeners.  However, if because the values
  *	returned by the getter are not deep copies, it is posible to change a

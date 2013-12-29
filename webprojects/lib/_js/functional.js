@@ -180,6 +180,9 @@ op = {
 	get: function(o, k) {return o[k];},
 	set: function(o, k, v) {return (o[k] = v);},
 
+	typeof: function(obj) {return typeof obj;},
+	instanceof: function(obj, klass) {return obj instanceof klass;},
+
 	custom: function(op) {return function(obj) {
 		return obj[op].apply(obj, Array.prototype.slice.call(arguments, 1));
 	};}
