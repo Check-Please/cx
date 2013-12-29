@@ -114,7 +114,7 @@ for(var i = 0; i < 2; i++)
 		if(module.length > 0)
 			arguments[1] = module + (cmd[0] == "/" ? "" : "/") + cmd;
 		arguments[0] = i == 0 ? "GET" : "POST";
-		this.apply(window, Array.toArray(arguments));
+		this.apply(window, $.makeArray(arguments));
 	}
 
 function buildAjaxErrFun(cmd, dontStopLoading)

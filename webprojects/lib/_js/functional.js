@@ -5,17 +5,21 @@
  *		f.c(x,y)(z) = f(x,y,z)
  *		f.c(x)(y,z) = f(x,y,z)
  *
- *	The "this" object which the origonal function is bound to may not transfer
- *	onto the curried function.  For instance, the following:
+ *	Very similar to underscore.js's "_.partial", but does not allow you to
+ *	use "_" as a placeholder.
+ *
+ *	The "this" object which the origonal function is bound to may not
+ *	transfer onto the curried function the way you'd expect.  For instance,
+ *	the following:
  *		obj.f.c(0)(1)
  *	is equivilant to:
  *		window.f = obj.f; f.c(0)(1); delete f;
  *	This is because the function returned by the curry opperation is not a
  *	member of any object, but is rather a free floating value.  One could
- *	solve this problem by using ".bind", which asks for an explicit "this"
- *	object, or by doing one of the following two options:
- *		obj.f.c(0).call(obj, 1);
- *		obj.f_ = obj.f.c(0); obj.f_(); delete obj.f_;
+ *	solve this problem in any of the following ways:
+ *		(1) Use ".bind" instead
+ *		(2) Use ".call" or ".apply" when invoking the curried function
+ *		(3) Set the curried function to be a member of the desired object
  */
 if(!Function.prototype.c) {
 	Function.prototype.c = function() {
@@ -33,91 +37,36 @@ if(!Function.prototype.c) {
 	};
 }
 
-/**	Fixes last argument(s), as though they were "curried".  It's not like
- *	normal currying though, so we use a k for "kurry"
+/**	More general curry
  *
+ *	Allows you to use "$" as a placeholder, in very much the same way that
+ *	underscore.js allows you to use "_"
  *	E.g.
- *		f.k(y)(x) = f(x,y)
- *		f.k(y,z)(x) = f(x,y,z)
- *		f.k(z)(x,y) = f(x,y,z)
- */
-if(!Function.prototype.k)
-	Function.prototype.k = function() {
-		var f = this;
-		var a = Array.prototype.slice.call(arguments, 0);
-		return function() { return f.apply(this,
-					Array.prototype.slice.call(arguments, 0).concat(a));
-		};
-	};
-
-/**	Fixes argument at a particular index
+ *		f.C(1,$,3)(2) = f(1,2,3)
+ *
+ *	If some of the placeholders are never filled in, "undefined" is used.
  *	E.g.
- *		f.C(x,0)(y) = f(x,y)
- *		f.C(y,1)(x) = f(x,y)
- *		f.C(y,1)(x,z) = f(x,y,z)
- *		f.C(z,2)(x,y) = f(x,y,z)
- *		f.C(y,-1)(x,z) = f(x,y,z)
- *		f.C(x,-2)(y,z) = f(x,y,z)
- *		f.C(y,1)() = f(undefined, y)
- *		f.C(y,z,1)(x) = f(x,y,z)
- *
- *	Note that since -0 == 0, this function cannot be used to append to the end
- *	of the passed arguments.  That's what ".k" is for.
- *
- *	Also, be aware that there are some weird implications of padding the passed
- *	arguments with "undefined."  For instance:
- *		f.C(y,1).C(x,0)() = f(x,y)
- *		f.C(x,0).C(y,1)() = f(x, undefined, y)
- *	This is not a bug.  It's just weird.  Think about it.
+ *		f.C(1,$,3)() = f(1, undefined, 3);
+ *	This can have some odd consequences.
+ *	E.g.
+ *		f.C($,$,3).C(1)(2) = f(1,2,3)
+ *		f.C(1).C($,$,3)(2) = f(1, 2, undefined, 3);
  */
 if(!Function.prototype.C)
 	Function.prototype.C = function() {
 		var f = this;
-		var i = arguments[arguments.length-1];
-		var a = Array.prototype.slice.call(arguments, 0, -1);
+		var a = Array.prototype.slice.call(arguments, 0);
+		var p = [];
+		var i = -1;
+		while((i = a.indexOf($, i+1)) != -1)
+			p.push(i);
 		return function() {
-			var args = Array.prototype.slice.call(arguments, 0);
-			if(i < 0)
-				i = Math.max(0, args.length+i);
-			if(args.length <= i) {
-				args.length = i;
-				return f.apply(this, args.concat(a));
-			}
-			return f.apply(this, args.splice.bind(args,i,0).apply(args,a));
+			for(var i = 0; i < p.length; i++)
+				a[p[i]] = arguments[i];
+			return f.apply(this, 
+				a.concat(Array.prototype.slice.call(arguments, p.length)));
 		};
 	};
-
-/**	Similar to .C but limits the arugments which can be passed later
- *
- *	E.g.
- *		f.K(x,y,0)(z,t) = f(x,y)
- *		f.K(x,y,1)(z,t) = f(z,x,y)
- *		f.K(x,y,-1)(z,t) = f(x,y,z)
- *
- *	As a special case, if the last parameter passes is not an integer, or if
- *	no parameters are passed, then it is as though 0 were appended to the end
- *	of the parameter list.  For instance:
- *		f.K("a", "b")("c") = f("a", "b");
- *		f.K()("a","b") = f();
- *	Be careful with this special case though.  If you do something like this:
- *		f.K(x,y)(z)
- *	and y is an integer, you may not get the behavior you were looking for
- */
-if(!Function.prototype.K)
-	Function.prototype.K = function() {
-		var f = this;
-		var a;
-		var i = arguments.length ? arguments[arguments.length-1] : null;
-		if(i != (i | 0)) {
-			a = Array.prototype.slice.call(arguments, 0);
-			i = 0;
-		} else
-			a = Array.prototype.slice.call(arguments, 0, -1);
-		return i == 0 ? function() {return f.apply(this, a);} : function() {
-			args = Array.prototype.slice.call(arguments, 0, Math.abs(i));
-			return f.apply(this, i < 0 ? a.concat(args) : args.concat(a));
-		};
-	}
 
 /**	Basic uncurry
  *
@@ -183,15 +132,28 @@ if(!Function.prototype.U)
 
 
 /**	Comosition, f.o(g)(x) = f(g(x))
+ *
  *	Name "o" is a reference to the math symbol
  */
 if(!Function.prototype.o)
 	Function.prototype.o = function(g) {
 		var f = this;
-		return function() { return f(g.apply(this, arguments)); };
+		return function() {return f.call(this, g.apply(this, arguments));};
 	};
 
-//Basic opperators
+/**	Composition, but for functions returning arrays/taking multiple arguments
+ *
+ *	For instance, suppose that f & g are functions, and g() returns [g1, g2].
+ *	Then f.O(g)() = f(g1, g2)
+ */
+if(!Function.prototype.O)
+	Function.prototype.O = function(g) {
+		var f = this;
+		return function() {return f.apply(this, g.apply(this, arguments));};
+	};
+
+/**	Basic opperators
+ */
 op = {
 	p: function(x,y) {return x+y;},
 	m: function(x,y) {return x-y;},
@@ -223,30 +185,56 @@ op = {
 	};}
 };
 
-["c", "C", "k", "K", "u", "U", "o", "sum", "min", "max"].forEach(function(x){
+/**	Functional opperators
+ */
+["c", "C", "u", "U", "o", "O", "sum", "min", "max"].forEach(function(x){
 	op[x] = op.custom(x);
 });
 
+/**	Sums up the values in an array
+ *
+ *	E.g. [1,2,3].sum() == 6
+ */
 if(!Array.prototype.sum)
 	Array.prototype.sum = Array.prototype.reduce.c(op.p, 0);
 
+/**	Finds the minimum value in an array
+ *
+ *	E.g. [1,2,3].min() == 1
+ */
 if(!Array.prototype.min)
 	Array.prototype.min = function() {
 		return Math.min.apply(Math, this);
 	};
 
+/**	Finds the maximum value in an array
+ *
+ *	E.g. [1,2,3].max() == 3
+ */
 if(!Array.prototype.max)
 	Array.prototype.max = function() {
 		return Math.max.apply(Math, this);
 	};
 
+/**	Runs a function on each object in an array
+ *
+ *	E.g. ["Hello", "World"].each(function(x) {console.log(x);})
+ */
 if(!Array.prototype.each)
 	Array.prototype.each = Array.prototype.forEach;
 
-/**	The tabulate function from SML, except that if no function is passed it
+/**	Creates an array of a given length with values determined by a function
+ *
+ *	The tabulate function from SML, except that if no function is passed it
  *	assumes the indentity function
  *
  *	@see http://www.standardml.org/Basis/list.html#SIG:LIST.tabulate:VAL
+ *
+ *	@param	n The length of the array to make
+ *	@param	f The function which determines the values of the array.  Always
+ *			passed the index of the element to make a value for.  Defaults
+ *			to the identity function
+ *	@return	The generated array
  */
 if(!Array.tabulate)
 	Array.tabulate = function(n, f) {

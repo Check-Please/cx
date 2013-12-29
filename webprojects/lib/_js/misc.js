@@ -81,16 +81,6 @@ if(!String.prototype.endsWith)
 		return this.substr(-sfx.length) == sfx;
 	};
 
-/**	Turns an array-like object into an actual array
- *
- *	Useful for something like the arguments variable
- *
- *	@param	x An array-like object
- *	@return An actual array
- */
-if(!Array.toArray)
-	Array.toArray = function(x) {return Array.prototype.slice.call(x, 0);};
-
 /**	Finds the GCD of two numbers
  *
  *	@param	a

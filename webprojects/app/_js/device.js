@@ -66,7 +66,7 @@ var device = device || {};
 		{
 			if(!url.match(/^[a-z]*:\/\//i))
 				arguments[1] = "{{SERVER}}" + (url[0] =="/"?"":"/") + url;
-			ajax.apply(this, Array.toArray(arguments));
+			ajax.apply(this, $.makeArray(arguments));
 		};
 		for(var f in ajax)
 			if(Function.prototype[f] == undefined)
