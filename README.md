@@ -8,21 +8,9 @@ Table of contents:
 Getting Started
 ===============
 
-The next section ("How to Set Up") tells you how to set up your computer/
-directory for doing work.
-
-As for information, you should probably check out the wiki.  These READMEs
-are for low-level information you'll want close by while you code.  The wiki
-is more designed to bring someone up to speed on how something works in a
-larger sense in case they've forgotten or are new to the project/team.  It
-contains information about the major design decisions and how various pieces
-of the software interact.  It also contains non-technical things, like Style
-Guides.
-
-We also might have a chat room (depending on how far in the future you are).
-It will probably be at http://chkex.hipchat.com.  Feel free to ask questions
-there.  Helping people is a priority.  If we don't have a chat room, feel
-free to get in contact with sjelin directly.  He's friendly.
+The [next section](how-to-set-up) tells you how to set up your computer/
+directory for doing work.  If you are new and need some guidance, check out
+the [Getting Started](wiki/Getting-Started) page on the wiki.
 
 How to Set Up
 =============
