@@ -1,20 +1,6 @@
-The goals of the builder are as follows:
-- Build the `web.xml` file for the server
-- Run some basic templating over web files
-- Compile `.scss` files into `.css` files
-- Compress `js` files, unless the `--debug` flag is specified
-- Compile web template files
-- Merge `js` and `css` files to reduce the number of requests to the server
-- Push files for all websites to the server
-- Push files for webapp to any smartphone apps
+For an overview of how the build process works, please read the [wiki page](
+../wiki/Build-Process-Overview/).  This is more of a spec.
 
-Wikipages to read beforehand
-----------------------------------------------------------------------------
-
-- [Build-Time Templating](
-		https://github.com/chkex/cx/wiki/Build-Time-Templating)
-- [Run-Time Templating](
-		https://github.com/chkex/cx/wiki/Run-Time-Templating)
 
 Building the web.xml file
 -----------------------------------------------------------------------------
