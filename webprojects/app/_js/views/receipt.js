@@ -137,6 +137,7 @@ mvc.views = mvc.views || {};
 				mvc.split.listen(render);
 				mvc.selection.listen(render);
 				mvc.tip.listen(calcTipPercent);
+				setTipByPrct(20);
 				$trgt.append($view);
 			} else {
 				$splitBtn.text(templates.splitText(mvc.split() != null));
