@@ -1,3 +1,30 @@
+/** A function for sending ajax requests to the server.
+ *
+ *	@param	method The method for the request (e.g. "GET")
+ *	@param	url The URL to send a request to
+ *	@param	rawData	An object containing the parameters to send the request
+ *					with.   Supports both primitive data and arrays.
+ *	@param	callback	The function to be called when the request is
+ *						completed successfully.  Takes the text returned from
+ *						the server as its first parameter, and the request
+ *						object as its second.
+ *						If null, the request is run synchronously
+ *	@param	failFunc	The function to be called if the request fails.  It
+ *						takes the following parameters, in order:
+ *							- The status code
+ *							- The status text
+ *							- The responce text
+ *							- The requst object
+ *						If null, nothing is called should the request fail
+ *	@param	boringUpdate	The function to be called when the request is
+ *							still in process, but the ready state has
+ *							changed.  Rarely useful.  Takes the new ready
+ *							state as its first parameter, and the request
+ *							object as its second.
+ *							If null, nothing happens on these read state
+ *							changes.
+ *	@return	The request object
+ */
 function ajax(method, url, rawData, callback, failFunc, boringUpdate)
 {
 	"use strict";
@@ -98,6 +125,12 @@ END_IF
 	xmlhttp.send(data);
 	return xmlhttp;
 }
+
+/*	The following defines ajex.get, ajex.post, ajax.put, and ajex.delete
+ *
+ *	These functions are all just like the normal ajax function, but with the
+ *	request method fixed.
+ */
 ["get", "post", "put", "delete"].forEach(function(method) {
 	ajax[method] = function() {
 		var args = [method.toUpperCase()];
@@ -106,6 +139,12 @@ END_IF
 	};
 });
 
+/*	The following defines ajax.receive and ajax.send.
+ *
+ *	These are just like ajax.get and ajax.post, except that instead of one
+ *	URL parameter there are two.  This is useful if many of the URLs you
+ *	access follow the form "module/command"
+ */
 for(var i = 0; i < 2; i++)
 	ajax[i == 0 ? "receive" : "send"] = function(module, cmd) {
 		module = module || "";
@@ -117,6 +156,14 @@ for(var i = 0; i < 2; i++)
 		this.apply(window, $.makeArray(arguments));
 	}
 
+/** Creates a function to be called if an ajax request failed.
+ *
+ *	@param	cmd The command which the request failed at doing
+ *	@param	dontStopLoading	Normally, any <a> tag with the "loading" class
+ *							has that class removed from it.  If this
+ *							parameter is true, that is not done
+ *	@return	The function to call if the request fails
+ */
 function buildAjaxErrFun(cmd, dontStopLoading)
 {
 	return function(code, _, msg) {

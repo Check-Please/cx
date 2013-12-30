@@ -1,3 +1,5 @@
+//There is no good reason for you to be reading this file
+
 if(!{{NATIVE}}) {
 
 	/*
