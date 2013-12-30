@@ -10,7 +10,7 @@ Getting Started
 
 The [next section](how-to-set-up) tells you how to set up your computer/
 directory for doing work.  If you are new and need some guidance, check out
-the [Getting Started](wiki/Getting-Started) page on the wiki.
+the [Getting Started](../../wiki/Getting-Started) page on the wiki.
 
 How to Set Up
 =============
