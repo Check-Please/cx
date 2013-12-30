@@ -1,8 +1,9 @@
-For an overview of how the build process works, please read the [wiki page](
-../wiki/Build-Process-Overview/).  This is more of a spec.
+Before you read this, please read the [wiki page](
+../wiki/Build-Process-Overview/).  This file simply fills in the details
+which are missing from the overview page and provides an in-depth example.
 
 
-Building the web.xml file
+Building the `web.xml` file
 -----------------------------------------------------------------------------
 
 The file `/server/servlet-list.csv` dictates what is put in the `web.xml`
@@ -46,7 +47,7 @@ they undergo the following transfermations (in order):
 
 Thus, `Parent Folder - Kid` becomes `servlets.parent_folder.kid`
 
-Example of what happens to the files /webprojects/
+Example of what happens to the contents of the `webprojects` folder
 -----------------------------------------------------------------------------
 
 Suppose the contents were as follows:
@@ -120,10 +121,10 @@ Suppose the contents were as follows:
 	|--	fonts/
 	|------	helvetica.woff
 
-And lets suppose the contents of `build-vars.csv` is as follows:
+And lets suppose the contents of `macros` is as follows:
 
-	_JQUERY_MODERN_VERSION__, 2.0.3
-	_JQUERY_OLD_IE_VERSION__, 1.10.2
+	{{_JQUERY_MODERN_VERSION__}} = 2.0.3
+	{{_JQUERY_OLD_IE_VERSION__}} = 1.10.2
 
 And the contents of `app-web-projects.csv` is as follows:
 
