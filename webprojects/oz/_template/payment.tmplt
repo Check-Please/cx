@@ -1,4 +1,4 @@
-<li class='payment {{cID}} {{status}}{{focus ? " focus" : ""}}{{notification ? " notification" : ""}}'>
+<li class='payment {{status}}{{focus ? " focus" : ""}}{{notification ? " notification" : ""}}' cID="{{cID}}">
 	<a class='title'>{{name}} ({{xxxx_lastFour}})</a>
 	<div class="info">
 		<p class="pan" ><strong>PAN: </strong> {{pan}}</p>		
