@@ -1,8 +1,8 @@
-<div class="ticket" title="{{tKey}}">
+<div class="ticket" tKey="{{tKey}}">
 	<div class="input">
 		<h1>Input</h1>
 		<div class="items"></div>
-		<div class="item">
+		<div class="new item">
 			<a>+</a> <label>New Item</label>
 		</div>
 	</div>

@@ -1,1 +1,1 @@
-<a class="tBtn" title="{{tKey}}">tKey</a>
+<a class="tBtn" tKey="{{tKey}}">tKey</a>

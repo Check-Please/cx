@@ -1,5 +1,5 @@
-<li>
-	<a class="title">{{name}} ({{xxxx_lastFour}})</a>
+<li class='payment {{cID}} {{status}}{{focus ? " focus" : ""}}{{notification ? " notification" : ""}}'>
+	<a class='title'>{{name}} ({{xxxx_lastFour}})</a>
 	<div class="info">
 		<p class="pan" ><strong>PAN: </strong> {{pan}}</p>		
 		<p class="name"><strong>Name:</strong> {{name}}</p>
@@ -9,13 +9,13 @@
 	<div class="messages">
 		<a class="success">Success</a>
 
-		<a class="fail" title="limit" >Limit</a>
-		<a class="fail" title="reject">Reject</a>
-		<a class="fail" title="order" >Order</a>
+		<a class="fail" title="limit"	>Limit</a>
+		<a class="fail" title="invalid"	>Invalid</a>
+		<a class="fail" title="reject"	>Reject</a>
 
-		<a class="fail" title="no-order">No Order</a>
 		<a class="fail" title="paid"	>Paid</a>
-		<a class="fail" title="order"	>Other</a>
+		<a class="fail" title="no-order">No Order</a>
+		<a class="fail" title="other"	>Other</a>
 
 		<a class="update" title="seen"		>Seen</a>
 		<a class="update" title="terminal"	>Terminal</a>
