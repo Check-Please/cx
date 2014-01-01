@@ -1,0 +1,23 @@
+@import "../../_ignore/main.scss";
+
+.tickets .ticket .payments {
+	position: absolute;
+	height: calc(100%-2*$padding);
+	width: calc(33%-2*$padding);
+	padding: $padding;
+	right: 0%;
+
+	.payment {
+		.card-info {
+		}
+		.messages {
+			& > * {
+				width: 33%;
+				display: inline-block;
+			}
+		}
+
+		.card-info, .messages { display: none; }
+		&.focus { .card-info, .messages { display: block; } }
+	}
+}

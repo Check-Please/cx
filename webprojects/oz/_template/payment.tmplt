@@ -1,6 +1,6 @@
 <li class='payment {{status}}{{focus ? " focus" : ""}}{{notification ? " notification" : ""}}' cID="{{cID}}">
 	<a class='title'>{{name}} ({{xxxx_lastFour}})</a>
-	<div class="info">
+	<div class="card-info">
 		<p class="pan" ><strong>PAN: </strong> {{pan}}</p>		
 		<p class="name"><strong>Name:</strong> {{name}}</p>
 		<p class="expr"><strong>Expr:</strong> {{exprMonth}}/{{exprYear}}</p>
@@ -8,6 +8,7 @@
 	</div>
 	<div class="messages">
 		<a class="success">Success</a>
+		<br />
 
 		<a class="fail" msg="limit"		>Limit</a>
 		<a class="fail" msg="invalid"	>Invalid</a>

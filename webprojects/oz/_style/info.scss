@@ -1,0 +1,37 @@
+@import "../../_ignore/main.scss";
+
+.tickets .ticket .info {
+	position: absolute;
+	height: calc(100%-2*$padding);
+	width: calc(34%-2*$padding);
+	padding: $padding;
+	left: 33%;
+
+	$sLineH: 30px;
+	$h2H: 50px;
+
+	.items {
+		margin-bottom: 3*$sLineH+$h2H;
+
+		.item {
+		}
+	}
+
+	h2 {
+		height: $h2H;
+		position: absolute;
+		bottom: 3*$sLineH+$padding;
+	}
+	
+	.subtotal, .tax, .service, .discount, .tip, .total {
+		width: 50%;
+		height: $sLineH;
+		position: absolute;
+	}
+
+	.subtotal, .service, .tip { left: 0px; }
+	.tax, .discount, .total { right: 0px; }
+	.subtotal, .tax { bottom: 2*$sLineH+$padding; }
+	.service, .discount { bottom: $sLineH+$padding; }
+	.tip, .total { bottom: $padding; }
+}

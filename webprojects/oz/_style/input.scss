@@ -1,0 +1,28 @@
+@import "../../_ignore/main.scss";
+@import "globals.scss"
+
+.tickets .ticket .input {
+	position: absolute;
+	height: calc(100%-2*$padding);
+	width: calc(33%-2*$padding);
+	padding: $padding;
+	left: 0%;
+
+	.item {
+		$lineH: 30px;
+		height: $lineH;
+		margin-bottom: 5px;
+		a {
+			display: inline-block;
+			width: $lineH;
+			height: $lineH;
+			text-align: center;
+			line-height: $lineH;
+		}
+		label, input {
+			display: inline-block;
+			width: calc(100% - $lineH);
+			height: $lineH;
+		}
+	}
+}
