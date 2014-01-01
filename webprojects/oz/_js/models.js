@@ -24,7 +24,7 @@
  *	The following methods are used to access these variables:
  *		models.refresh()
  *		models.setItems(tKey, items)
- *		models.setPaymentFocus(tKey, cID, focus)
+ *		models.togglePaymentFocus(tKey, cID)
  *		models.setPaymentStatus(tKey, cID, statusCode, statusMsg)
  *
  *	The following constants are also defined:
@@ -134,10 +134,10 @@ models = models || {};
 	 *
 	 *	@param	tKey The ticket which the payment is in
 	 *	@param	cID The connection ID of the payer
-	 *	@param	focus If the payment should have the focus
 	 */
-	models.setPaymentFocus = function(tKey, cID, focus) {
+	models.togglePaymentFocus = function(tKey, cID) {
 		var tPayments = payments[tKey];
+		var focus = !tPayments.byCID[cID].focus;
 		if(focus) {
 			tPayments.byCID[cID].notification = false;
 			for(var i in tPayments.byCID)
