@@ -9,16 +9,16 @@
 	<div class="messages">
 		<a class="success">Success</a>
 
-		<a class="fail" title="limit"	>Limit</a>
-		<a class="fail" title="invalid"	>Invalid</a>
-		<a class="fail" title="reject"	>Reject</a>
+		<a class="fail" msg="limit"		>Limit</a>
+		<a class="fail" msg="invalid"	>Invalid</a>
+		<a class="fail" msg="reject"	>Reject</a>
 
-		<a class="fail" title="paid"	>Paid</a>
-		<a class="fail" title="no-order">No Order</a>
-		<a class="fail" title="other"	>Other</a>
+		<a class="fail" msg="paid"		>Paid</a>
+		<a class="fail" msg="no-order"	>No Order</a>
+		<a class="fail" msg="other"		>Other</a>
 
-		<a class="update" title="seen"		>Seen</a>
-		<a class="update" title="terminal"	>Terminal</a>
-		<a class="update" title="processing">Processing</a>
+		<a class="update" msg="seen"		>Seen</a>
+		<a class="update" msg="terminal"	>Terminal</a>
+		<a class="update" msg="processing"	>Processing</a>
 	</div>
 </li>
