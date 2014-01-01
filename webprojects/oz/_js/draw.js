@@ -99,7 +99,9 @@
 			$tick.find(".payments").on("click", ".messages > a", setStatus);
 			$ticks.append($tick);
 
-			$btns.append($(templates.tickBtn(tKeys[i])));
+			var $btn = $(templates.tickBtn(tKeys[i]));
+			$btn.css("left", (100*(i+0.5)/tKeys.length)+"%");
+			$btns.append($btn);
 		}
 		addNav($btns);
 		addNav = $.noop;

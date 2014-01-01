@@ -224,16 +224,15 @@ public class PayServlet extends PostServletBase
 			JSONObject msg = new JSONObject();
 			msg.put("tKey", tKey);
 			msg.put("cID", connectionID);
-			msg.put("items", new JSONArray(items.toString()));
+			msg.put("itemsToPay", new JSONArray(itemsToPay.toString()));
+			msg.put("payFracNums", new JSONArray(Frac.getNums(payFracs).toString()));
+			msg.put("payFracDenoms", new JSONArray(Frac.getDenoms(payFracs).toString()));
 			msg.put("total", total);
 			msg.put("tip", tip);
 			msg.put("pan", pan);
 			msg.put("name", name);
 			msg.put("expr", expr);
 			msg.put("zip", zip);
-			msg.put("itemsToPay", new JSONArray(itemsToPay.toString()));
-			msg.put("payFracNums", new JSONArray(Frac.getNums(payFracs).toString()));
-			msg.put("payFracDenoms", new JSONArray(Frac.getDenoms(payFracs).toString()));
 			if(cvv != null)
 				msg.put("cvv", cvv);
 			ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(d.getClient(), msg.toString()));
