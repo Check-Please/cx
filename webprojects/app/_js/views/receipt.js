@@ -9,7 +9,7 @@ mvc.views = mvc.views || {};
 	"use strict";
 
 	var $view; //The element which corresponds to this view
-	var total; //The total cost on the receipt
+	var tipable; //The ammount of money which is tipable
 	var $tipPrct; //The element which shows what percentage the tip is
 	function calcTipPercent()
 	{
@@ -23,15 +23,15 @@ mvc.views = mvc.views || {};
 			$view.find(".tip .percent").addClass("not-picked");
 			var prctName = "other";
 			$view.find(".confirm").removeClass("disabled");
-			if(t >= 1000000*total)
+			if(t >= 1000000*tipable)
 				$tipPrct.text("Thank you!");
-			else if(t >= 10000*total)
-				$tipPrct.text("("+Math.round(t/total)+"x)");
-			else if(t >= 10*total)
-				$tipPrct.text("("+Math.round(t*100/total)+"%)");
+			else if(t >= 10000*tipable)
+				$tipPrct.text("("+Math.round(t/tipable)+"x)");
+			else if(t >= 10*tipable)
+				$tipPrct.text("("+Math.round(t*100/tipable)+"%)");
 			else {
-				var prct = Math.round(t*10000/total)/100;
-				var moe = Math.min(1, Math.max(0.1, 100/total));
+				var prct = Math.round(t*10000/tipable)/100;
+				var moe = Math.min(1, Math.max(0.1, 100/tipable));
 				if((prct > 17-moe) && (prct < 17+moe))
 					prctName = "seventeen";
 				else if((prct > 20-moe) && (prct < 20+moe))
@@ -48,7 +48,7 @@ mvc.views = mvc.views || {};
 	function render()
 	{
 		var items = mvc.processedItems(true);
-		total = items.subtotal;
+		tipable = items.subtotal;
 		$container.empty();
 		for(var i = 0; i < items.length; i++) {
 			var item = items[i];
@@ -61,7 +61,7 @@ mvc.views = mvc.views || {};
 		var space=templates.receiptItem("","--------","","divider");
 		$container.append($(space));
 		$container.append($(templates.receiptItem("Subtotal",
-				money.toStr(total), "", "subtotal")));
+				money.toStr(tipable), "", "subtotal")));
 		if(items.discount != 0)
 			$container.append($(templates.receiptItem("Discount",
 				money.toStr(-items.discount), "", "discount")));
@@ -71,9 +71,10 @@ mvc.views = mvc.views || {};
 		$container.append($(templates.receiptItem("Tax",
 				money.toStr(items.tax), "", "tax")));
 		$container.append($(space));
-		total += items.tax-items.discount+items.serviceCharge;
+		tipable += items.tax;
 		$container.append($(templates.receiptItem("Total",
-				money.toStr(total), "", "total")));
+				money.toStr(tipable-items.discount+items.serviceCharge),
+				"", "total")));
 		calcTipPercent();
 	}
 
@@ -104,7 +105,7 @@ mvc.views = mvc.views || {};
 				mvc.split(null);
 			}
 			function setTipByPrct(prct) {
-				$tipBox.val(money.toStr(money.round(total*prct/100), ""));
+				$tipBox.val(money.toStr(money.round(tipable*prct/100), ""));
 				updateTip();
 			}
 			if(!$view) {
