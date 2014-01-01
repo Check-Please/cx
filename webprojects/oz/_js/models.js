@@ -38,15 +38,15 @@
  *		drawTick(tKey, items, payments) 
  */
 
-models = models || {};
+var models = models || {};
 
 (function() {
 	models.STATUS_FAIL = -1;
 	models.STATUS_PAID = 1;
 	models.STATUS_NONE = 0;
 
-	var post = ajax.send.c("oz");
-	var get = ajax.recieve.c("oz");
+	var post = ajax.send.bind(ajax, "oz");
+	var get = ajax.receive.bind(ajax, "oz");
 	var restr = "sjelin";
 
 	var tickets;
@@ -75,7 +75,7 @@ models = models || {};
 				}
 				drawTick(tKey, tickets[tKey], payments[tKey]);
 			}
-		});
+		}, buildAjaxErrFun("connect"));
 	}
 
 	/*	Opens a socket to the server & sets up the socket events

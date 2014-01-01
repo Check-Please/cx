@@ -34,9 +34,9 @@ $fBtnW: 80px;
 	height: $ftrH;
 
 	.tBtn {
-		width: $fBtnH;
+		width: $fBtnW;
 		height: $ftrH - 4px;
-		margin: 2px 0px 2px ($fBtnH / -2);
+		margin: 2px 0px 2px ($fBtnW / -2);
 		position: absolute;
 	}
 }
