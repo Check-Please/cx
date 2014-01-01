@@ -46,6 +46,38 @@
 		upateItems.call($(this).parents(".ticket")[0]);
 	}
 
+	/*	Toggles if one payment has the focus
+	 */
+	function togglePayFocus() {
+		var $this = $(this);
+		models.togglePaymentFocus(
+				$this.parents(".ticket").attr("tKey"),
+				$this.parents(".payment").attr("cID"));
+	}
+
+	/*	Sets the status of a payment
+	 */
+	function setStatus() {
+		var $this = $(this);
+		var tKey = $this.parents(".ticket").attr("tKey");
+		var cID = $this.parents(".payment").attr("cID")
+		var sCode =	$this.hasClass("success") ?	models.STATUS_PAID :
+					$this.hasClass("fail") ?	models.STATUS_FAIL :
+												models.STATUS_NONE;
+		var msg = $this.attr("msg");
+		models.setPaymentStatus(tKey, cID, sCode,
+			sCode == models.STATUS_PAID ? "Success!" :
+			msg == "limit"	? "Not within credit limit"		:
+			msg == "invalid"? "Invalid credit information"	:
+			msg == "reject"	? "Credit card rejected"		:
+			msg == "paid"	? "Ticket already paid"			:
+			msg == "tech"	? "Technical Difficulties"		:
+			msg == "other"	? "Unknown failure cause"		:
+			msg == "enqueue"	? "Entering queue"	:
+			msg == "terminal"	? "Sending info"	:
+			msg == "processing"	? "Card processing"	: "");
+	}
+
 	var addNav = function($nav) {
 		$nav.on("click", "a.tBtn", function() {
 			location.hash = $(this).attr("tKey");
@@ -63,6 +95,8 @@
 										updateItems.bind($tick));
 			$items.on("click", ".item a", deleteItem);
 			$tick.find(".new.item").click(newItem.bind($tick));
+			$tick.find(".payments").on("click", ".title", togglePayFocus);
+			$tick.find(".payments").on("click", ".messages > a", setStatus);
 			$ticks.append($tick);
 
 			$btns.append($(templates.tickBtn(tKeys[i])));

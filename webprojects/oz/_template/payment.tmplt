@@ -13,11 +13,11 @@
 		<a class="fail" msg="invalid"	>Invalid</a>
 		<a class="fail" msg="reject"	>Reject</a>
 
-		<a class="fail" msg="paid"		>Paid</a>
-		<a class="fail" msg="no-order"	>No Order</a>
-		<a class="fail" msg="other"		>Other</a>
+		<a class="fail" msg="paid"	>Paid</a>
+		<a class="fail" msg="tech"	>Tech</a>
+		<a class="fail" msg="other"	>Other</a>
 
-		<a class="update" msg="seen"		>Seen</a>
+		<a class="update" msg="enqueue"		>Seen</a>
 		<a class="update" msg="terminal"	>Terminal</a>
 		<a class="update" msg="processing"	>Processing</a>
 	</div>
