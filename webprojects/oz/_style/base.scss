@@ -15,6 +15,15 @@ body {
 	@include helvetica();
 }
 
+a {
+	color: #000;
+	@include user-select(none);
+	cursor: pointer;
+} a.disabled {
+	@include opacity(0.5);
+	cursor: auto;
+}
+
 $ftrH: 40px;
 $fBtnW: 80px;
 
@@ -23,7 +32,7 @@ $fBtnW: 80px;
 	top: 0px;
 	left: 0px;
 	width: 100%;
-	height: calc(100%-$ftrH);
+	height: calc(100% - #{$ftrH});
 }
 
 .nav {

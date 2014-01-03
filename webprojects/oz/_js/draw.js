@@ -35,7 +35,7 @@
     			return v.toString(16);
 			}
 		);
-		$(this).append($(templates.itemIn(uuid, "")));
+		$(this).find(".input .items").append($(templates.itemIn(uuid, "")));
 		updateItems.call(this);
 	}
 
@@ -78,11 +78,6 @@
 			msg == "processing"	? "Card processing"	: "");
 	}
 
-	var addNav = function($nav) {
-		$nav.on("click", "a.tBtn", function() {
-			location.hash = $(this).attr("tKey");
-		});
-	}
 	window.drawBase = function(tKeys) {
 		var $ticks = $(".tickets");
 		$ticks.empty();
@@ -103,12 +98,11 @@
 			$btn.css("left", (100*(i+0.5)/tKeys.length)+"%");
 			$btns.append($btn);
 		}
-		addNav($btns);
-		addNav = $.noop;
+		(onhashchange || $.noop)();
 	}
 
 	window.drawTick = function(tKey, items, payments) {
-		var $tick = $(".ticket[tKey="+tKey+"]");
+		var $tick = $(".ticket[tKey=\""+tKey+"\"]");
 
 		//Input
 		var $items = $tick.find(".input .items");
@@ -143,9 +137,9 @@
 				fPayment = p;
 		}
 		var $payments = $tick.find(".payments ul");
-		$payments.append.apply($payments, payments[modules.STATUS_NONE]);
-		$payments.append.apply($payments, payments[modules.STATUS_FAIL]);
-		$payments.append.apply($payments, payments[modules.STATUS_PAID]);
+		$payments.append.apply($payments, payments[models.STATUS_NONE]);
+		$payments.append.apply($payments, payments[models.STATUS_FAIL]);
+		$payments.append.apply($payments, payments[models.STATUS_PAID]);
 
 		//Filter by payer with focus
 		if(fPayment != null) {
@@ -168,7 +162,7 @@
 		}
 
 		//Info
-		var summary = {	subtotal: 0, tax: 0, serviceCharge: 0, discount: 0,
+		var summary = {	subtotal: 0, tax: 0, service: 0, discount: 0,
 						tip: (fPayment||{}).tip||0};
 		$items = $tick.find(".info .items");
 		for(var i = 0; i < items.length; i++) {
@@ -180,11 +174,11 @@
 			)));
 			summary.subtotal += item.price;
 			summary.tax += item.tax;
-			summary.serviceCharge += item.serviceCharge;
+			summary.service += item.serviceCharge;
 			summary.discount += item.discount;
 		}
 		summary.total =	summary.subtotal + summary.tax +
-						summary.serviceCharge - summary.discount +
+						summary.service - summary.discount +
 						(summary.tip || 0);
 		for(var i in summary)
 			$tick.find(".info ."+i+" span").text(money.toStr(summary[i]));

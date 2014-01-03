@@ -26,7 +26,7 @@ public class Data extends AbstractKind
 		setKey(k);
 		data = new ArrayList<String>(len);
 		for(int i = 0; i < len; i++)
-			data.set(i, "{}");
+			data.add("{}");
 		channelID = null;
 	}
 

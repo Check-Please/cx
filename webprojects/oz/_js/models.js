@@ -57,14 +57,14 @@ var models = models || {};
 	 *	Sets up a new connection with the server, downloads the current
 	 *	tickets, opens a socket, and calls drawBase() and drawTick()
 	 */
-	models.refresh = function() {
+	models.refresh = function(callback) {
 		post("connect", {restr: restr}, function(data) {
 			data = JSON.parse(data);
 			openSocket(data.token);
 			if(data.ticks instanceof Array) {
 				tickets = {};
-				for(var i = 0; i < n; i++)
-					tickets["oz"+i] = tickets[i];
+				for(var i = 0; i < data.ticks.length; i++)
+					tickets["oz"+i] = data.ticks[i];
 			} else
 				tickets = data.ticks;
 			drawBase(Object.keys(tickets));
@@ -85,14 +85,9 @@ var models = models || {};
 	 */
 	function openSocket(token)
 	{
-		skt = (new goog.appengine.Channel(token)).open({
-			'onopen': onOpen,
-			'onmessage': onMessage,
-			'onerror': onError,
-			'onclose': onClose
-		});
-		skt.onopen = $.noop;
-		skt.onmessage = function(payment) {
+		var skt;
+		var onOpen = $.noop;
+		var onMessage = function(payment) {
 			payment = JSON.parse(payment);
 			payment.focus = false;
 			patment.notification = true;
@@ -102,13 +97,13 @@ var models = models || {};
 			payments[payment.tKey].push(payment);
 			payments[payment.tKey].byCID[payment.cID] = payment;
 		};
-		skt.onerror = function(err) {
+		var onError = function(err) {
 			alert("SOCKET ERROR!  Please restart.\n\n"+JSON.stringify(err));
 			var s = skt;
 			skt = null;
 			s.close();
 		};
-		skt.onclose = function() {
+		var onClose = function() {
 			if(skt != null) {
 				alert("Socket closed!  Please restart.");
 				var s = skt;
@@ -116,6 +111,16 @@ var models = models || {};
 				s.close();
 			}
 		};
+		skt = (new goog.appengine.Channel(token)).open({
+			'onopen': onOpen,
+			'onmessage': onMessage,
+			'onerror': onError,
+			'onclose': onClose
+		});
+		skt.onopen = onOpen;
+		skt.onmessage = onMessage;
+		skt.onerror = onError;
+		skt.onclose = onClose;
 	}
 
 	/**	Sets the items on a ticket and calls drawTick
@@ -125,7 +130,7 @@ var models = models || {};
 	 */
 	models.setItems = function(tKey, items) {
 		tickets[tKey] = items;
-		send("tick", {restr: restr,	i: parseInt(tKey.substr(2)),
+		post("tick", {restr: restr,	i: parseInt(tKey.substr(2)),
 						tick: JSON.stringify(items)}, $.noop);
 		drawTick(tKey, items, payments[tKey]);
 	};
@@ -174,9 +179,9 @@ var models = models || {};
 			denoms: payment.payFracDenoms
 		};
 		switch(statusCode) {
-			case models.STATUS_PAID: send("success", params, $.noop); break;
-			case models.STATUS_FAIL: send("failure", params, $.noop); break;
-			case models.STATUS_NONE: send("update", params, $.noop); break;
+			case models.STATUS_PAID: post("success", params, $.noop); break;
+			case models.STATUS_FAIL: post("failure", params, $.noop); break;
+			case models.STATUS_NONE: post("update", params, $.noop); break;
 		};
 		drawTick(tKey, tickets[tKey], payments[tKey]);
 	};

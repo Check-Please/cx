@@ -3,8 +3,8 @@
 
 .tickets .ticket .input {
 	position: absolute;
-	height: calc(100%-2*$padding);
-	width: calc(33%-2*$padding);
+	height: calc(100% - #{2*$padding});
+	width: calc(33% - #{2*$padding});
 	padding: $padding;
 	left: 0%;
 
@@ -21,8 +21,13 @@
 		}
 		label, input {
 			display: inline-block;
-			width: calc(100% - $lineH);
-			height: $lineH;
+			width: calc(100% - #{$lineH} - 1em);
+			height: 2em;
 		}
+	}
+
+	.new.item, .new.item * {
+		@include user-select(none);
+		cursor: pointer;
 	}
 }

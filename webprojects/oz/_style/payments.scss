@@ -3,8 +3,8 @@
 
 .tickets .ticket .payments {
 	position: absolute;
-	height: calc(100%-2*$padding);
-	width: calc(33%-2*$padding);
+	height: calc(100% - #{2*$padding});
+	width: calc(33% - #{2*$padding});
 	padding: $padding;
 	right: 0%;
 
