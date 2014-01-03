@@ -7,6 +7,8 @@
 	width: calc(34% - #{2 * $padding});
 	padding: $padding;
 	left: 33%;
+	border-left: $border;
+	border-right: $border;
 
 	$sLineH: 30px;
 	$h2H: 50px;
@@ -25,14 +27,14 @@
 	}
 	
 	.subtotal, .tax, .service, .discount, .tip, .total {
-		width: calc(50% - #{$padding});
+		width: calc(50% - #{$padding} - 1em);
 		height: $sLineH;
 		position: absolute;
 	}
 
 	& > p span {
 		position: absolute;
-		right: 2em;
+		right: 0px;
 		top: 0.05em;
 	}
 
