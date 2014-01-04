@@ -3,6 +3,7 @@
  */
 
 (function() {
+	"use strict";
 
 	/*	Updates the models on what the tickets are
 	 *
@@ -17,6 +18,7 @@
 			var item = menu.parse($item.find("input").val());
 			if(item != null) {
 				item.id = $item.attr("itemID");
+				item.orderDate = $item.attr("orderDate");
 				items.push(item);
 			}
 		});
@@ -35,7 +37,8 @@
     			return v.toString(16);
 			}
 		);
-		$(this).find(".input .items").append($(templates.itemIn(uuid, "")));
+		$(this).find(".input .items").append($(templates.itemIn(uuid,
+												new Date().getTime(), "")));
 		updateItems.call(this);
 	}
 

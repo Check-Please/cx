@@ -41,6 +41,8 @@
 var models = models || {};
 
 (function() {
+	"use strict";
+
 	models.STATUS_FAIL = -1;
 	models.STATUS_PAID = 1;
 	models.STATUS_NONE = 0;
@@ -59,6 +61,7 @@ var models = models || {};
 	 */
 	models.refresh = function(callback) {
 		post("connect", {restr: restr}, function(data) {
+			//Load Data
 			data = JSON.parse(data);
 			openSocket(data.token);
 			if(data.ticks instanceof Array) {
@@ -67,17 +70,42 @@ var models = models || {};
 					tickets["oz"+i] = data.ticks[i];
 			} else
 				tickets = data.ticks;
+
+			//Process data
 			drawBase(Object.keys(tickets));
 			for(tKey in tickets) {
-				if(payments[tKey] == undefined) {
-					payments[tKey] =  [];
-					payments[tKey].byCID = {};
+				var items = tickets[tKey];
+				var payers = payments[tKey];
+				if(payers == undefined) {
+					payments[tKey] = (payers = []);
+					payers.byCID = {};
 				}
-				drawTick(tKey, tickets[tKey], payments[tKey]);
+
+				//Add payment for unknown pay fracs
+				var tickPaid = {};
+				for(var i = 0; i < items.length; i++) {
+					tickPaid[items[i].id] = new Frac(	items[i].paidNum,
+														items[i].paidDenom);
+				}
+
+				var tickPayments = {};
+				for(var i in tickPaid)
+					tickPayments[i] = new Frac(0);
+				for(var i = 0; i < payers.length; i++) {
+					var payer = payers[i];
+					if(payer.statusCode == models.STATUS_PAID)
+						for(var j = 0; i < payer.itemsToPay.length; i++) {
+							
+						}
+				}
+
+				//Draw
+				drawTick(tKey, items, payers);
 			}
 		}, buildAjaxErrFun("connect"));
 	}
 
+	var skt = null;
 	/*	Opens a socket to the server & sets up the socket events
 	 *
 	 *	Once this is done, any payments sent to the server will automatically
@@ -85,7 +113,6 @@ var models = models || {};
 	 */
 	function openSocket(token)
 	{
-		var skt;
 		var onOpen = $.noop;
 		var onMessage = function(payment) {
 			payment = JSON.parse(payment);
@@ -111,6 +138,7 @@ var models = models || {};
 				s.close();
 			}
 		};
+		closeSocket();
 		skt = (new goog.appengine.Channel(token)).open({
 			'onopen': onOpen,
 			'onmessage': onMessage,
@@ -122,6 +150,22 @@ var models = models || {};
 		skt.onerror = onError;
 		skt.onclose = onClose;
 	}
+
+	/**	Closes the socket without error messages
+	 */
+	function closeSocket()
+	{
+		if(skt != null) {
+			var s = skt;
+			skt = null;
+			s.close();
+		}
+	}
+
+/*	window.onbeforeunload = function() {
+		closeSocket();
+		post("disconnect", {payments: JSON.stringify(payments)});
+	}*/
 
 	/**	Sets the items on a ticket and calls drawTick
 	 *
@@ -167,14 +211,11 @@ var models = models || {};
 		payment.statusMsg = statusMsg;
 		if(statusCode != 0)
 			payment.focus = false;
-		var items = tickets[tKey];
-		for(var i = 0; i < items.length; i++)
-			items[i] = JSON.stringify(items[i]); 
 		params = {
 			channelID: payment.cID,
 			msg: statusMsg,
 			i: parseInt(tKey.substr(2)),
-			items: items,
+			items: payment.itemsToPay,
 			nums: payment.payFracNums,
 			denoms: payment.payFracDenoms
 		};

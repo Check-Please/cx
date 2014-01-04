@@ -4,6 +4,8 @@
 $(document).ready(models.refresh);
 
 window.onhashchange = function() {
+	"use strict";
+
 	var cmd = (location.hash||"").slice(1);
 	$(".nav .tBtn").removeClass("focus");
 	$(".tickets > .ticket").hide()

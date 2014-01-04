@@ -11,51 +11,54 @@ import org.json.JSONObject;
 public class ItemModifier {
 	private String name;
 	private long price;//stored in 100ths of a cent
+	private long tax;//stored in 100ths of a cent
 	private String type;//optional, useful for analysis
 	private List<Boolean> choices;//null = has no choices
 	public ItemModifier(String name)
 	{
-		init(name, 0L, null, null);
+		init(name, 0L, 0L, null, null);
 	}
 	public ItemModifier(String name, String type)
 	{
-		init(name, 0L, type, null);
+		init(name, 0L, 0L, type, null);
 	}
-	public ItemModifier(String name, long price)
+	public ItemModifier(String name, long price, long tax)
 	{
-		init(name, price, null, null);
+		init(name, price, tax, null, null);
 	}
-	public ItemModifier(String name, long price, String type)
+	public ItemModifier(String name, long price, long tax, String type)
 	{
-		init(name, price, type, null);
+		init(name, price, tax, type, null);
 	}
 	public ItemModifier(String name, List<Boolean> choices)
 	{
-		init(name, 0L, null, choices);
+		init(name, 0L, 0L, null, choices);
 	}
 	public ItemModifier(String name, String type, List<Boolean> choices)
 	{
-		init(name, 0L, type, choices);
+		init(name, 0L, 0L, type, choices);
 	}
-	public ItemModifier(String name, long price, List<Boolean> choices)
+	public ItemModifier(String name, long price, long tax, List<Boolean> choices)
 	{
-		init(name, price, null, choices);
+		init(name, price, tax, null, choices);
 	}
-	public ItemModifier(String name, long price, String type, List<Boolean> choices)
+	public ItemModifier(String name, long price, long tax, String type, List<Boolean> choices)
 	{
-		init(name, price, type, choices);
+		init(name, price, tax, type, choices);
 	}
-	private void init(String name, long price, String type, List<Boolean> choices)
+	private void init(String name, long price, long tax, String type, List<Boolean> choices)
 	{
 		this.name = name;
 		this.price = price;
+		this.tax = tax;
 		this.type = type;
 		this.choices = choices;
 	}
 	public ItemModifier(JSONObject json) throws JSONException
 	{
 		name = json.getString("name");
-		price = json.getLong("price");
+		price = json.has("price") ? json.getLong("price") : 0L;
+		tax = json.has("tax") ? json.getLong("tax") : 0L;
 		type = json.has("type") ? json.getString("type") : null;
 		if(json.has("choices")) {
 			JSONArray jsonChoices = json.getJSONArray("choices");
@@ -70,6 +73,7 @@ public class ItemModifier {
 		JSONObject json = new JSONObject();
 		json.put("name", name);
 		json.put("price", price);
+		json.put("tax", tax);
 		if(type != null)
 			json.put("type", type);
 		if(choices != null)
@@ -83,6 +87,7 @@ public class ItemModifier {
 		ItemModifier that = (ItemModifier) o;
 		return	this.name.equals(that.name) &&
 				(this.price == that.price) &&
+				(this.tax == that.tax) &&
 				(this.type == null ? that.type == null :
 					this.type.equals(that.type));
 	}
@@ -90,7 +95,8 @@ public class ItemModifier {
 	{
 		return	name.hashCode() + 31*(
 				((int) price) + 31*(
-				(type == null ? 0 : type.hashCode())));
+				((int) tax) + 31*(
+				(type == null ? 0 : type.hashCode()))));
 	}
 	public String toString()
 	{
