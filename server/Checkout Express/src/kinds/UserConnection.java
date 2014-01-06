@@ -27,28 +27,25 @@ public class UserConnection extends AbstractKind
 	protected Set<String> itemsToPay;
 	protected String username;
 	protected Map<String, Date> startTimes;
-	protected String ticketLogID;
 	protected String platform;
 	public UserConnection(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
 	public UserConnection(Entity e) { super(e); }
 
-	public UserConnection(Key k, String ticketLogID, String plat)
+	public UserConnection(Key k, String plat)
 	{
 		setKey(k);
 		username = null;
 		startTimes = new HashMap<String, Date>();
-		this.ticketLogID = ticketLogID;
 		platform = plat;
 		removeItems();
 	}
 	
-	protected UserConnection(Key k, Set<String> itemsToPay, String username, Map<String, Date> startTimes, String ticketLogID)
+	protected UserConnection(Key k, Set<String> itemsToPay, String username, Map<String, Date> startTimes)
 	{
 		setKey(k);
 		this.itemsToPay = itemsToPay;
 		this.username = username;
 		this.startTimes = startTimes;
-		this.ticketLogID = ticketLogID;
 	}
 
 	public UserConnection(ClosedUserConnection cuc)
@@ -57,7 +54,6 @@ public class UserConnection extends AbstractKind
 		this.itemsToPay = cuc.itemsToPay;
 		this.username = cuc.username;
 		this.startTimes = cuc.startTimes;
-		this.ticketLogID = cuc.ticketLogID;
 	}
 
 	public void addItem(String id)
@@ -143,7 +139,6 @@ public class UserConnection extends AbstractKind
 		DSConverter.set(e, "itemsToPay", itemsToPay, DSConverter.DataTypes.SET);
 		e.setProperty("username", username);
 		DSConverter.set(e, "startTimes", startTimes, DSConverter.DataTypes.MAP);
-		e.setProperty("ticketLogID", ticketLogID);
 		e.setProperty("platform", platform);
 		return e;
 	}
@@ -153,7 +148,6 @@ public class UserConnection extends AbstractKind
 		itemsToPay = (Set<String>) DSConverter.get(e, "itemsToPay", DSConverter.DataTypes.SET);
 		username = (String) e.getProperty("username");
 		startTimes = (Map<String, Date>) DSConverter.get(e, "startTimes", DSConverter.DataTypes.MAP);
-		ticketLogID = (String) e.getProperty("ticketLogID");
 		platform = (String) e.getProperty("platform");
 	}
 }

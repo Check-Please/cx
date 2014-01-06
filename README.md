@@ -69,6 +69,7 @@ You'll find the following files/subfolders in this folder:
 *	`server` - The folder containing server code
 *	`webprojects` - The folder containing web code
 *	`scripts` - The folder containing internal scripts
+*	`specs` - The folder containing some specs 
 *	`misc` - The folder containing other stuff
 
 License

@@ -83,11 +83,11 @@ mvc.views = mvc.views || {};
 		var on = mvc.selection() != null && !!mvc.selection()[id];
 		var others = mvc.split() == null ? 0 : (mvc.processedSplit()[id]||0);
 		var mods = info.mods.map(function(mod) {
-			return templates.itemMod(mod.name,
-				mod.price ?  money.toStr(mod.price) : "");
+			var p = mod.price - mod.discount;
+			return templates.itemMod(mod.name, p ?  money.toStr(p) : "");
 		}).join("");
 		var $item = $(templates.splitItem(id, on, others, info.name, 
-					money.toStr(info.price), mods));
+					money.toStr(info.price-info.discount), mods));
 		if(elems[id] != null)
 			elems[id].replaceWith($item);
 		elems[id] = $item;

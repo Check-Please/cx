@@ -69,6 +69,5 @@ public class DisconnectServlet extends PostServletBase
 				}
 			}
 		}
-		servlets.cx.PayServlet.paymentFailureCallback(new TableKey(MyUtils.get_NoFail(KeyFactory.createKey(TableKey.getKind(), "OZ"+p.getLong(0)), ds)), p.getStr(0), p.getStrList(0), Frac.makeFracs(p.getLongList(0), p.getLongList(1)), ds, p.getStr(1));
 	}
 }

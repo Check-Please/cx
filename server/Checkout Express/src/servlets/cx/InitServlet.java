@@ -17,7 +17,6 @@ import org.json.JSONObject;
 import kinds.BluetoothIDToRestaurantPointer;
 import kinds.Client;
 import kinds.ConnectionToTablePointer;
-import kinds.BasicTickLog;
 import kinds.Globals;
 import kinds.UserConnection;
 import kinds.TableKey;
@@ -26,7 +25,6 @@ import kinds.Restaurant;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 import utils.MyUtils;
@@ -175,12 +173,6 @@ public class InitServlet extends PostServletBase
 			String connectionID = UUID.randomUUID().toString();
 			new ConnectionToTablePointer(KeyFactory.createKey(ConnectionToTablePointer.getKind(), connectionID), tableKey).commit(ds);
 			String token = ChannelServiceFactory.getChannelService().createChannel(connectionID);
-			Key logKey = BasicTickLog.makeKey(restr.getKey().getName(), tableKey, items);
-			try {
-				ds.get(logKey);
-			} catch(EntityNotFoundException e) {
-				new BasicTickLog(logKey, items).commit(ds);
-			}
 			Client c;
 			try {
 				c = new Client(p.getKey(), ds);
@@ -195,7 +187,7 @@ public class InitServlet extends PostServletBase
 				newClientKey = true;
 			}
 			c.commit(ds);
-			new UserConnection(table.getKey().getChild(UserConnection.getKind(), connectionID), logKey.getName(), p.getStr(1)).commit(ds);
+			new UserConnection(table.getKey().getChild(UserConnection.getKind(), connectionID), p.getStr(1)).commit(ds);
 
 			JSONObject ret = new JSONObject();
 			ret.put("tKey", tableKey);

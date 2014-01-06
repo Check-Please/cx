@@ -48,20 +48,24 @@ mvc.views = mvc.views || {};
 	function render()
 	{
 		var items = mvc.processedItems(true);
-		tipable = items.subtotal;
+		tipable = items.tipable;
 		$container.empty();
 		for(var i = 0; i < items.length; i++) {
 			var item = items[i];
 			$container.append($(templates.receiptItem(item.name,
-				money.toStr(item.price),
+				money.toStr(item.price - item.discount),
 				item.mods.map(function(mod) {
 					return templates.itemMod(mod.name, mod.price == 0 ? "":
-						money.toStr(mod.price));}).join(""), "")));
+						money.toStr(mod.price-mod.discount));}).join(""), "")
+			));
 		}
 		var space=templates.receiptItem("","--------","","divider");
 		$container.append($(space));
 		$container.append($(templates.receiptItem("Subtotal",
-				money.toStr(tipable), "", "subtotal")));
+				money.toStr(items.subtotal), "", "subtotal")));
+		if(items.fee != 0)
+			$container.append($(templates.receiptItem("Fee",
+				money.toStr(items.fee), "", "fee")));
 		if(items.discount != 0)
 			$container.append($(templates.receiptItem("Discount",
 				money.toStr(-items.discount), "", "discount")));
@@ -71,10 +75,8 @@ mvc.views = mvc.views || {};
 		$container.append($(templates.receiptItem("Tax",
 				money.toStr(items.tax), "", "tax")));
 		$container.append($(space));
-		tipable += items.tax;
 		$container.append($(templates.receiptItem("Total",
-				money.toStr(tipable-items.discount+items.serviceCharge),
-				"", "total")));
+				money.toStr(items.total), "", "total")));
 		calcTipPercent();
 	}
 

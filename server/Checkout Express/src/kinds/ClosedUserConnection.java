@@ -30,17 +30,17 @@ public class ClosedUserConnection extends UserConnection
 
 	public ClosedUserConnection(String restr, UserConnection uc, Long c)
 	{
-		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), uc.getKey().getName()), uc.itemsToPay, uc.username, uc.startTimes, uc.ticketLogID);
+		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), uc.getKey().getName()), uc.itemsToPay, uc.username, uc.startTimes);
 		init(restr, uc, c, null);
 	}
 	public ClosedUserConnection(String restr, UserConnection uc, Long c, String errMsg)
 	{
-		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), uc.getKey().getName()), uc.itemsToPay, uc.username, uc.startTimes, uc.ticketLogID);
+		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), uc.getKey().getName()), uc.itemsToPay, uc.username, uc.startTimes);
 		init(restr, uc, c, errMsg);
 	}
 	public ClosedUserConnection(String restr, UserConnection uc, String errMsg)
 	{
-		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), uc.getKey().getName()), uc.itemsToPay, uc.username, uc.startTimes, uc.ticketLogID);
+		super(KeyFactory.createKey(Restaurant.getKind(), restr).getChild(getKind(), uc.getKey().getName()), uc.itemsToPay, uc.username, uc.startTimes);
 		init(restr, uc, CLOSE_CAUSE__ERROR, errMsg);
 	}
 	private void init(String restr, UserConnection uc, Long c, String err)

@@ -118,9 +118,11 @@ var mvc = {};
 	{
 		var ret = [];
 		ret.subtotal = 0;
+		ret.fee = 0;
 		ret.tax = 0;
 		ret.discount = 0;
 		ret.serviceCharge = 0;
+		ret.tipable = 0;
 		var items = mvc.items();
 		var split = mvc.processedSplit();
 		var selection = mvc.selection();
@@ -138,6 +140,11 @@ var mvc = {};
 				var tax = (item.tax||0)*num/denom/100;
 				var discount = (item.discount||0)*num/denom/100;
 				var serviceCharge = (item.serviceCharge||0)*num/denom/100;
+				var tickFee = (item.tickPrice||0)*num/denom/100;
+				var tickTax = (item.tickTax||0)*num/denom/100;
+				var tickDiscount = (item.tickDiscount||0)*num/denom/100;
+				var tickSC = (item.tickSC||0)*num/denom/100;
+				var rMods = $.extend(true, {}, item.mods);
 				ret.push({
 					id: id,
 					num: num,
@@ -147,20 +154,37 @@ var mvc = {};
 					tax: money.round(tax),
 					discount: money.round(discount),
 					serviceCharge: money.round(serviceCharge),
-					mods: item.mods
+					mods: rMods
 				});
-				for(var j = 0; j < item.mods.length; j++)
-					price += (item.mods[j].price||0)*num/denom/100;
-				ret.subtotal += price;
-				ret.tax += tax;
-				ret.discount += discount;
-				ret.serviceCharge += serviceCharge;
+				for(var j = 0; j < rMods.length; j++) {
+					var mod = rMods[j];
+					var p += (mod.price||0)*num/denom/100;
+					var t += (mod.tax||0)*num/denom/100;
+					var d += (mod.discount||0)*num/denom/100;
+					var s += (mod.serviceCharge||0)*num/denom/100;
+					price += p;
+					tax += t;
+					discount += d;
+					serviceCharge += s;
+					mod.price = money.round(p);
+					mod.tax = money.round(t);
+					mod.discount = money.round(d);
+					mod.serviceCharge = money.round(s);
+				}
+				ret.subtotal += price-discount;
+				ret.fee += tickFee;
+				ret.tax += tax+tickTax;
+				ret.discount += tickDiscount;
+				ret.serviceCharge += serviceCharge+tickSC;
+				ret.tipable += price+tax+tickFee+tickTax;
 			}
 		}
 		ret.subtotal = money.round(ret.subtotal);
+		ret.fee = money.round(ret.fee);
 		ret.tax = money.round(ret.tax);
 		ret.discount = money.round(ret.discount);
 		ret.serviceCharge = money.round(ret.serviceCharge);
+		ret.tipable = money.round(ret.tipable);
 		return ret;
 	};
 })();
