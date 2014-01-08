@@ -139,7 +139,13 @@ public class TicketItem {
 			return Preloaded.getTicketItems(q.getLong("id"), paid);
 		if(method.equals("oz")) {
 			Data d = new Data(MyUtils.get_NoFail(KeyFactory.createKey(Data.getKind(), restr), ds));
-			return OrderParser.parseOrder(new JSONObject(d.getData().get(q.getInt("i"))), paid);
+			JSONObject ticket = new JSONObject();
+			ticket.put("items", new JSONArray(d.getData().get(q.getInt("i"))));
+			JSONArray tickets = new JSONArray();
+			tickets.put(ticket);
+			JSONObject order = new JSONObject();
+			order.put("tickets", tickets);
+			return OrderParser.parseOrder(order, paid);
 		} else
 			throw new IllegalArgumentException("Unknown system for query");
 	}

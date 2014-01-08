@@ -170,15 +170,19 @@
 		$items = $tick.find(".info .items");
 		for(var i = 0; i < items.length; i++) {
 			var item = items[i];
-			$items.append($(templates.itemDesc(item.name, item.price,
+			var price = (item.price||0)-(item.discount||0);
+			summary.subtotal += price;
+			summary.tax += item.tax||0;
+			summary.service += item.serviceCharge||0;
+			$items.append($(templates.itemDesc(item.name, price,
+					var p = (x.price||0)-(x.discount||0);
 					item.mods.map(function(x) {
-							return templates.map(x.name, x.price);
-					})
+							return templates.map(x.name, p);
+					});
+					summary.subtotal += p;
+					summary.tax += x.tax||0;
+					summary.service += x.serviceCharge||0;
 			)));
-			summary.subtotal += item.price;
-			summary.tax += item.tax;
-			summary.service += item.serviceCharge;
-			summary.discount += item.discount;
 		}
 		summary.total =	summary.subtotal + summary.tax +
 						summary.service - summary.discount +
