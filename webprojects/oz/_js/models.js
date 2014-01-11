@@ -48,7 +48,6 @@ var models = models || {};
 	models.STATUS_NONE = 0;
 
 	var post = ajax.send.bind(ajax, "oz");
-	var get = ajax.receive.bind(ajax, "oz");
 	var restr = "sjelin";
 
 	var tickets;
@@ -59,7 +58,7 @@ var models = models || {};
 	 *	Sets up a new connection with the server, downloads the current
 	 *	tickets, opens a socket, and calls drawBase() and drawTick()
 	 */
-	models.refresh = function(callback) {
+	models.refresh = function() {
 		post("connect", {restr: restr}, function(data) {
 			//Load Data
 			data = JSON.parse(data);
@@ -73,7 +72,7 @@ var models = models || {};
 
 			//Process data
 			drawBase(Object.keys(tickets));
-			for(tKey in tickets) {
+			for(var tKey in tickets) {
 				var items = tickets[tKey];
 				var payers = payments[tKey];
 				if(payers == undefined) {
@@ -81,29 +80,28 @@ var models = models || {};
 					payers.byCID = {};
 				}
 
-				//Add payment for unknown pay fracs
-				var tickPaid = {};
-				for(var i = 0; i < items.length; i++) {
-					tickPaid[items[i].id] = new Frac(	items[i].paidNum,
-														items[i].paidDenom);
-				}
-
-				var tickPayments = {};
-				for(var i in tickPaid)
-					tickPayments[i] = new Frac(0);
-				for(var i = 0; i < payers.length; i++) {
-					var payer = payers[i];
-					if(payer.statusCode == models.STATUS_PAID)
-						for(var j = 0; i < payer.itemsToPay.length; i++) {
-							
-						}
-				}
-
 				//Draw
 				drawTick(tKey, items, payers);
 			}
 		}, buildAjaxErrFun("connect"));
 	}
+
+	function addPayment(payment) {
+		payment.focus = false;
+		payment.notification = true;
+		payment.msgKey = null;
+		payment.statusCode = models.STATUS_NONE;
+		payment.statusMsg = "";
+		payment.timeStamp = new Date();
+		payment.exprYear = "20"+payment.expr.slice(0,2);
+		payment.exprMonth = payment.expr.slice(2);
+		var tKey = payment.tKey;
+		payments[tKey].push(payment);
+		payments[tKey].byCID[payment.cID] = payment;
+		drawTick(tKey, tickets[tKey], payments[tKey]);
+	}
+	if({{DEBUG}})
+		window.addPayment = addPayment;
 
 	var skt = null;
 	/*	Opens a socket to the server & sets up the socket events
@@ -114,16 +112,7 @@ var models = models || {};
 	function openSocket(token)
 	{
 		var onOpen = $.noop;
-		var onMessage = function(payment) {
-			payment = JSON.parse(payment);
-			payment.focus = false;
-			patment.notification = true;
-			payment.statusCode = models.STATUS_NONE;
-			payment.statusMsg = "";
-			payment.timeStamp = new Date();
-			payments[payment.tKey].push(payment);
-			payments[payment.tKey].byCID[payment.cID] = payment;
-		};
+		var onMessage = addPayment.o(JSON.parse);
 		var onError = function(err) {
 			alert("SOCKET ERROR!  Please restart.\n\n"+JSON.stringify(err));
 			var s = skt;
@@ -205,13 +194,14 @@ var models = models || {};
 	 *	@param	statusCode The status code of the update
 	 *	@param	statusMsg The message for the update
 	 */
-	models.setPaymentStatus = function(tKey, cID, statusCode, statusMsg) {
+	models.setPaymentStatus = function(tKey,cID,msgKey,statusCode,statusMsg){
 		var payment = payments[tKey].byCID[cID];
 		payment.statusCode = statusCode;
 		payment.statusMsg = statusMsg;
+		payment.msgKey = msgKey;
 		if(statusCode != 0)
 			payment.focus = false;
-		params = {
+		var params = {
 			channelID: payment.cID,
 			msg: statusMsg,
 			i: parseInt(tKey.substr(2)),

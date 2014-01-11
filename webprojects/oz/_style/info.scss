@@ -10,13 +10,27 @@
 	border-left: $border;
 	border-right: $border;
 
+	h1 span {
+		font-size: 0.5em;
+		padding-left: 1em;
+	}
+
 	$sLineH: 30px;
 	$h2H: 50px;
 
 	.items {
-		margin-bottom: 3*$sLineH+$h2H;
+		height: calc(100% - #{3*$sLineH+$h2H+70px} - 3em);
+		overflow: auto;
+		list-style: none;
+		padding: 0px 1.5em;
 
 		.item {
+			padding: 0.5em 0px;
+			border-bottom: $border;
+
+			.price {
+				float: right;
+			}
 		}
 	}
 

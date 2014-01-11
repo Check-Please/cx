@@ -1,6 +1,10 @@
 @import "../../_ignore/main.scss";
 @import "globals.scss";
 
+@-webkit-keyframes pay-blink { 
+   50% { border-color: #F00; } 
+}
+
 .tickets .ticket .payments {
 	position: absolute;
 	height: calc(100% - #{2*$padding});
@@ -8,17 +12,60 @@
 	padding: $padding;
 	right: 0%;
 
+	& > ul {
+		list-style: none;
+		padding: 0px;
+	}
+
 	.payment {
+		border: $border;
+		padding: 0.5em;
+		margin-bottom: 1em;
+		cursor: pointer;
+		div { cursor: auto; }
+
 		.card-info {
+			p {	margin: 0px 0px 1em 0px; }
 		}
 		.messages {
 			& > * {
-				width: 33%;
+				width: calc(33% - 0.34em);
 				display: inline-block;
+			}
+			.success {
+				color: #0A0;
+			}
+			.fail {
+				color: #A00;
+			}
+			.update {
 			}
 		}
 
+		&.paid {
+			background: #AFA;
+			.messages .success { font-weight: bold; }
+		}
+		&.failed {
+			background: #FAA;
+			&.limit .fail[msg="limit"] { font-weight: bold; }
+			&.invalid .fail[msg="invalid"] { font-weight: bold; }
+			&.reject .fail[msg="reject"] { font-weight: bold; }
+			&.paid .fail[msg="paid"] { font-weight: bold; }
+			&.tech .fail[msg="tech"] { font-weight: bold; }
+			&.other .fail[msg="other"] { font-weight: bold; }
+		}
+		&.none {
+			&.enqueue .update[msg="enqueue"] { font-weight: bold; }
+			&.terminal .update[msg="terminal"] { font-weight: bold; }
+			&.processing .update[msg="processing"] { font-weight: bold; }
+		}
+
 		.card-info, .messages { display: none; }
-		&.focus { .card-info, .messages { display: block; } }
+		&.focus { &>a { display: none } &>div { display: block; } }
+
+		&.notification {
+			-webkit-animation: pay-blink .5s step-end infinite alternate;
+		}
 	}
 }

@@ -15,6 +15,7 @@ var menu = menu || {};
 		raw = raw.split(",");
 		var item = menu.items[parseInt(raw[0])];
 		if(item != null) {
+			item = $.extend(true, {}, item);
 			item.mods = [];
 			for(var i = 1; i < raw.length; i++) {
 				var mod = menu.mods[parseInt(raw[i])];
@@ -25,31 +26,24 @@ var menu = menu || {};
 		return item;
 	}
 
+	function makeKey(x) {
+		return x.name+(x.price?","+x.price:"")+(x.tax?"+"+x.tax:"");
+	}
+	var lookup = {};
+
 	menu.unparse = function(item) {
-		var str = lookup(item);
+		var str = lookup[makeKey(item)];
 		if((str != null) && (item.mods != null))
 			for(var i = 0; i < item.mods.length; i++) {
-				var m = lookup(item.mods[i]);
+				var m = lookup[makeKey(item.mods[i])];
 				if(m != null)
 					str += ","+m;
 			}
 		return str;
 	}
 
-	function lookup(x) {
-		x = $.extend(true, {}, x);
-		delete x.id;
-		delete x.orderDate;
-		delete x.mods;
-		delete x.choices;
-		delete x.serviceCharge;
-		delete x.discount;
-		delete x.paidNum;
-		delete x.paidDenom;
-		return lookup[JSON.stringify[x]];
-	}
 	for(var i in menu.items)
-		lookup[JSON.stringify(menu.items[i])] = i;
+		lookup[makeKey(menu.items[i])] = i;
 	for(var i in menu.mods)
-		lookup[JSON.stringify(menu.mods[i])] = i;
+		lookup[makeKey(menu.mods[i])] = i;
 })();

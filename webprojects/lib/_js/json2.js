@@ -1,6 +1,6 @@
 //There is no good reason for you to be reading this file
 
-if(!{{NATIVE}}) {
+IF_NOT_NATIVE
 
 	/*
 		json2.js
@@ -489,4 +489,5 @@ if(!{{NATIVE}}) {
 			};
 		}
 	}());
-}
+
+END_IF

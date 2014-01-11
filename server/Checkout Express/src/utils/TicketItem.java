@@ -30,10 +30,11 @@ public class TicketItem {
 	private long tickDiscount;
 
 	private List<ItemModifier> mods;
+
 	private long paidNum;//defaults to 0
 	private long paidDenom;//defaults to 1
 
-	public TicketItem(String id, String name, long price, long tax, long serviceCharge, long discount, List<ItemModifier> mods) {
+	public TicketItem(String id, String name, long price, long tax, long serviceCharge, long discount, List<ItemModifier> mods, Frac paidFrac) {
 		this.id = id;
 		this.name = name;
 		this.price = price;
@@ -45,8 +46,8 @@ public class TicketItem {
 		this.tickSC = 0L;
 		this.tickDiscount = 0L;
 		this.mods = mods;
-		this.paidNum = 0L;
-		this.paidDenom = 1L;
+		this.paidNum = paidFrac.getNum();
+		this.paidDenom = paidFrac.getDenom();
 	}
 
 	public TicketItem(JSONObject json) throws JSONException

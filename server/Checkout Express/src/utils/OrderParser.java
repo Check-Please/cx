@@ -54,13 +54,15 @@ public class OrderParser {
 		for(int i = 0; i < rawMods.length(); i++)
 			mods.add(parseMod(rawMods.getJSONObject(i)));
 
+		Frac paidFrac = paid.containsKey(id) ? paid.get(id) : Frac.ZERO;
+
 		List<TicketItem> items = new ArrayList<TicketItem>();
 		if(item.has("quantity")) {
 			int q = item.getInt("quantity");
 			for(int i = 0; i < q; i++)
-				items.add(new TicketItem(id+","+i, name, price, tax, serviceCharge, discount, mods));
+				items.add(new TicketItem(id+","+i, name, price, tax, serviceCharge, discount, mods, paidFrac));
 		} else
-			items.add(new TicketItem(id, name, price, tax, serviceCharge, discount, mods));
+			items.add(new TicketItem(id, name, price, tax, serviceCharge, discount, mods, paidFrac));
 		
 		return items;
 	}

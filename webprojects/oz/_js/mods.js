@@ -1,4 +1,4 @@
 var menu = menu || {};
-menu.items = [{
+menu.mods = [{
 	name: "No Dressing"
 }];

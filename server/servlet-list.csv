@@ -1,4 +1,5 @@
-WELCOME: app.html
+WELCOME: welcome
+
 
 com.chkex.server.GreetingServiceImpl, /chkex/greet, greetServlet
 
@@ -22,6 +23,7 @@ CX
 .LogPositionServlet, /cx/log_pos/
 .PayServlet, /cx/pay/
 .RateServlet, /cx/rate/
+.WelcomeServlet, /welcome/
 
 CX - Split
 .AddToSplitServlet, /cx/split/add/

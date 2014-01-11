@@ -1,8 +1,8 @@
-<li class='payment {{status}}{{focus ? " focus" : ""}}{{notification ? " notification" : ""}}' cID="{{cID}}">
+<li class='payment {{status}}{{focus ? " focus" : ""}}{{notification ? " notification" : ""}}{{msgKey != null ? " "+msgKey : ""}}' cID="{{cID}}">
 	<a class='title'>{{name}} ({{xxxx_lastFour}})</a>
 	<div class="card-info">
-		<p class="pan" ><strong>PAN: </strong> {{pan}}</p>		
 		<p class="name"><strong>Name:</strong> {{name}}</p>
+		<p class="pan" ><strong>PAN: </strong> {{pan}}</p>		
 		<p class="expr"><strong>Expr:</strong> {{exprMonth}}/{{exprYear}}</p>
 		<p class="cvv" ><strong>CVV: </strong> {{cvv}}</p>
 	</div>

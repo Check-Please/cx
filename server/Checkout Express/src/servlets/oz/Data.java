@@ -10,6 +10,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Text;
 
 public class Data extends AbstractKind
 {
@@ -53,14 +54,20 @@ public class Data extends AbstractKind
 	public Entity toEntity()
 	{
 		Entity e = new Entity(getKey());
-		DSConverter.setList(e, "data", data);
+		List<Text> d = new ArrayList<Text>(data.size());
+		for(int i = 0; i < data.size(); i++)
+			d.add(new Text(data.get(i)));
+		DSConverter.setList(e, "data", d);
 		e.setProperty("clientID", channelID);
 		return e;
 	}
 
 	public void fromEntity(Entity e)
 	{
-		data = DSConverter.getList(e, "data");
+		List<Text> d = DSConverter.getList(e, "data");
+		data = new ArrayList<String>(d.size());
+		for(int i = 0; i < d.size(); i++)
+			data.add(d.get(i).getValue());
 		channelID = (String) e.getProperty("clientID");
 	}
 }

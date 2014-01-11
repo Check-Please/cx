@@ -144,7 +144,7 @@ var mvc = {};
 				var tickTax = (item.tickTax||0)*num/denom/100;
 				var tickDiscount = (item.tickDiscount||0)*num/denom/100;
 				var tickSC = (item.tickSC||0)*num/denom/100;
-				var rMods = $.extend(true, {}, item.mods);
+				var rMods = $.extend(true, [], item.mods);
 				ret.push({
 					id: id,
 					num: num,
@@ -158,10 +158,10 @@ var mvc = {};
 				});
 				for(var j = 0; j < rMods.length; j++) {
 					var mod = rMods[j];
-					var p += (mod.price||0)*num/denom/100;
-					var t += (mod.tax||0)*num/denom/100;
-					var d += (mod.discount||0)*num/denom/100;
-					var s += (mod.serviceCharge||0)*num/denom/100;
+					var p = (mod.price||0)*num/denom/100;
+					var t = (mod.tax||0)*num/denom/100;
+					var d = (mod.discount||0)*num/denom/100;
+					var s = (mod.serviceCharge||0)*num/denom/100;
 					price += p;
 					tax += t;
 					discount += d;
@@ -185,6 +185,8 @@ var mvc = {};
 		ret.discount = money.round(ret.discount);
 		ret.serviceCharge = money.round(ret.serviceCharge);
 		ret.tipable = money.round(ret.tipable);
+		ret.total = ret.subtotal + ret.fee + ret.tax + ret.serviceCharge -
+																ret.discount;
 		return ret;
 	};
 })();

@@ -45,14 +45,15 @@
 	/*	Deletes a ticket item
 	 */
 	function deleteItem() {
+		var $tick = $(this).parents(".ticket");
 		$(this).parent().remove();
-		upateItems.call($(this).parents(".ticket")[0]);
+		updateItems.call($tick[0]);
 	}
 
 	/*	Toggles if one payment has the focus
 	 */
 	function togglePayFocus() {
-		var $this = $(this);
+		var $this = $(this).find("a");
 		models.togglePaymentFocus(
 				$this.parents(".ticket").attr("tKey"),
 				$this.parents(".payment").attr("cID"));
@@ -68,7 +69,7 @@
 					$this.hasClass("fail") ?	models.STATUS_FAIL :
 												models.STATUS_NONE;
 		var msg = $this.attr("msg");
-		models.setPaymentStatus(tKey, cID, sCode,
+		models.setPaymentStatus(tKey, cID, msg, sCode,
 			sCode == models.STATUS_PAID ? "Success!" :
 			msg == "limit"	? "Not within credit limit"		:
 			msg == "invalid"? "Invalid credit information"	:
@@ -90,10 +91,11 @@
 			var $tick = $(templates.ticket(tKeys[i]));
 			var $items = $tick.find(".input .items");
 			$items.on("keyup keydown keypress", ".item input",
-										updateItems.bind($tick));
+										updateItems.bind($tick[0]));
 			$items.on("click", ".item a", deleteItem);
-			$tick.find(".new.item").click(newItem.bind($tick));
-			$tick.find(".payments").on("click", ".title", togglePayFocus);
+			$tick.find(".new.item").click(newItem.bind($tick[0]));
+			$tick.find(".payments").on("click", ".payment", togglePayFocus);
+			$tick.find(".payments").on("click", ".payment .messages", false);
 			$tick.find(".payments").on("click", ".messages > a", setStatus);
 			$ticks.append($tick);
 
@@ -113,15 +115,20 @@
 		$items.children().each(function() {
 			nCurrItems += menu.parse($(this).find("input").val())==null?0:1;
 		});
-		if(nCurrItems == items.length) {
+		if(nCurrItems != items.length) {
 			$items.empty();
-			for(var i = 0; i < items.length; i++)
-				$items.append($(templates.itemIn(items[i].id,
-												menu.unparse(items[i]))));
+			for(var i = 0; i < items.length; i++) {
+				var item = items[i];
+				var str = menu.unparse(item);
+				if(str != null)
+					$items.append($(templates.itemIn(item.id, item.orderDate,
+																	str)));
+			}
 		}
 
 		//Payments
-		var payments = {};//status -> array of payment elems
+		var notification = false;
+		var payElems = {};//status -> array of payment elems
 		var fPayment = null;
 		for(var i = 0; i < payments.length; i++) {
 			var p = payments[i];
@@ -132,29 +139,33 @@
 			var lastFour = p.pan.slice(-4);
 			while(lastFour.length < p.pan.length)
 				lastFour = "X"+lastFour;
-			var $payment = $(template.payment(p.cID, statusString, p.focus,
-								p.notification, p.pan, p.name,
+			var $payment = $(templates.payment(p.cID, statusString, p.msgKey,
+								p.focus, p.notification, p.pan, p.name,
 								p.exprMonth, p.exprYear, p.cvv, lastFour));
-			(payments[sCode] || (payments[sCode] = [])).push($payment);
+			(payElems[sCode] || (payElems[sCode] = [])).push($payment);
+			notification = notification || p.notification;
 			if(p.focus)
 				fPayment = p;
 		}
 		var $payments = $tick.find(".payments ul");
-		$payments.append.apply($payments, payments[models.STATUS_NONE]);
-		$payments.append.apply($payments, payments[models.STATUS_FAIL]);
-		$payments.append.apply($payments, payments[models.STATUS_PAID]);
+		$payments.empty();
+		$payments.append.apply($payments, payElems[models.STATUS_NONE]);
+		$payments.append.apply($payments, payElems[models.STATUS_FAIL]);
+		$payments.append.apply($payments, payElems[models.STATUS_PAID]);
+		$(".nav a.tBtn[tKey=\""+tKey+"\"]")[(
+			notification ? "add" : "remove")+"Class"]("notification");
 
 		//Filter by payer with focus
 		if(fPayment != null) {
 			var payFracs = {};
-			for(var i = 0; i < fPayment.itemsToPay; i++)
+			for(var i = 0; i < fPayment.itemsToPay.length; i++)
 				payFracs[fPayment.itemsToPay[i]] = {
 					num: fPayment.payFracNums[i],
 					denom: fPayment.payFracDenoms[i]
 				}
-			items = $.extend(true, {}, items);
+			items = $.extend(true, [], items);
 			for(var i = items.length-1; i >= 0; i--) {
-				frac = payFracs[items[i].id];
+				var frac = payFracs[items[i].id];
 				if(frac == null)
 					items.splice(i, 1);
 				else {
@@ -168,26 +179,32 @@
 		var summary = {	subtotal: 0, tax: 0, service: 0, discount: 0,
 						tip: (fPayment||{}).tip||0};
 		$items = $tick.find(".info .items");
+		$items.empty();
 		for(var i = 0; i < items.length; i++) {
 			var item = items[i];
-			var price = (item.price||0)-(item.discount||0);
+			var d = (item.paidDenom) || 1;
+			var n = d - (item.paidNum || 0);
+			var name = (n != d ? "("+n+"/"+d+") " : "")+item.name;
+			var price = ((item.price || 0) - (item.discount || 0)) * n / d;
 			summary.subtotal += price;
-			summary.tax += item.tax||0;
-			summary.service += item.serviceCharge||0;
-			$items.append($(templates.itemDesc(item.name, price,
-					var p = (x.price||0)-(x.discount||0);
-					item.mods.map(function(x) {
-							return templates.map(x.name, p);
-					});
+			summary.tax += (item.tax || 0) * n / d;
+			summary.service += (item.serviceCharge || 0) * n / d;
+			$items.append($(templates.itemDesc(name, money.toStr(price/100),
+				item.mods.map(function(x) {
+					var p = ((x.price || 0) - (x.discount || 0)) * n / d;
 					summary.subtotal += p;
-					summary.tax += x.tax||0;
-					summary.service += x.serviceCharge||0;
+					summary.tax += (x.tax || 0) * n / d;
+					summary.service += (x.serviceCharge || 0) * n / d;
+					return templates.itemMod(x.name,p?money.toStr(p/100):"");
+				}).join("")
 			)));
 		}
 		summary.total =	summary.subtotal + summary.tax +
 						summary.service - summary.discount +
 						(summary.tip || 0);
 		for(var i in summary)
-			$tick.find(".info ."+i+" span").text(money.toStr(summary[i]));
+			$tick.find(".info ."+i+" span").text(
+												money.toStr(summary[i]/100));
+		$(".info h1 span").text(fPayment ? "("+fPayment.name+")" : "");
 	}
 })();

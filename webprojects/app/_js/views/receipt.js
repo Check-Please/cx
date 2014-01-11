@@ -11,6 +11,7 @@ mvc.views = mvc.views || {};
 	var $view; //The element which corresponds to this view
 	var tipable; //The ammount of money which is tipable
 	var $tipPrct; //The element which shows what percentage the tip is
+	var tipPercent=20; //The desired % for the tip.  null if tip not set by %
 	function calcTipPercent()
 	{
 		$tipPrct = $tipPrct || $view.find(".tipPrct");
@@ -82,17 +83,26 @@ mvc.views = mvc.views || {};
 
 	var $tipBox;//The input dialogue which the top is typed into
 	var oldTip = "";//What the tip was before the most recent change
-	function updateTip()
+	function setTipStr(tipStr)
 	{
-		var newTip = $tipBox.val();
-		if(newTip != oldTip) {
-			if(newTip.match(/^[0-9]*\.?[0-9]{0,2}$/)) {
-				oldTip = newTip;
-				mvc.tip(newTip.length == 0 || newTip == "." ? null :
-						Math.round(parseFloat(newTip)*100));
-			} else
-				$tipBox.val(oldTip);
+		if(tipStr != $tipBox.val())
+			$tipBox.val(tipStr);
+		if(tipStr != oldTip) {
+			oldTip = tipStr;
+			mvc.tip((tipStr.length == 0) || (tipStr == ".") ? null :
+							Math.round(parseFloat(tipStr)*100));
 		}
+	}
+	function parseTip()
+	{
+		tipPercent = null;
+		var newTip = $tipBox.val();
+		setTipStr(newTip.match(/^[0-9]*\.?[0-9]{0,2}$/) ? newTip : oldTip);
+	}
+	function setTipByPrct(prct) {
+		tipPercent = prct;
+		var tip = money.toStr(money.round(tipable*prct/100), "");
+		setTipStr(tip);
 	}
 
 	var $splitBtn;
@@ -105,10 +115,6 @@ mvc.views = mvc.views || {};
 					connectionID: mvc.connectionID()
 				}, $.noop);
 				mvc.split(null);
-			}
-			function setTipByPrct(prct) {
-				$tipBox.val(money.toStr(money.round(tipable*prct/100), ""));
-				updateTip();
 			}
 			if(!$view) {
 				var re= /^(.*?),?([^\\,]+,?[a-z ]{2,},?\s*[0-9\\-]{0,10})$/i;
@@ -130,22 +136,24 @@ mvc.views = mvc.views || {};
 				$view.find(".tip .percent.other").click(function() {
 					$tipBox.val("");
 					$tipBox.focus();
-					updateTip();
+					parseTip();
 				});
-				$tipBox.keyup(updateTip);
-				$tipBox.keydown(updateTip);
-				$tipBox.keypress(updateTip);
-				updateTip();
+				$tipBox.keyup(parseTip);
+				$tipBox.keydown(parseTip);
+				$tipBox.keypress(parseTip);
 				mvc.items.listen(render);
 				mvc.split.listen(render);
 				mvc.selection.listen(render);
 				mvc.tip.listen(calcTipPercent);
-				setTipByPrct(20);
 				$trgt.append($view);
 			} else {
 				$splitBtn.text(templates.splitText(mvc.split() != null));
 				$view.show();
 			}
+			if(tipPercent != null)
+				setTipByPrct(tipPercent);
+			else
+				parseTip();
 		},
 		redirect: function(prevView) {
 			if((mvc.split() != null) && (prevView != mvc.views.split) &&

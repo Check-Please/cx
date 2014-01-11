@@ -1,7 +1,7 @@
 /**	This file manages the location
  */
 
-$(document).ready(models.refresh);
+$(document).ready(function(){models.refresh();});
 
 window.onhashchange = function() {
 	"use strict";
