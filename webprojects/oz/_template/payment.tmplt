@@ -14,7 +14,7 @@
 		<a class="fail" msg="invalid"	>Invalid</a>
 		<a class="fail" msg="reject"	>Reject</a>
 
-		<a class="fail" msg="paid"	>Paid</a>
+		<a class="fail" msg="clear"	>Paid</a>
 		<a class="fail" msg="tech"	>Tech</a>
 		<a class="fail" msg="other"	>Other</a>
 

@@ -42,23 +42,32 @@
 			}
 		}
 
+		&.paid, &.failed {
+			.messages a { display: none; }
+		}
+		@mixin bold-msg($msg) {
+			&.#{$msg} .messages a[msg="#{$msg}"] {
+				font-weight: bold;
+				display: inline-block;
+			}
+		}
 		&.paid {
 			background: #AFA;
-			.messages .success { font-weight: bold; }
+			.messages .success { font-weight: bold; display: inline-block; }
 		}
 		&.failed {
 			background: #FAA;
-			&.limit .fail[msg="limit"] { font-weight: bold; }
-			&.invalid .fail[msg="invalid"] { font-weight: bold; }
-			&.reject .fail[msg="reject"] { font-weight: bold; }
-			&.paid .fail[msg="paid"] { font-weight: bold; }
-			&.tech .fail[msg="tech"] { font-weight: bold; }
-			&.other .fail[msg="other"] { font-weight: bold; }
+			@include bold-msg(limit);
+			@include bold-msg(invalid);
+			@include bold-msg(reject);
+			@include bold-msg(paid);
+			@include bold-msg(tech);
+			@include bold-msg(other);
 		}
 		&.none {
-			&.enqueue .update[msg="enqueue"] { font-weight: bold; }
-			&.terminal .update[msg="terminal"] { font-weight: bold; }
-			&.processing .update[msg="processing"] { font-weight: bold; }
+			@include bold-msg(enqueue);
+			@include bold-msg(terminal);
+			@include bold-msg(processing);
 		}
 
 		.card-info, .messages { display: none; }

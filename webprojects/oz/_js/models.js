@@ -66,7 +66,7 @@ var models = models || {};
 			if(data.ticks instanceof Array) {
 				tickets = {};
 				for(var i = 0; i < data.ticks.length; i++)
-					tickets["oz"+i] = data.ticks[i];
+					tickets["OZ"+i] = data.ticks[i];
 			} else
 				tickets = data.ticks;
 
@@ -96,9 +96,15 @@ var models = models || {};
 		payment.exprYear = "20"+payment.expr.slice(0,2);
 		payment.exprMonth = payment.expr.slice(2);
 		var tKey = payment.tKey;
-		payments[tKey].push(payment);
-		payments[tKey].byCID[payment.cID] = payment;
-		drawTick(tKey, tickets[tKey], payments[tKey]);
+		var cID = payment.cID;
+		var pays = payments[tKey];
+		if(pays.byCID[cID] != null)
+			for(var i = 0; i < pays.length; i++)
+				if(pays[i].cID == cID)
+					pays.splice(i,1);
+		pays.push(payment);
+		pays.byCID[cID] = payment;
+		drawTick(tKey, tickets[tKey], pays);
 	}
 	if({{DEBUG}})
 		window.addPayment = addPayment;
@@ -112,7 +118,7 @@ var models = models || {};
 	function openSocket(token)
 	{
 		var onOpen = $.noop;
-		var onMessage = addPayment.o(JSON.parse);
+		var onMessage = addPayment.o(JSON.parse.o(op.get.C($, "data")));
 		var onError = function(err) {
 			alert("SOCKET ERROR!  Please restart.\n\n"+JSON.stringify(err));
 			var s = skt;
@@ -216,4 +222,40 @@ var models = models || {};
 		};
 		drawTick(tKey, tickets[tKey], payments[tKey]);
 	};
+
+	/**	Removes all items/payments from a particular table
+	 *
+	 *	If there are outstanding payments, the user gets a confirm dialogue.
+	 *	If the user confirms, all outstanding payments fail, getting the
+	 *	message that they timed out
+	 *
+	 *	@param	tKey The key for the table to clear
+	 */
+	models.clear = function(tKey) {
+		var payers = payments[tKey];
+		var confirmed = false;
+		for(var i = 0; i < payers.length; i++) {
+			var payment = payers[i];
+			if(payment.statusCode == models.STATUS_NONE) {
+				if(!confirmed) {
+					confirmed = confirm("There are some outstanding "+
+										"payments on this table.  Are you "+
+										"sure you want to clear?");
+					if(!confirmed)
+						return;
+				}
+				post("failure", {
+					channelID: payment.cID,
+					msg: "Payment timmed out",
+					i: parseInt(tKey.substr(2)),
+					items: payment.itemsToPay,
+					nums: payment.payFracNums,
+					denoms: payment.payFracDenoms
+				}, $.noop);
+			}
+		}
+		payments[tKey] = [];
+		payments[tKey].byCID = {};
+		models.setItems(tKey, []);
+	}
 })();

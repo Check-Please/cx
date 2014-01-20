@@ -63,8 +63,11 @@
 	 */
 	function setStatus() {
 		var $this = $(this);
+		var $payment = $this.parents(".payment");
+		if($payment.hasClass("paid") || $payment.hasClass("failed"))
+			return;
 		var tKey = $this.parents(".ticket").attr("tKey");
-		var cID = $this.parents(".payment").attr("cID")
+		var cID = $payment.attr("cID")
 		var sCode =	$this.hasClass("success") ?	models.STATUS_PAID :
 					$this.hasClass("fail") ?	models.STATUS_FAIL :
 												models.STATUS_NONE;
@@ -74,7 +77,7 @@
 			msg == "limit"	? "Not within credit limit"		:
 			msg == "invalid"? "Invalid credit information"	:
 			msg == "reject"	? "Credit card rejected"		:
-			msg == "paid"	? "Ticket already paid"			:
+			msg == "clear"	? "Ticket already paid"			:
 			msg == "tech"	? "Technical Difficulties"		:
 			msg == "other"	? "Unknown failure cause"		:
 			msg == "enqueue"	? "Entering queue"	:
@@ -94,6 +97,7 @@
 										updateItems.bind($tick[0]));
 			$items.on("click", ".item a", deleteItem);
 			$tick.find(".new.item").click(newItem.bind($tick[0]));
+			$tick.find(".input .clear").click(models.clear.c(tKeys[i]));
 			$tick.find(".payments").on("click", ".payment", togglePayFocus);
 			$tick.find(".payments").on("click", ".payment .messages", false);
 			$tick.find(".payments").on("click", ".messages > a", setStatus);

@@ -125,7 +125,8 @@ public class TableKey extends AbstractKind
 	{
 		ChannelService channelService = ChannelServiceFactory.getChannelService();
 		for(Entity e : getClients(k, ds))
-			UserConnection.sendItemsUpdateAndRemoveSplit(items, splitID, e.getKey(), channelService);
+			if(!e.getKey().getName().equals(splitID))
+				UserConnection.sendItemsUpdateAndRemoveSplit(items, splitID, e.getKey(), channelService);
 	}
 
 	public void sendItemsUpdateAndRestoreSplit(String splitID, List<String> splitItems, DatastoreService ds) throws JSONException, UnsupportedFeatureException, HttpErrMsg
@@ -137,7 +138,8 @@ public class TableKey extends AbstractKind
 	{
 		ChannelService channelService = ChannelServiceFactory.getChannelService();
 		for(Entity e : getClients(k, ds))
-			UserConnection.sendItemsUpdateAndRestoreSplit(items, splitID, splitItems, e.getKey(), channelService);
+			if(!e.getKey().getName().equals(splitID))
+				UserConnection.sendItemsUpdateAndRestoreSplit(items, splitID, splitItems, e.getKey(), channelService);
 	}
 
 	public void sendSplitUpdate(String splitID, Set<String> splitItems, DatastoreService ds)

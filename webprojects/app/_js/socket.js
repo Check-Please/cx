@@ -113,10 +113,10 @@ var socket = socket || {};
 		/*	type = 0 for msg update, -1 for error, 1 for paid
 		 */
 		LOAD_UPDATE: function(type, msg) {
-			switch(type) {
-				case 0: mvc.loading(msg); break;
-				case -1: if(msg!=null) alert(msg); mvc.loading(null); break;
-				case 1: mvc.loading(null); mvc.paid(true); break;
+			switch(parseInt(type)) {
+				case 0: mvc.loadMsg(msg); break;
+				case -1: if(msg!=null) alert(msg); mvc.loadMsg(null); break;
+				case 1: mvc.loadMsg(null); mvc.paid(true); break;
 			}
 		}
 	}

@@ -48,9 +48,9 @@ public class UserConnection extends AbstractKind
 		this.startTimes = startTimes;
 	}
 
-	public UserConnection(ClosedUserConnection cuc)
+	public UserConnection(TableKey table, ClosedUserConnection cuc)
 	{
-		setKey(cuc.getKey().getParent().getChild(getKind(), cuc.getKey().getName()));
+		setKey(table.getKey().getChild(getKind(), cuc.getKey().getName()));
 		this.itemsToPay = cuc.itemsToPay;
 		this.username = cuc.username;
 		this.startTimes = cuc.startTimes;
@@ -105,7 +105,13 @@ public class UserConnection extends AbstractKind
 
 	public static void sendItemsUpdateAndRestoreSplit(List<TicketItem> items, String splitID, List<String> splitItems, Key k, ChannelService channelService)
 	{
-		sendMsg("items_and_restore_split", items+"\n"+splitID+"\n"+splitItems, k, channelService);
+		StringBuffer splitItemsStr = new StringBuffer();
+		for(String splitItem : splitItems) {
+			if(splitItemsStr.length() > 0)
+				splitItemsStr.append(",");
+			splitItemsStr.append("\""+splitItem+"\"");
+		}
+		sendMsg("items_and_restore_split", items+"\n"+splitID+"\n["+splitItemsStr+"]", k, channelService);
 	}
 
 	public static void sendSplitUpdate(String splitID, JSONArray splitItems, Key k, ChannelService channelService)

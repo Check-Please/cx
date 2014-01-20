@@ -291,7 +291,7 @@ mvc.views = mvc.views || {};
 				mvc.done(resp.done);
 				mvc.paid(true);
 			} else {
-				mvc.loading(resp.loadMsg);
+				mvc.loadMsg(resp.loadMsg);
 			}
 			$(".loading").removeClass("loading");
 		}, buildAjaxErrFun("pay"));

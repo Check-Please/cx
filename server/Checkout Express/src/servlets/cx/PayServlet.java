@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import kinds.Client;
 import kinds.ConnectionToTablePointer;
 import kinds.ClosedUserConnection;
+import kinds.Restaurant;
 import kinds.UserConnection;
 import kinds.TableKey;
 
@@ -271,10 +272,9 @@ public class PayServlet extends PostServletBase
 	private static void reopenConnection(TableKey table, String connectionID, DatastoreService ds)
 	{
 		new ConnectionToTablePointer(KeyFactory.createKey(ConnectionToTablePointer.getKind(), connectionID), table.getKey().getName()).commit(ds);
-		ClosedUserConnection cuc = new ClosedUserConnection(MyUtils.get_NoFail(table.getKey().getChild(UserConnection.getKind(), connectionID), ds));
-		new UserConnection(cuc).commit(ds);
+		ClosedUserConnection cuc = new ClosedUserConnection(MyUtils.get_NoFail(KeyFactory.createKey(Restaurant.getKind(), table.getRestrUsername()).getChild(ClosedUserConnection.getKind(), connectionID), ds));
+		new UserConnection(table, cuc).commit(ds);
 		cuc.rmv(ds);
-
 	}
 
 	/*	Finalizes the metadata in the ticket and sends updates.  This entails clearing the meta-

@@ -65,8 +65,6 @@ var mvc = {};
 
 		var ls = [];
 		mvc[name] = function(v) {
-			if(!inited)
-				console.log("NAME:"+name+", OLD:"+old+", VAL:"+v);
 			{{ASSERT: inited && "Access"}};
 			if(arguments.length > 0) {
 				var old = vals[name];
