@@ -1,19 +1,26 @@
 (function() {
 	device.getTableInfo = function(c) {
-		function attempt(nAttempts) {
-			iOS.call("getTableInfo", [], function(tInfo) {
-				if($.isEmptyObject(tInfo) && nAttempts < 20) {
-					setTimeout(attempt, 100, nAttempts+1); 
-				} else {
-					if($.isEmptyObject(tInfo))
-						tInfo = {rssis: [], ids: []};
-					c(JSON.stringify(tInfo));
-				}
-			}, function(err) {
-				c(null, err.code, err.message);
-			});
+		if({{LOCAL}})
+			c("IKA");
+		else {
+			function attempt(nAttempts) {
+				iOS.call("getTableInfo", [], function(tInfo) {
+					if($.isEmptyObject(tInfo) && nAttempts < 20) {
+						setTimeout(attempt, 100, nAttempts+1); 
+					} else {
+						if($.isEmptyObject(tInfo))
+							c(null, 0,	"You do not appear to be sitting "+
+										"at a table which supports " +
+										"Checkout Express");
+							tInfo = {rssis: [], ids: []};
+						c(JSON.stringify(tInfo));
+					}
+				}, function(err) {
+					c(null, err.code, err.message);
+				});
+			}
+			attempt(0);
 		}
-		attempt(0);
 	};
 	var kc;
 	iOS.call("getKeychain", [], function(kcStr){

@@ -167,14 +167,15 @@ public class PayServlet extends PostServletBase
 		}
 	}
 
-	private static void addOrSubToMap(Map<String, Frac> m, List<String> keys, List<Frac> vals, boolean add)
+	private static enum MAP_SIGN {MAP_ADD, MAP_SUB};
+	private static void addOrSubToMap(Map<String, Frac> m, List<String> keys, List<Frac> vals, MAP_SIGN sign)
 	{
 		for(int i = 0; i < keys.size(); i++) {
 			String k = keys.get(i);
 			Frac old = m.get(k);
 			if(old == null)
 				old = Frac.ZERO;
-			old = old.add(vals.get(i).mult(add ? 1 : -1));
+			old = old.add(vals.get(i).mult(sign == MAP_SIGN.MAP_ADD ? 1 : -1));
 			m.put(k, old);
 		}
 	}
@@ -356,17 +357,17 @@ public class PayServlet extends PostServletBase
 		//Pay
 		JSONObject query = new JSONObject(table.getQuery());
 		JSONObject ret = new JSONObject();
-		boolean sync = pay(query, table.getRestrUsername(), table.getKey().getName(), connectionID, pan, name, expr, zip, cvv, itemsToPay, payFracs, items, total, tip, ds);
 		config.FORBID_RETRIES = true;
+		boolean sync = pay(query, table.getRestrUsername(), table.getKey().getName(), connectionID, pan, name, expr, zip, cvv, itemsToPay, payFracs, items, total, tip, ds);
 
 		closeConnection(table, connectionID, tip, ds);
 		boolean ticketPaid;
 		if(sync) {
-			addOrSubToMap(paidPart, itemsToPay, payFracs, true);
+			addOrSubToMap(paidPart, itemsToPay, payFracs, MAP_SIGN.MAP_ADD);
 			ticketPaid = isPaid(itemsOnTicket, paidPart);
 			ret.put("done", ticketPaid);
 		} else {
-			addOrSubToMap(outstandingPayments, itemsToPay, payFracs, true);
+			addOrSubToMap(outstandingPayments, itemsToPay, payFracs, MAP_SIGN.MAP_ADD);
 			ticketPaid = false;
 			ret.put("loadMsg", query.get("method").equals("oz") ? "Accessing terminal" :
 							"Processing credit card");
@@ -398,7 +399,7 @@ public class PayServlet extends PostServletBase
 
 		//Manage internal stuff
 		Map<String, Frac> paidPart = table.getPaidPart();
-		addOrSubToMap(paidPart, itemsPaid, ammountPaid, true);
+		addOrSubToMap(paidPart, itemsPaid, ammountPaid, MAP_SIGN.MAP_ADD);
 		if(itemsOnTicket == null) {
 			List<TicketItem> items;
 			try {
@@ -415,7 +416,7 @@ public class PayServlet extends PostServletBase
 		if(ticketPaid)
 			table.clearTickMetadata(ds);
 		else
-			addOrSubToMap(table.getOutstandingPart(), itemsPaid, ammountPaid, false);
+			addOrSubToMap(table.getOutstandingPart(), itemsPaid, ammountPaid, MAP_SIGN.MAP_SUB);
 		table.commit(ds);
 	}
 
@@ -435,7 +436,7 @@ public class PayServlet extends PostServletBase
 	{
 		//Manage internal stuff
 		reopenConnection(table, connectionID, ds);
-		addOrSubToMap(table.getOutstandingPart(), itemsPaid, ammountPaid, false);
+		addOrSubToMap(table.getOutstandingPart(), itemsPaid, ammountPaid, MAP_SIGN.MAP_SUB);
 		try {
 			table.sendItemsUpdateAndRestoreSplit(connectionID, itemsPaid, ds);
 		} catch (UnsupportedFeatureException e) {
