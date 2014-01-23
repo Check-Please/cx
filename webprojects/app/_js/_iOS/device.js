@@ -12,7 +12,6 @@
 							c(null, 0,	"You do not appear to be sitting "+
 										"at a table which supports " +
 										"Checkout Express");
-							tInfo = {rssis: [], ids: []};
 						c(JSON.stringify(tInfo));
 					}
 				}, function(err) {
