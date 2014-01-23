@@ -11,43 +11,8 @@ var socket = socket || {};
 (function () {
 	"use strict";
 
-	//Are you ready for the most fucked up thing you've ever seen?
-	//Because what follows is not for the faint of heart.  I'm serious.
-	//
-	//
-	//
-	//You've been warned.
-	if({{NATIVE}}) device.ajax.get("_ah/channel/jsapi", {}, function(code) {
-		code = code.replace(/\/_ah/g, "{{SERVER}}/_ah");//I WARNED YOU
-		var $script=$("<script>");//This is going exactly where you think
-		$script.attr("type", "text/JavaScript");
-		$script[0].innerHTML = code;
-		$("head").append($script);
-	}, mvc.errASAP.c("Couldn't load communications with the server"));
-	//The web case was handled in index.html
-
-	//You think it's over don't you?
-	//Don't you?
-	//Hahaha, that's rich.
-
-	socket.init = function(token, timeWaited) {
-		timeWaited = timeWaited || 0;
-		if(window.goog && goog.appengine && goog.appengine.Channel)
-			open(token);
-		else {
-			if(timeWaited > 9000)
-				mvc.errASAP("Couldn't load communications with the server");
-			else {
-				var wait = Math.ceil(timeWaited/10+20);
-				setTimeout(socket.init, wait, token, timeWaited+wait)
-			}
-		}
-	}
-	//Ok, you an open your eyes now.
-
 	var skt = null;
-	function open(token)
-	{
+	socket.init = function(token) {
     	skt = (new goog.appengine.Channel(token)).open({
 			'onopen': onOpen,
 			'onmessage': onMessage,

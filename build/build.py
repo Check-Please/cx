@@ -1,4 +1,4 @@
-import os, shutil, errno, re, csv, getopt, sys, subprocess
+import os, shutil, errno, re, csv, getopt, sys, subprocess, urllib2
 import bash, macros
 
 javaTmpltDir = "server/Checkout Express/src/templates" # This is ugly. w/e...
@@ -457,6 +457,19 @@ def transferFls(src,dest,plat,debug,mVars,mFuns,foldersToFollow,parents=[]):
     if bash.exists(htmlPath):
         transferLeaf(htmlPath,dest,plat,debug,mVars,mFuns,parents,True);
 
+""" Downloads some resource from the server so they can be used by the native
+    app.
+
+    @param  server The server to download from
+    @param  folder The folder to add the files to
+    @param  path The path to the resource
+    @param  preprocess  A function which is run over the contents of the
+                        file.  If None/not specified, no preprocessing occurs
+"""
+def downloadFile(server, folder, path, preprocess=None):
+    if preprocess == None:
+        preprocess = lambda x: x;
+
 #############################################################################
 # Executed liness
 #############################################################################
@@ -470,6 +483,8 @@ for (op, val) in getopt.getopt(sys.argv[1:], "lds", ["debug", "local",
     local = local or op == "-l" or op == "--local";
     if op == "-s" or op == "--server":
         server = val;
+if server == None:
+    server = localServer if local else webServer;
 
 projectsForApp = set([]);
 projectsForAppFil = bash.readfile("build/app-web-projects.csv");
@@ -502,11 +517,23 @@ for i in xrange(0, len(platforms)):
         bash.mkdir(platformPaths[i])
     plat = platforms[i];
     native = plat != webPlat;
+    path = platformPaths[i];
     mVars['PLATFORM'] = plat;
     mVars['NATIVE'] = "true" if native else "false";
-    mVars['SERVER'] = "" if not native else (server if server != None else (
-                                    localServer if local else webServer)); 
-    transferFls(tmpFolder, platformPaths[i], plat, debug, mVars, mFuns,
+    mVars['SERVER'] = server if native else "";
+    transferFls(tmpFolder, path, plat, debug, mVars, mFuns,
                                         uSet if i == 0 else projectsForApp);
+    # Download channel API
+    if native:
+        apiPath = "_ah/channel/jsapi";
+        bash.mkdir(os.path.join(path, "_ah"));
+        bash.mkdir(os.path.join(path, "_ah/channel"));
+        content =   urllib2.urlopen(
+                        os.path.join(server, apiPath) if local else
+                        "https://talkgadget.google.com/talkgadget/channel.js"
+                    ).read();
+        apiFile = bash.writefile(os.path.join(path, apiPath));
+        apiFile.write(re.sub(r'/_ah', os.path.join(server, "_ah"), content));
+        apiFile.close();
 
 bash.rm_r(tmpFolder);
