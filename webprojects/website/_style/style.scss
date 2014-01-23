@@ -11,7 +11,7 @@ body > a {
 	display: block;
 }
 
-img {
+#home img {
 	width: 100%;
 	margin: 25px 0px;
 }
@@ -37,13 +37,45 @@ h2 {
 	bottom: 0px;
 }
 
+#content {
+	position: relative;
+}
+
+.member {
+	width: 45%;
+	display: inline-block;
+}
+
+.member img {
+	margin-right: 1em;
+	max-width: 100%;
+}
+
+.member p {
+	margin: 0.5em 0px;
+	&.name {
+		margin-top: 1em;
+	}
+	&.school {
+		font-style: italic;
+	}
+}
+
+.nickname {
+	display: none;
+}
+
+.klarf {
+	position: absolute;
+	right: 0px;
+}
 
 @media (min-width: 650px) {
 	body {
 		width: 600px;
 		margin: auto;
 	}
-	img {
+	#home img {
 		margin: 50px 0px;
 	}
 	#nav {
@@ -74,8 +106,24 @@ h2 {
 @media (min-width: 850px) {
 	body { width: 800px; }
 	#content { width: 650px; }
+	.member img {
+		float: left;
+		width: 85px;
+	}
+	.member p.name {
+		margin-top: 0px;
+	}
 }
 
 @media (max-width: 550px) {
 	#nav a span { display: none; }
+}
+
+@media (min-width: 425px) {
+	.member img {
+		border-radius: 1em;
+	}
+	.nickname {
+		display: inline;
+	}
 }
