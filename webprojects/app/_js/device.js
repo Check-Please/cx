@@ -83,13 +83,13 @@ var device = device || {};
 	 *						parameter, the second is an error code, and the
 	 *						third is an error message.  So far, the
 	 *						following codes are in use:
-	 *							0 - No table in URL
+	 *							0 - No table info
 	 */
 	device.getTableInfo = function(callback)
 	{
 		var q = window.location.search;
 		if(q.length == 0)
-			callback(null, 0, "No table specified in the URL.");
+			callback(null, 0);
 		else {
 			var i = q.indexOf('&');
 			if(i == -1)

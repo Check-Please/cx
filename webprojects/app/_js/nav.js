@@ -16,7 +16,12 @@
 		return mvc.views[(location.hash||"").slice(1)] || mvc.views.receipt;
 	}
 	window.onhashchange = function() {
-		goToView(viewFromHash());
+		if(mvc.inited()) {
+			if({{NATIVE}} && (location.hash == "#demo"))
+				location.reload();
+			else
+				goToView(viewFromHash());
+		}
 	}
 
 	var mutex = false;

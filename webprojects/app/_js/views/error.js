@@ -19,12 +19,16 @@ mvc.views = mvc.views || {};
 											"of this app")));
 			else if(err == "noKey")
 				$trgt.append($(templates.err__noKey(
-						{{NATIVE}} ?	"you are in a restaurant which "+
-									 	"uses Checkout Express" :
+						{{NATIVE}} ?	"you are at a table which supports "+
+									 	"Checkout Express" :
 										"you typed in the URL correctly")));
 			else
 				$trgt.append($((templates["err__"+err] ||
 												templates.err.c(err))()));
+
+			if({{NATIVE}} && ((err == "noKey") || (err == "invalidKey") ||
+					(err == "empty")))
+				$trgt.find("#err").append($(templates.demoLink()));
 			var reload = {{NATIVE}} && reloadsAllowed &&
 									(err == "reload" || err == "timeout");
 			if({{DEBUG}}) try {

@@ -68,7 +68,10 @@ public class ClosedUserConnection extends UserConnection
 		e.setProperty("rating", rating);
 		e.setProperty("tip", tip);
 		e.setProperty("closeCause", closeCause);
-		e.setProperty("errMsg", errMsg);
+		String eMsg = null;
+		if(errMsg != null)
+			eMsg = errMsg.substring(0, 500);
+		e.setProperty("errMsg", eMsg);
 		return e;
 	}
 	public void fromEntity(Entity e)

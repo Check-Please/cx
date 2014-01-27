@@ -23,7 +23,7 @@ public abstract class ServletBase extends HttpServlet
 		USER
 	}
 	protected static enum ContentType {
-		JSON, XML, HTML
+		JSON, XML, HTML, PNG
 	}
 	protected static enum SecurityType {
 		REJECT, REDIRECT
@@ -129,6 +129,9 @@ public abstract class ServletBase extends HttpServlet
 				break;
 			case HTML:
 				resp.setContentType("text/html");
+				break;
+			case PNG:
+				resp.setContentType("image/png");
 				break;
 			default:
 				throw new IllegalStateException("Unknown content type");

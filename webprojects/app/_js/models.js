@@ -3,8 +3,7 @@
  *		key - The table key
  *		restrName - The name of the restaurant
  *		restrAddress - The address of the restaurant
- *		restrStyle -	The name of a custom stylesheet for the restaurant,
- *						if one exists
+ *		receiptImg - The code for the image in the receipt
  *		connectionID - Used to tell the server who changed something
  *		items -	The items on the ticket.  Stored as an array of objects.
  *				Objects follow more or less the format in TicketItem.java
@@ -54,7 +53,7 @@ var mvc = {};
 	}
 
 	var vals;
-	[	'key', 'restrName', 'restrAddress', 'restrStyle', 'connectionID',
+	[	'key', 'restrName', 'restrAddress', 'receiptImg', 'connectionID',
 		'items', 'split', 'selection', 'tip', 'contract', 'loadMsg', 'paid',
 		'done', 'err'].forEach(function(name) {
 		function myNotify(old) {

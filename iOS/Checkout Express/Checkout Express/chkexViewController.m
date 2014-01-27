@@ -27,6 +27,9 @@
     //Bluetooth
     bluetoothIDs = nil;
     bluetoothRSSIs = nil;
+//    bluetoothIDs = @[@"58844-63794"];//Light blue
+//    bluetoothRSSIs = @[@0];
+
     self.beaconManager = [[ESTBeaconManager alloc] init];
     self.beaconManager.delegate = self;
     self.beaconManager.avoidUnknownStateBeacons = YES;

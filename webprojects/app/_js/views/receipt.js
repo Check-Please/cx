@@ -119,9 +119,9 @@ mvc.views = mvc.views || {};
 			if(!$view) {
 				var re= /^(.*?),?([^\\,]+,?[a-z ]{2,},?\s*[0-9\\-]{0,10})$/i;
 				var splitAddress = re.exec(mvc.restrAddress().trim())
-				$view = $(templates.receipt(mvc.restrName(),mvc.restrStyle(),
-											splitAddress[1], splitAddress[2],
-											"<REPLACE_ME />", "<R_ME_2 />"));
+				$view = $(templates.receipt(mvc.restrName(),mvc.receiptImg(),
+								splitAddress[1], splitAddress[2],
+								"<REPLACE_ME />","<R_ME_2 />","{{SERVER}}"));
 				$container = $view.find("REPLACE_ME").parent();
 				$splitBtn = $view.find("R_ME_2").parent();
 				$splitBtn.text(templates.splitText(mvc.split() != null));

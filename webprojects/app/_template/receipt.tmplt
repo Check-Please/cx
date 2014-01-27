@@ -2,7 +2,7 @@
 	<div class='receipt {{logo != null ? "has-logo" : ""}}'>
 		<div class="header"></div>
 		{{(logo == null ? "" :}}
-			<img class='title' src='cx_custom/{{logo}}_receipt.png' />
+			<img class='title' src='{{server}}/cx/receiptImg.png?{{logo}}' />
 		{{)}}
 		<h2 class='title'>{{restrName}}</h2>
 		<h3 class="street address">{{street_address}}</h3>

@@ -53,6 +53,8 @@ def compressJS(path, native):
     for line in proc.stderr:
         if re.match(r'WARN: Condition always (?:true|false) \[',
                 line.strip()) != None or re.match(
+                r'WARN: Boolean && always false \[',
+                line.strip()) != None or re.match(
                 r'WARN: Dropping side-effect-free statement \[',
                 line.strip()) != None:
             ignoreNext = True;

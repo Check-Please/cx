@@ -22,10 +22,14 @@
 		if("{{PLATFORM}}" == "iOS")
 			device.iOSTitleBar("Loading...");
 		inParallel([device.getTableInfo,device.getPos], function(tInfo,pos) {
-			if(!{{NATIVE}}) {
-				if(tInfo[1] == 0)
-					return(window.location = "http://"+window.location.host
-														+ "/website.html");
+			if(tInfo[1] == 0) {
+				if({{NATIVE}}) {
+					mvc.init({err: "noKey"});
+					loading.init();
+					mvc.err.notify();
+				} else
+					location = "http://" + location.host + "/website.html";
+				return;
 			}
 			tInfo = tInfo[0] || "";
 			device.ajax.send("cx", "init", {
@@ -51,33 +55,36 @@
 				}
 				if(data.deleteCCs)
 					device.deleteCards();
+				var style = JSON.parse(data.restrStyle || "{}");
 				mvc.init({
 					key: data.tKey,
 					restrName: data.restrName,
 					restrAddress: data.restrAddress,
-					restrStyle: data.restrStyle,
+					receiptImg: style.receiptImg,
 					connectionID: data.connectionID,
 					items: data.items,
 					split: data.split,
-					selection: {},
+					selection: {}
 				});
 				socket.init(data.channelToken);
 				$("title").text("Pay your ticket at "+data.restrName);
-				if(data.restrStyle == null) {
-					var $name = $("<span>");
-					$name.text(data.restrName);
-					$("#header").append($name);
-				} else {
+				if(style.sheet != null) {
 					var $css = $("<link>");
 					$css.attr("type", "text/css");
 					$css.attr("rel", "Stylesheet");
 					$css.attr("media", "all");
-					$css.attr("href",
-							"cx_custom/"+data.restrStyle+".css");
+					$css.attr("href", "{{SERVER}}/cx/customStyle.css?" +
+																style.sheet);
 					$("head").append($css);
+				}
+				if(style.headerImg == null) {
+					var $name = $("<span>");
+					$name.text(data.restrName);
+					$("#header").append($name);
+				} else {
 					var $img = $("<img>");
-					$img.attr("src",
-							"cx_custom/"+data.restrStyle+"_header.png");
+					$img.attr("src", "{{SERVER}}/cx/headerImg.png?" +
+															style.headerImg);
 					$("#header").append($img);
 				}
 				loading.init();
