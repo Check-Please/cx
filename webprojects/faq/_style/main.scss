@@ -1,0 +1,11 @@
+@import "../../_ignore/main.scss";
+
+body {
+	@include helvetica();
+}
+
+h2 {
+	font-weight: normal;
+	font-size: 1em;
+	text-decoration: underline;
+}

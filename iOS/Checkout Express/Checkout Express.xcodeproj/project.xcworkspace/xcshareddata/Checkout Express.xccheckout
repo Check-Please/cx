@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>F8B8CB9F-E07B-40A6-B5DA-A3E38865E4F0</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Checkout Express</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>536D11C3-FBF7-4FDB-8E1A-29C48DE18372</key>
+		<string>https://github.com/Estimote/iOS-SDK.git</string>
+		<key>AA233989-DBE5-465C-B429-C4378048344B</key>
+		<string>https://github.com/chkex/cx.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>iOS/Checkout Express/Checkout Express.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>536D11C3-FBF7-4FDB-8E1A-29C48DE18372</key>
+		<string>../../../estimote-SDK</string>
+		<key>AA233989-DBE5-465C-B429-C4378048344B</key>
+		<string>../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/chkex/cx.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>AA233989-DBE5-465C-B429-C4378048344B</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>AA233989-DBE5-465C-B429-C4378048344B</string>
+			<key>IDESourceControlWCCName</key>
+			<string>cx</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>536D11C3-FBF7-4FDB-8E1A-29C48DE18372</string>
+			<key>IDESourceControlWCCName</key>
+			<string>estimote-SDK</string>
+		</dict>
+	</array>
+</dict>
+</plist>
