@@ -21,7 +21,9 @@
 		setTimeout(window.onresize, 0);
 		if("{{PLATFORM}}" == "iOS")
 			device.iOSTitleBar("Loading...");
+		$("#loadMsg p").text("Getting location...");
 		inParallel([device.getTableInfo,device.getPos], function(tInfo,pos) {
+			$("#loadMsg p").text("Getting order...");
 			if(tInfo[1] == 0) {
 				if({{NATIVE}}) {
 					mvc.init({err: "noKey"});
@@ -48,6 +50,7 @@
 									data.errCode == 1 ? "invalidKey" :
 									data.errCode == 2 ? "empty" :
 									data.errCode == 5 ? "reqUpdate" :
+									data.errCode == 6 ? "disabled" :
 														"500"});
 					loading.init();
 					mvc.err.notify();
@@ -94,6 +97,22 @@
 				mvc.init({err: "Couldn't connect to the server"});
 				loading.init();
 				mvc.err.notify();
+			}, function(rs) {
+				var $p = $("#loadMsg p");
+				function setLoadPrct(prct, old) {
+					function pToS(p) {
+						return "Getting order ("+p+"%)...";
+					};
+					if($p.is(':visible')&&(old==null||$p.text()==pToS(old)))
+						$p.text(pToS(prct));
+				};
+				setLoadPrct(rs*25);
+
+				//Increase percentage so people don't feel bad
+				for(var i = 1; i < 5; i++)
+					setTimeout(setLoadPrct,2000*i, rs*25+5*i, rs*25+5*(i-1));
+				for(var i = 1; i < 5; i++)
+					setTimeout(setLoadPrct,2000*(i+4),rs*25+20+i,rs*25+19+i);
 			});
 		});
 		if(device.getDebugID() != null) {

@@ -71,8 +71,8 @@ function ajax(method, url, rawData, callback, failFunc, boringUpdate)
 		//points shouldn't exist in production, it makes debugging annoying,
 		//and since the bug is not understood some sort of solution needs to
 		//be in place.  In this case, what we're doing is having an extra
-		//variable keep track of if we've seen state 4 yet, and sending extra
-		//state 4s onto the boring update function.
+		//variable keep track of if we've seen state 4 yet, and ignoring
+		//extra state 4s
 		var stateFourSeen = false;
 IF_DEBUG
 		var stack;
@@ -100,7 +100,7 @@ END_IF
 						failFunc(xmlhttp.status, xmlhttp.statusText,
 								xmlhttp.responseText, xmlhttp);
 					}
-				} else if(boringUpdate != null) {
+				} else if((boringUpdate!=null) && (xmlhttp.readyState<4)) {
 					boringUpdate(xmlhttp.readyState, xmlhttp);
 				}
 IF_DEBUG

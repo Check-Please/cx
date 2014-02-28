@@ -65,6 +65,8 @@ public class InitServlet extends PostServletBase
 	private static final int ERR__JSON = 3;
 	private static final int ERR__UNSUPPORTED_FEATURE = 4;
 	private static final int ERR__UPDATE_REQUIRED = 5;
+	@SuppressWarnings("unused")
+	private static final int ERR__DISABLED = 6;
 
 	private static String deduceTableKey(JSONObject info, DatastoreService ds) throws JSONException {
 		JSONArray rawIDs = info.getJSONArray("ids");

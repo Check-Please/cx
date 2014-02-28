@@ -161,6 +161,16 @@ mvc.views = mvc.views || {};
 		}
 	}
 
+	/*	Toggles a checkbox inside a <span> tag
+	 */
+	function toggleKid(e) {
+		if(e.target.nodeName.toUpperCase() != "INPUT") {
+			var cb = $(this).find('input[type="checkbox"]')[0];
+			cb.checked = !cb.checked;
+			update();
+		}
+	}
+
 	mvc.views.pay = {
 		title: "Pay",
 		build: function($trgt) {
@@ -195,6 +205,8 @@ mvc.views = mvc.views || {};
 								mvc.contract.c(mvc.views.secFAQ.viewName));
 				$view.find(".ccPolicy a").click(
 								mvc.contract.c(mvc.views.ccPolicy.viewName));
+				$view.find(".save span").click(toggleKid);
+				$view.find(".req-password span").click(toggleKid);
 				$trgt.append($view);
 				update();
 			} else

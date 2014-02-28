@@ -58,8 +58,6 @@
 
 - (NSDictionary *) processFunctionFromJS:(NSString *) name withArgs:(NSArray*) args error:(NSError **) error
 {
-    NSLog(@"--From JS: %@(%@)", name, [args componentsJoinedByString:@","]);
-
     //Make sure the correct number of agrs were passed & that the function exists
     int numArgs;
     if([name isEqualToString:@"echo"])

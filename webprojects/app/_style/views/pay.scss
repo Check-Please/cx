@@ -110,12 +110,16 @@
 
 #pay .save, #pay .req-password {
 	height: 2em;
-}
 
-#pay .save input, #pay .req-password input {
-	width: auto;
-	position: relative;
-	bottom: 0.2em;
+	span {
+		cursor: pointer;
+	}
+
+	input {
+		width: auto;
+		position: relative;
+		bottom: 0.2em;
+	}
 }
 
 #pay .save a {
