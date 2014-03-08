@@ -72,11 +72,11 @@ public class InitServlet extends PostServletBase
 		JSONArray rawIDs = info.getJSONArray("ids");
 		JSONArray rawRSSIs = info.getJSONArray("rssis");
 // TEMP CODE FOR OZ
-		if(rawIDs.getString(0).equals("58844-63794"))//Light blue
+		if(rawIDs.getString(0).equals("58844-63794"))//Light blue (apple)
 			return "OZ0";
-		else if(rawIDs.getString(0).equals("61149-28010"))//Light green
+		else if(rawIDs.getString(0).equals("61149-28010"))//Light green (striped)
 			return "OZ1";
-		else if(rawIDs.getString(0).equals("18604-31050"))//Dark blue
+		else if(rawIDs.getString(0).equals("18604-31050"))//Dark blue (spotted)
 			return "OZ2";
 //END TEMP CODE FOR OZ
 		if(rawIDs.length() != rawRSSIs.length())

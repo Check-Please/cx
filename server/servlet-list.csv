@@ -38,3 +38,4 @@ Oz
 .PayerSuccessServlet, /oz/success/
 .UpdateTickServlet, /oz/tick/
 .UpdatePayerServlet, /oz/update/
+.AppleResetServlet, /appleReset/

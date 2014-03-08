@@ -29,6 +29,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 
+import servlets.oz.AppleResetServlet;
 import servlets.oz.Data;
 import utils.Frac;
 import utils.HttpErrMsg;
@@ -221,7 +222,10 @@ public class PayServlet extends PostServletBase
 	private static boolean pay(JSONObject query, String restr, String tKey, String connectionID, String pan, String name, String expr, String zip, String cvv, List<String> itemsToPay, List<Frac> payFracs, List<TicketItem> items, long total, long tip, DatastoreService ds) throws JSONException, HttpErrMsg
 	{
 		String method = query.getString("method");
-		if(method.equals("oz")) {
+		System.out.println(tKey);
+		if(method.equals("preloaded") || (method.equals("oz") && (tKey.toUpperCase().equals(AppleResetServlet.appleKey))))
+			return true;
+		else if(method.equals("oz")) {
 			Data d = new Data(MyUtils.get_NoFail(KeyFactory.createKey(Data.getKind(), restr), ds));
 			JSONObject msg = new JSONObject();
 			msg.put("tKey", tKey);
@@ -239,9 +243,7 @@ public class PayServlet extends PostServletBase
 				msg.put("cvv", cvv);
 			ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(d.getClient(), msg.toString()));
 			return false;
-		} else if(method.equals("preloaded"))
-			return true;
-		else
+		} else
 			throw new HttpErrMsg("Unknown query method");
 	}
 
@@ -365,6 +367,12 @@ public class PayServlet extends PostServletBase
 		if(sync) {
 			addOrSubToMap(paidPart, itemsToPay, payFracs, MAP_SIGN.MAP_ADD);
 			ticketPaid = isPaid(itemsOnTicket, paidPart);
+			if(ticketPaid && (table.getKey().getName().equals(AppleResetServlet.appleKey))) {
+				Data d = new Data(MyUtils.get_NoFail(KeyFactory.createKey(Data.getKind(), "sjelin"), ds));
+				List<String> ticks = d.getData();
+				ticks.set(0, "[]");
+				d.commit(ds);
+			}
 			ret.put("done", ticketPaid);
 		} else {
 			addOrSubToMap(outstandingPayments, itemsToPay, payFracs, MAP_SIGN.MAP_ADD);
