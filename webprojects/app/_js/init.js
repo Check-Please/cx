@@ -22,7 +22,8 @@
 		if("{{PLATFORM}}" == "iOS")
 			device.iOSTitleBar("Loading...");
 		$("#loadMsg p").text("Getting location...");
-		inParallel([device.getTableInfo,device.getPos], function(tInfo,pos) {
+		inParallel([device.getTableInfo,device.getPos,device.loadData],
+		function(tInfo,pos) {
 			$("#loadMsg p").text("Getting order...");
 			if(tInfo[1] == 0) {
 				if({{NATIVE}}) {
@@ -34,6 +35,30 @@
 				return;
 			}
 			tInfo = tInfo[0] || "";
+
+			var loadPrctEvents = [];
+			function clearLoadPrctEvents()
+			{
+				for(var i = 0; i < loadPrctEvents.length; i++)
+					clearTimeout(loadPrctEvents[i]);
+				loadPrctEvents = [];
+			}
+			function LoadWithPrct(msg, p)
+			{
+				clearLoadPrctEvents();
+				function setLP(prct) {
+					if(loadPrctEvents.length > 0)
+						loadPrctEvents.length--;
+					$("#loadMsg p").text(msg + " (" + prct + "%)...");
+				};
+				setLP(p);
+
+				for(var i = 1; i < 5; i++)
+					loadPrctEvents[8-i] = setTimeout(setLP, 2000*i, p+5*i);
+				for(var i = 1; i < 5; i++)
+					loadPrctEvents[4-i]=setTimeout(setLP,2000*(i+4),p+20+i);
+			}
+			LoadWithPrct("Getting order", 0);
 			device.ajax.send("cx", "init", {
 				isNative: {{NATIVE}},
 				tableInfo: tInfo,
@@ -44,6 +69,7 @@
 				accuracy: pos[2],
 				versionNum: {{VERSION_NUM}}
 			}, function(data) {
+				clearLoadPrctEvents();
 				data = JSON.parse(data);
 				if(data.errCode != null) {
 					mvc.init({err:	data.errCode == 0 ? "noKey" :
@@ -51,6 +77,7 @@
 									data.errCode == 2 ? "empty" :
 									data.errCode == 5 ? "reqUpdate" :
 									data.errCode == 6 ? "disabled" :
+									data.errCode == -1 ? "sjelin" :
 														"500"});
 					loading.init();
 					mvc.err.notify();
@@ -94,26 +121,15 @@
 				window.onhashchange();
 				mvc.views.error.allowReload();
 			}, function() {
+				clearLoadPrctEvents();
 				mvc.init({err: "Couldn't connect to the server"});
 				loading.init();
 				mvc.err.notify();
 			}, function(rs) {
-				var $p = $("#loadMsg p");
-				function setLoadPrct(prct, old) {
-					function pToS(p) {
-						return "Getting order ("+p+"%)...";
-					};
-					if($p.is(':visible')&&(old==null||$p.text()==pToS(old)))
-						$p.text(pToS(prct));
-				};
-				setLoadPrct(rs*25);
-
-				//Increase percentage so people don't feel bad
-				for(var i = 1; i < 5; i++)
-					setTimeout(setLoadPrct,2000*i, rs*25+5*i, rs*25+5*(i-1));
-				for(var i = 1; i < 5; i++)
-					setTimeout(setLoadPrct,2000*(i+4),rs*25+20+i,rs*25+19+i);
+				LoadWithPrct("Getting order", rs*25);
 			});
+			if("{{PLATFORM}}" == "iOS")
+				device.iOSTitleBar("Loading....");
 		});
 		if(device.getDebugID() != null) {
 			var $script = $("<script>");
@@ -124,4 +140,9 @@
 		nav.init();
 	};
 
+
+	window.onerror = function(err, url, num)
+	{
+		alert("JavaScript error from "+url+":\n\n"+err+" (Line #"+num+")");
+	}
 })();

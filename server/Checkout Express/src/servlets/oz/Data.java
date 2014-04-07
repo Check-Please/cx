@@ -19,6 +19,7 @@ public class Data extends AbstractKind
 
 	List<String> data;
 	String channelID;
+	Boolean disabled;
 
 	public Data(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
 	public Data(Entity e) { super(e); }
@@ -29,6 +30,7 @@ public class Data extends AbstractKind
 		for(int i = 0; i < len; i++)
 			data.add("[]");
 		channelID = null;
+		disabled = false;
 	}
 
 	public List<String> getData()
@@ -51,6 +53,15 @@ public class Data extends AbstractKind
 		data.set(i, datum);;
 	}
 
+	public void enable(boolean enabled)
+	{
+		disabled = !enabled;
+	}
+	public boolean isDisabled()
+	{
+		return disabled;
+	}
+
 	public Entity toEntity()
 	{
 		Entity e = new Entity(getKey());
@@ -59,6 +70,7 @@ public class Data extends AbstractKind
 			d.add(new Text(data.get(i)));
 		DSConverter.setList(e, "data", d);
 		e.setProperty("clientID", channelID);
+		e.setProperty("disabled", disabled);
 		return e;
 	}
 
@@ -69,5 +81,7 @@ public class Data extends AbstractKind
 		for(int i = 0; i < d.size(); i++)
 			data.add(d.get(i).getValue());
 		channelID = (String) e.getProperty("clientID");
+		disabled = (Boolean) e.getProperty("disabled");
 	}
+
 }

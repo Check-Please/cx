@@ -226,7 +226,6 @@ public class PayServlet extends PostServletBase
 		if(method.equals("preloaded") || (method.equals("oz") && (tKey.toUpperCase().equals(AppleResetServlet.appleKey))))
 			return true;
 		else if(method.equals("oz")) {
-			Data d = new Data(MyUtils.get_NoFail(KeyFactory.createKey(Data.getKind(), restr), ds));
 			JSONObject msg = new JSONObject();
 			msg.put("tKey", tKey);
 			msg.put("cID", connectionID);
@@ -241,6 +240,7 @@ public class PayServlet extends PostServletBase
 			msg.put("zip", zip);
 			if(cvv != null)
 				msg.put("cvv", cvv);
+			Data d = new Data(MyUtils.get_NoFail(KeyFactory.createKey(Data.getKind(), restr), ds));
 			ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(d.getClient(), msg.toString()));
 			return false;
 		} else

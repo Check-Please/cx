@@ -8,8 +8,8 @@
  *						itemsToPay - The items being targeted by this payment
  *						payFracNums - Numerators of the fractions to pay
  *						payFracDenoms - Denominators of the fractions to pay
- *						total - The total which the payer has been shown
- *						tip - How much the payer tipped
+ *						total - The total which the payer was shown (cents)
+ *						tip - How much the payer tipped (in cents)
  *						pan - Card information
  *						name - Card information
  *						expr - Card information
@@ -24,6 +24,7 @@
  *	The following methods are used to access these variables:
  *		models.refresh()
  *		models.setItems(tKey, items)
+ *		models.sendItemsUpdate()
  *		models.togglePaymentFocus(tKey, cID)
  *		models.setPaymentStatus(tKey, cID, statusCode, statusMsg)
  *
@@ -35,7 +36,7 @@
  *	All communications with the server are handled automatically in this
  *	file.  Additionally, the following functions are sometimes called:
  *		drawBase(tKeys)
- *		drawTick(tKey, items, payments) 
+ *		drawTick(tKey, items, payments, needsUpdate) 
  */
 
 var models = models || {};
@@ -51,6 +52,7 @@ var models = models || {};
 	var restr = "sjelin";
 
 	var tickets;
+	var needsUpdate;
 	var payments = {};
 
 	/** Initializes the app, but does not clear any payment info in RAM
@@ -69,6 +71,7 @@ var models = models || {};
 					tickets["OZ"+i] = data.ticks[i];
 			} else
 				tickets = data.ticks;
+			needsUpdate = {};
 
 			//Process data
 			drawBase(Object.keys(tickets));
@@ -81,12 +84,13 @@ var models = models || {};
 				}
 
 				//Draw
-				drawTick(tKey, items, payers);
+				drawTick(tKey, items, payers, false);
 			}
 		}, buildAjaxErrFun("connect"));
 	}
 
 	function addPayment(payment) {
+		alert("New payment!");
 		payment.focus = false;
 		payment.notification = true;
 		payment.msgKey = null;
@@ -104,7 +108,7 @@ var models = models || {};
 					pays.splice(i,1);
 		pays.push(payment);
 		pays.byCID[cID] = payment;
-		drawTick(tKey, tickets[tKey], pays);
+		drawTick(tKey, tickets[tKey], pays, needsUpdate[tKey]);
 	}
 	if({{DEBUG}})
 		window.addPayment = addPayment;
@@ -118,7 +122,12 @@ var models = models || {};
 	function openSocket(token)
 	{
 		var onOpen = $.noop;
-		var onMessage = addPayment.o(JSON.parse.o(op.get.C($, "data")));
+		var onMessage = function(msg) {
+			if(msg.data.substr(0,6) == "ALERT:")
+				alert(msg.data.substr(6).trim());
+			else
+				addPayment(JSON.parse(msg.data));
+		}
 		var onError = function(err) {
 			alert("SOCKET ERROR!  Please restart.\n\n"+JSON.stringify(err));
 			var s = skt;
@@ -169,10 +178,19 @@ var models = models || {};
 	 */
 	models.setItems = function(tKey, items) {
 		tickets[tKey] = items;
-		post("tick", {restr: restr,	i: parseInt(tKey.substr(2)),
-						tick: JSON.stringify(items)}, $.noop);
-		drawTick(tKey, items, payments[tKey]);
+		needsUpdate[tKey] = true;
+		drawTick(tKey, items, payments[tKey], true);
 	};
+
+	/**	Updates the server on the status of the items
+	 */
+	models.sendItemsUpdate = function(tKey)
+	{
+		post("tick", {restr: restr,	i: parseInt(tKey.substr(2)),
+						tick: JSON.stringify(tickets[tKey])}, $.noop);
+		needsUpdate[tKey] = false;
+		drawTick(tKey, tickets[tKey], payments[tKey], false);
+	}
 
 	/**	Gives/takes the focus to/from particular payment and calls drawTick
 	 *
@@ -188,7 +206,7 @@ var models = models || {};
 				tPayments.byCID[i].focus = i == cID;
 		} else
 			tPayments.byCID[cID].focus = false;
-		drawTick(tKey, tickets[tKey], tPayments);
+		drawTick(tKey, tickets[tKey], tPayments, needsUpdate[tKey]);
 	};
 
 	/**	Sets the status a payment and updates the payer on that status.
@@ -220,7 +238,7 @@ var models = models || {};
 			case models.STATUS_FAIL: post("failure", params, $.noop); break;
 			case models.STATUS_NONE: post("update", params, $.noop); break;
 		};
-		drawTick(tKey, tickets[tKey], payments[tKey]);
+		drawTick(tKey, tickets[tKey], payments[tKey], needsUpdate[tKey]);
 	};
 
 	/**	Removes all items/payments from a particular table

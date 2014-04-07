@@ -9,3 +9,9 @@ h2 {
 	font-size: 1em;
 	text-decoration: underline;
 }
+
+@media screen {
+	.print-only {
+		display: none;
+	}
+}

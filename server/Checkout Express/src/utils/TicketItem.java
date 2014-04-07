@@ -132,6 +132,7 @@ public class TicketItem {
 		return this.toString().hashCode();
 	}
 
+	public static HttpErrMsg currentlyDisabled = new HttpErrMsg(404, "Checkout Express has been temporarily disabled.");
 	public static List<TicketItem> getItems(String query, String restr, Map<String, Frac> paid, DatastoreService ds) throws JSONException, UnsupportedFeatureException, HttpErrMsg
 	{
 		JSONObject q = new JSONObject(query);
@@ -140,6 +141,8 @@ public class TicketItem {
 			return Preloaded.getTicketItems(q.getLong("id"), paid);
 		if(method.equals("oz")) {
 			Data d = new Data(MyUtils.get_NoFail(KeyFactory.createKey(Data.getKind(), restr), ds));
+			if(d.isDisabled())
+				throw currentlyDisabled;
 			JSONObject ticket = new JSONObject();
 			ticket.put("items", new JSONArray(d.getData().get(q.getInt("i"))));
 			JSONArray tickets = new JSONArray();

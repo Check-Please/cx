@@ -7,6 +7,7 @@
 		<div class="new item">
 			<a>+</a> <label>New Item</label>
 		</div>
+		<button class="update">Update Server</button>
 	</div>
 	<div class="info">
 		<h1>Items<span></span></h1>

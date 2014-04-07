@@ -46,13 +46,13 @@ public class InitServlet extends GetServletBase
 	{
 		Long len = p.getLong(0);
 		if(len == null)
-			len = 3L;
+			len = 6L;
 		String restr = p.getKeyName(0);
 		(new Data(KeyFactory.createKey(Data.getKind(), restr), len.intValue())).commit(ds);
 		JSONObject query = new JSONObject();
 		query.put("method", "oz");
 		query.put("restr", restr);
-		for(int i = 0; i < len; i++) {
+		for(int i = 1; i <= len; i++) {
 			query.put("i", i);
 			(new TableKey(KeyFactory.createKey(TableKey.getKind(), "OZ"+i), restr, query.toString())).commit(ds);
 		}

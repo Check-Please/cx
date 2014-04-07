@@ -1,0 +1,38 @@
+* {
+	margin: 0px;
+	padding: 0px;
+}
+body {
+	font-family: Helvetica;
+	background: #EEE;
+	font-size: 0.3in;
+}
+
+body > div {
+	width: 14em;
+	height: 8em;
+	margin: 4em auto;
+	background: #FFF;
+	padding: 1em;
+	position: relative;
+}
+
+body > div > * {
+	display: block;
+	text-align: center;
+	font-size: 1em;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+body > div > h1 {
+	font-family: 'Rammetto One', cursive;
+	font-size: 1.7em;
+	line-height: 1em;
+	margin-top: 0.4em;
+}
+
+h2 {
+	font-family: 'Poiret One', cursive;
+	margin-top: 1.2em
+}

@@ -21,13 +21,22 @@
 		attempt(0);
 	};
 	var kc;
+	var loadDataCallback;
+	device.loadData = function(c) {
+		if(kc == undefined)
+			loadDataCallback = c;
+		else
+			c();
+	};
 	iOS.call("getKeychain", [], function(kcStr){
 		try {
 			kc = JSON.parse(kcStr);
 		} catch(e) {
 			kc = {};
 		}
+		(loadDataCallback || $.noop)();
 	});
+	//RACE CONDITION
 	device.accData = function(k, v) {
 		{{ASSERT: k.match(/^[_0-9a-z]*$/i)}};
 		if(arguments.length == 1)

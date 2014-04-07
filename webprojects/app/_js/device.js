@@ -184,6 +184,13 @@ var device = device || {};
 		setTimeout(callCallback, 1000);
 	};
 
+	/**	Loads data from the device into localStorage so that they can be
+	 *	accesed without a callback function in the future.
+	 *
+	 *	@param	callback The funtion to be called once the data is loaded
+	 */
+	device.loadData = op.call;
+
 	/**	Gets some sort of hash identifying the device/user
 	 *
 	 *	The purpose of this ID is to help the server track users even without

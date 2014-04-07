@@ -70,7 +70,7 @@ public class ClosedUserConnection extends UserConnection
 		e.setProperty("closeCause", closeCause);
 		String eMsg = null;
 		if(errMsg != null)
-			eMsg = errMsg.substring(0, 500);
+			eMsg = errMsg.substring(0, Math.min(500, errMsg.length()));
 		e.setProperty("errMsg", eMsg);
 		return e;
 	}

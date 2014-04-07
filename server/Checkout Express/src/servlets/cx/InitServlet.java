@@ -22,11 +22,14 @@ import kinds.UserConnection;
 import kinds.TableKey;
 import kinds.Restaurant;
 
+import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 
+import servlets.oz.Data;
 import utils.MyUtils;
 import utils.PostServletBase;
 import utils.HttpErrMsg;
@@ -65,8 +68,8 @@ public class InitServlet extends PostServletBase
 	private static final int ERR__JSON = 3;
 	private static final int ERR__UNSUPPORTED_FEATURE = 4;
 	private static final int ERR__UPDATE_REQUIRED = 5;
-	@SuppressWarnings("unused")
 	private static final int ERR__DISABLED = 6;
+	private static final int ERR__SJELIN = -1;//I will deliver the check by hand
 
 	private static String deduceTableKey(JSONObject info, DatastoreService ds) throws JSONException {
 		JSONArray rawIDs = info.getJSONArray("ids");
@@ -78,6 +81,12 @@ public class InitServlet extends PostServletBase
 			return "OZ1";
 		else if(rawIDs.getString(0).equals("18604-31050"))//Dark blue (spotted)
 			return "OZ2";
+		else if(rawIDs.getString(0).equals("25289-33994"))//Light blue (clean)
+			return "OZ3";
+		else if(rawIDs.getString(0).equals("47979-57457"))//Light green (clean)
+			return "OZ4";
+		else if(rawIDs.getString(0).equals("27717-60880"))//Dark blue (clean)
+			return "OZ5";
 //END TEMP CODE FOR OZ
 		if(rawIDs.length() != rawRSSIs.length())
 			throw new JSONException("Number of IDs should equal the number of RSSIs");
@@ -155,6 +164,7 @@ public class InitServlet extends PostServletBase
 				} catch(JSONException e) {
 					err(ERR__INVALID_TABLE_KEY, out);
 				}
+				//Forward iOS simulator to dev table
 				if(MyUtils.isDevServer() && tableKey == null) {
 					tableKey = Globals.devTableID;
 				}
@@ -165,7 +175,25 @@ public class InitServlet extends PostServletBase
 				err(ERR__NO_TABLE_KEY, out);
 			TableKey table = new TableKey(KeyFactory.createKey(TableKey.getKind(), tableKey), ds);
 			Restaurant restr = table.getRestr(ds);
-			List<TicketItem> items = TicketItem.getItems(table, ds);
+
+			//SJELIN DOES THINGS BY HAND
+			if(tableKey.startsWith("OZ")) {
+				Data d = new Data(MyUtils.get_NoFail(KeyFactory.createKey(Data.getKind(), "sjelin"), DatastoreServiceFactory.getDatastoreService()));
+				ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(d.getClient(), "ALERT: Again, new payer at "+tableKey));
+				err(ERR__SJELIN, out);
+				return;
+			}
+			//END SJELIN DOES THINGS BY HAND
+
+			List<TicketItem> items;
+			try {
+				items = TicketItem.getItems(table, ds);
+			} catch(HttpErrMsg e) {
+				if(e != TicketItem.currentlyDisabled)
+					throw e;
+				err(ERR__DISABLED, out);
+				return;
+			}
 			if(items == null || items.size() == 0) {
 				err(ERR__EMPTY_TICKET, out);
 				return;

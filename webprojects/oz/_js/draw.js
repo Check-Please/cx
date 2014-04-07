@@ -98,6 +98,8 @@
 			$items.on("click", ".item a", deleteItem);
 			$tick.find(".new.item").click(newItem.bind($tick[0]));
 			$tick.find(".input .clear").click(models.clear.c(tKeys[i]));
+			$tick.find(".input .update").click(models.sendItemsUpdate.c(
+											tKeys[i]));
 			$tick.find(".payments").on("click", ".payment", togglePayFocus);
 			$tick.find(".payments").on("click", ".payment .messages", false);
 			$tick.find(".payments").on("click", ".messages > a", setStatus);
@@ -110,7 +112,7 @@
 		(onhashchange || $.noop)();
 	}
 
-	window.drawTick = function(tKey, items, payments) {
+	window.drawTick = function(tKey, items, payments, update) {
 		var $tick = $(".ticket[tKey=\""+tKey+"\"]");
 
 		//Input
@@ -129,6 +131,8 @@
 																	str)));
 			}
 		}
+		$tick.find(".input .clear").toggle(items.length > 0);
+		$tick.find(".input .update").toggle(update === true);
 
 		//Payments
 		var notification = false;
@@ -181,14 +185,14 @@
 
 		//Info
 		var summary = {	subtotal: 0, tax: 0, service: 0, discount: 0,
-						tip: (fPayment||{}).tip||0};
+						tip: 100*((fPayment||{}).tip||0)};
 		$items = $tick.find(".info .items");
 		$items.empty();
 		for(var i = 0; i < items.length; i++) {
 			var item = items[i];
 			var d = (item.paidDenom) || 1;
 			var n = d - (item.paidNum || 0);
-			var name = (n != d ? "("+n+"/"+d+") " : "")+item.name;
+			var name = (n != d ? "("+n+"/"+d+") " : "")+item.name||"&nbsp;";
 			var price = ((item.price || 0) - (item.discount || 0)) * n / d;
 			summary.subtotal += price;
 			summary.tax += (item.tax || 0) * n / d;
@@ -211,4 +215,9 @@
 												money.toStr(summary[i]/100));
 		$(".info h1 span").text(fPayment ? "("+fPayment.name+")" : "");
 	}
+
+	window.onkeydown = function(x) {
+		if(x.keyCode == 13)
+			$(".input .update:visible").click();
+	};
 })();
