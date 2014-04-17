@@ -101,7 +101,7 @@ body {
 		text-align: center;
 
 		&.focus {
-			background: #333;
+			background: #0886E0;
 			color: #FFF;
 		}
 
@@ -168,8 +168,10 @@ body {
 	&:before {
 		top: 0.85em;
 		height: 0.8em;
-		border-radius: 0.1em;
-		box-shadow: inset 0px 0px 0px 1px;
+		background: url('../../img/redesign/pay/card-border.svg');
+		background-size: 100% 100%;
+		background-repeat: no-repeat;
+		@include opacity( 225 / 255 );
 	}
 	&:after {
 		top: 1em;
@@ -201,7 +203,7 @@ body {
 	height: 2em;
 	line-height: 2em;
 	text-align: center;
-	background: #1088FE;
+	background: #0886E0;
 	border-radius: 0.3em;
 	font-size: 0.8em;
 	color: #FFF;

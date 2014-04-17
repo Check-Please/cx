@@ -3,6 +3,7 @@
 $text-color: #1E1E1E;
 
 body {
+	@include no-text-adj();
 	background: #EEE;
 	@include helvetica();
 	margin: 0px;
@@ -27,11 +28,27 @@ body {
 		margin: 0.5em 0px;
 	}
 	input {
-		height: 1em;
 		font-size: 1em;
-		border: 0px;
-		display: block;
-		margin: auto;
+		border: 1px solid rgba(0,0,0,0.25);
+		border-radius: 0px;
+		@include no-extra-style();
+		height: calc(1.5em - 2px);
+		width: calc(100% - 5.4em - 2px);
+		margin: 0px 1em;
+		padding: 0px 0.1em;
+	}
+	a {
+		display: inline-block;
+		position: absolute;
+		font-size: 0.75em;
+		width: 3em;
+		height: 2em;
+		line-height: 2em;
+		text-align: center;
+		border-radius: 0.75em;
+		background: #333;
+		color: #FFF;
+		font-weight: 100;
 	}
 }
 
@@ -94,6 +111,15 @@ body {
 				background-image: url("../../img/redesign/feedback/thumbs-up-up.png");
 			}
 		}
+	}
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+	.email a {
+		font-weight: 300;
+	}
+	.feedback a.ok:before {
+		font-weight: 200;
 	}
 }
 

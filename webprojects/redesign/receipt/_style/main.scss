@@ -2,12 +2,11 @@
 
 body {
 	background: #EEE;
-/*	background-image: url("../../img/redesign/receipt/texture.png");
-	background-size: 1px;*/
 	@include helvetica();
 	margin: 0px;
 	font-weight: 300;
 	color: #1E1E1E;
+	position: relative;
 }
 
 IF_PLATFORM_IS web
@@ -54,32 +53,20 @@ END_IF
 	}
 }
 
-
-.receipt {
+.receipt, .summary {
 	position: relative;
-}
-.receipt, .receipt .subtotal  {
-	&:before { @include thin-line(bottom); }
-	&:after { @include thin-line(); }
+
+	&:before {
+		@include thin-line(bottom);
+		top: -1px;
+	}
+	&:after {
+		@include thin-line();
+		bottom: -1px;
+	}
 }
 
-.receipt:before {
-	top: -1px;
-}
-
-.receipt:after {
-	bottom: -1px;
-}
-
-.receipt .subtotal:before {
-	top: -1px;
-}
-
-.receipt .subtotal:after {
-	top: -0.5em;
-}
-
-.receipt .item {
+.receipt .item, .summary .item {
 	height: 1em;
 	position: relative;
 	background: #FFF;
@@ -143,7 +130,7 @@ END_IF
 			top: 25%;
 			right: 30%;
 
-			background: url("../../img/redesign/receipt/split-icon.png");
+			background: url("../../img/redesign/receipt/split-icon.svg");
 			background-size: 75%;
 			background-position: 50% 0px;
 			background-repeat: no-repeat;
@@ -161,7 +148,7 @@ END_IF
 
 	&.your, &.unpaid, &.their, &.paid {
 		&:not(:first-child):before {
-			@include thin-line(1em);
+			@include thin-line();
 			width: calc(100% - #{1em});
 		}
 	}
@@ -179,12 +166,12 @@ END_IF
 
 	$yColor: "1088FE";
 	&.your .checkbox:before {
-		background: url("../../img/redesign/receipt/checked_box.png");
+		background: url("../../img/redesign/receipt/checked_box.svg");
 		background-size: 100%;
 	}
 
 	&.unpaid .checkbox:before {
-		background: url("../../img/redesign/receipt/unchecked_box.png");
+		background: url("../../img/redesign/receipt/unchecked_box.svg");
 		background-size: 100%;
 		@include opacity(0.25);
 	}
@@ -204,6 +191,7 @@ END_IF
 
 		.checkbox:before {
 			font-size: 0.2em;
+			font-weight: 400;
 			width: 5em;
 			height: 5em;
 			line-height: 5em;
@@ -217,16 +205,16 @@ END_IF
 	}
 
 	&.their {
-		background: #BEF;
 		.checkbox:before {
 			content: "Taken";
+			color: #08E;
 		}
 	}
 
 	&.paid {
-		background: #ACF285;
 		.checkbox:before {
 			content: "Paid";
+			color: #0E0;
 		}
 	}
 
@@ -238,14 +226,44 @@ END_IF
 	}
 }
 
+a.all, a.none {
+	display: inline-block;
+	font-size: 0.4em;
+	margin: 0px 2.5em;
+	width: calc(50% - 3.75em);
+	height: 2em;
+	line-height: 2em;
+	text-align: center;
+	border-radius: 0.5em;
+	position: absolute;
+}
+
+a.all {
+	background: #0886E0;
+	color: #FFF;
+}
+
+a.none {
+	box-shadow: inset 0px 0px 0px 1px rgba(0,0,0,0.25);
+	right: 0px;
+}
+
+.receipt {
+	margin-bottom: 0.5em;
+}
+
+.summary {
+	margin-top: 2em;
+}
+
 .confirm {
 	display: block;
 	margin: 1.25em;
 	height: 2em;
 	line-height: 2em;
 	text-align: center;
-	background: #1088FE;
+	background: #0886E0;
+	color: #FFF;
 	border-radius: 0.3em;
 	font-size: 0.8em;
-	color: #FFF;
 }

@@ -22,14 +22,11 @@ import kinds.UserConnection;
 import kinds.TableKey;
 import kinds.Restaurant;
 
-import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 
-import servlets.oz.Data;
 import utils.MyUtils;
 import utils.PostServletBase;
 import utils.HttpErrMsg;
@@ -69,6 +66,7 @@ public class InitServlet extends PostServletBase
 	private static final int ERR__UNSUPPORTED_FEATURE = 4;
 	private static final int ERR__UPDATE_REQUIRED = 5;
 	private static final int ERR__DISABLED = 6;
+	@SuppressWarnings("unused")
 	private static final int ERR__SJELIN = -1;//I will deliver the check by hand
 
 	private static String deduceTableKey(JSONObject info, DatastoreService ds) throws JSONException {
@@ -175,15 +173,6 @@ public class InitServlet extends PostServletBase
 				err(ERR__NO_TABLE_KEY, out);
 			TableKey table = new TableKey(KeyFactory.createKey(TableKey.getKind(), tableKey), ds);
 			Restaurant restr = table.getRestr(ds);
-
-			//SJELIN DOES THINGS BY HAND
-			if(tableKey.startsWith("OZ")) {
-				Data d = new Data(MyUtils.get_NoFail(KeyFactory.createKey(Data.getKind(), "sjelin"), DatastoreServiceFactory.getDatastoreService()));
-				ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(d.getClient(), "ALERT: Again, new payer at "+tableKey));
-				err(ERR__SJELIN, out);
-				return;
-			}
-			//END SJELIN DOES THINGS BY HAND
 
 			List<TicketItem> items;
 			try {

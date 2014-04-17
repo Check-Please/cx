@@ -7,11 +7,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.appengine.api.channel.ChannelMessage;
-import com.google.appengine.api.channel.ChannelServiceFactory;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.KeyFactory;
-
 import utils.HttpErrMsg;
 import utils.MyUtils;
 
@@ -29,10 +24,6 @@ public class RedirectServlet extends HttpServlet {
 		try {
 			isDev = MyUtils.isDevServer();
 		} catch (HttpErrMsg e) {}
-		//SJELIN
-		Data d = new Data(MyUtils.get_NoFail(KeyFactory.createKey(Data.getKind(), "sjelin"), DatastoreServiceFactory.getDatastoreService()));
-		ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(d.getClient(), "ALERT: New payer at OZ"+n));
-		//END SJELIN
 		resp.sendRedirect("http"+(isDev ? "" : "s")+"://"+req.getServerName()+(isDev ? ":"+req.getServerPort() : "")+"/?OZ"+n);
 	}
 
