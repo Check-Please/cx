@@ -3,22 +3,27 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<title>Checkout Express</title>
+		<title>Checkout Express Experiment</title>
 		<meta charset="UTF-8" />
+		<script type="text/JavaScript" src="js/website.js"></script>
 		<link type="text/css" rel="Stylesheet" href="css/experiment.css" media="all" />
 	</head>
 	<body>
 		<a href="/" id="home"><img src="img/website/logo.svg" /></a>
 		<div id="nav">
-			<a href="#setup">Setup</a>
-			<a href="#days13">Days 1-3</a>
-			<a href="#day4">Day 4</a>
-			<a href="#day5">Day 5</a>
-			<a href="#conclusion">Conclusion</a>
+			<a href="#setup">Setup</a
+			><a href="#days13">Days 1-3</a
+			><a href="#day4">Day 4</a
+			><a href="#day5">Day 5</a
+			><a href="#conclusion">Conclusion</a>
 		</div>
 		<div id="content">
-			<div id="setup">
-				<h2>Setup</h2>
+			<div id="tl-dr">
+				<h1>tl;dr <span>We got the equivalent of around 50 uses per week per location</span></h1>
+			</div>
+			<div>
+				<span class="anchor" id="setup"></span>
+				<h1>Setup</h1>
 				<p>I ran the experiment at a restaurant called <a href="http://www.bakerysocial.com">Social at Bakery Square</a>.  Bakery Square is essentially a small outdoor mall and office buildings.  It is home to both Google's Pittsburgh offices and <a href="http://www.techshop.ws/pittsburgh.html">TechShop Pittsburgh</a>.  I picked the location because I believed that there would be a higher concentration of early adopters in that area than most other areas of Pittsburgh.</p>
 				<p>The exact setup of the experiment changed as the experiment went on, so I will describe the initial setup here and the changes as they occur in the later parts.  The app was live at six of Social's 30+ tables.  However, I selected the six I believed would be most busy.</p>
 				<p>On the tables where the app was live, I put a business card advertising the app.  The cards looked as follows:
@@ -26,8 +31,9 @@
 				The cards were placed in stands (seen <a href="http://www.amazon.com/Rolodex-Black-Business-Holder-22251/dp/B00006IAKZ">here</a>), 10 cards in each stand, one stand per table.</p>
 				<p>When a customer made an order, after the waitstaff inputted the order into Social's Point of Sale (POS) system, I would go to a POS terminal and copy down the order from their database to mine.  This is because the app did not integrate into the POS system.  All the integration was done manually, behind the scenes, by myself.</p>
 			</div>
-			<div id="days13">
-				<h2>Days 1-3</h2>
+			<div>
+				<span class="anchor" id="days13"></span>
+				<h1>Days 1-3</h1>
 				<h4>Saturday, March 29th, 2 PM - 4 PM</h4>
 				<p>Because people eat so slowly during brunch, and because this was such a short test at an awkward time, and because I was only testing the app at 6 tables, only two groups actually got the chance to use the app.  One of those was a group of elderly ladies.  The other was a group of three 20-somethings.  Neither group used the app. When the group of 20-somethings left I asked if they had seen the cards.  They said they had, they just didn't use the app anyway.</p>
 				<h4>Tuesday, April 1st, 11:00 AM - 1:30 PM</h4>
@@ -46,18 +52,21 @@
 					<img src="img/experiment/card-v3.png" />
 				At the end of the URL, I wrote in a number which identified the table.  As you can see, it is a web only design.  I decided that to keep the design simple, I couldn't include both web and native instructions.  I decided web was more important for first use, and I could get native users when I emailed someone their receipt.</p>
 			</div>
-			<div id="day4">
-				<h2>Day 4 <span>(Friday, April 4th, 11:30 AM - 9:30 PM)</span></h2>
+			<div>
+				<span class="anchor" id="day4"></span>
+				<h1>Day 4 <span>(Friday, April 4th, 11:30 AM - 9:30 PM)</span></h1>
 				<p>At 5 PM, I actually gave up and left.  I was feeling pretty depressed about the results thus far and running the experiment was actually kind of exhausting.  But I left the business cards at the table in case But at 8 PM, I saw that two people attempted to use the app.  The app was disabled at the time, so they were just shown an error screen, and I wasn't there to ask them about it, but I still found the result encouraging.  At 9:30, I went back and removed the cards.</p>
 			</div>
-			<div id="day5">
-				<h2>Day 5 <span>(Saturday, April 5th, 6 PM - 8:40 PM)</span></h2>
+			<div>
+				<span class="anchor" id="day5"></span>
+				<h1>Day 5 <span>(Saturday, April 5th, 6 PM - 8:40 PM)</span></h1>
 				<p>I realized at this point that the app itself isn't actually important to the experiment.  What I was interested in was if I could get someone to <i>try</i> to use the app, not if anyone actually used it.  Since logging everything behind the scenes was such a pain, I decided I would disable the app, switch it to just send me a notification, and manually check out any customers who wanted tried to use the app.  This would allow me to get some work done, instead of just spending the whole time transferring information from the POS to my database.</p>
 				<p>4 people tried to use the app.  Oddly though, they all tried to use it shortly after they ordered, not at the end of their meal when they were checking out.  When I came over to their table, I said that I would be happy to check them out if they reloaded the app at the end of their meal, and asked why they had tried to use it so soon in the first place.  They said they were just curious.  One person mentioned that he had had this problem in the past so he was particularly interested in a solution.</p>
 				<p>Most people were pretty angry to learn that the app didn't really work.  They were curious more than anything else, and if it wasn't a "real" app they didn't really care.  I ended the experiment early because I didn't want the restaurant to receive any complaints.</p>
 			</div>
-			<div id="conclusion">
-				<h2>Conclusion</h2>
+			<div>
+				<span class="anchor" id="conclusion"></span>
+				<h1>Conclusion</h1>
 				<p>In the end, 8 people tried to use the app, and one person actually used it.  Presumably all 8 of those people would have actually used it if it were functioning the whole time.  If we count the total active time for the app as 3 full days at 1/3 of the tables at the restaurant, that means that if we extrapolate around 50 people can be expected to try the app in any week, given the current setup.  If you look at the <a href="metrics.html">competing metrics</a>, these usage numbers are nearly 2 orders of magnitude above everyone else.</p>
 				<p>Another major thing I learned is that people are mostly just curious, and the app needs to work with their curiosity.  When I am manually passing information from the restaurant's POS system into my database, it takes about five minutes for the information to enter my database (on average), and the payment process still ends with me physically handing a check to the diners.  This all really violates the whole purpose of people using the app.  It needs to <i>feel</i> automatic.  So real POS integration is necessary before further testing.  A redesign is also in order, since the current version is ugly.</p>
 			</div>
