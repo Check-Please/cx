@@ -1,0 +1,223 @@
+/* Formatting base */
+body, html {
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+  width: 100%;
+  height: 100%; }
+
+body {
+  -webkit-text-size-adjust: none;
+  -moz-text-size-adjust: none;
+  -o-text-size-adjust: none;
+  -khtml-text-size-adjust: none;
+  -ms-text-size-adjust: none;
+  text-size-adjust: none;
+  font-family: HelveticaNeueLTPro-Roman, HelveticaNeueLTPro-Md, "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; }
+
+a {
+  color: #000;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  -khtml-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer; }
+
+a.disabled {
+  /*	The following is buggy, and so is commented out*/
+  /*	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.5);*/
+  filter: alpha(opacity=50);
+  -ms-filter: "alpha(opacity=50)";
+  -o-filter: "alpha(opacity=50)";
+  -webkit-opacity: 0.5;
+  -moz-opacity: 0.5;
+  -o-opacity: 0.5;
+  -khtml-opacity: 0.5;
+  -ms-opacity: 0.5;
+  opacity: 0.5;
+  cursor: auto; }
+
+.tickets {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: calc(100% - 40px);
+  border-bottom: 1px solid #dddddd; }
+  .tickets .ticket > div {
+    overflow: auto; }
+
+@-webkit-keyframes btn-blink {
+  50% {
+    box-shadow: 0px 0px #000;
+    color: #F00; } }
+
+.nav {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  height: 40px; }
+  .nav .tBtn {
+    width: 80px;
+    height: 36px;
+    line-height: 36px;
+    margin: 2px 0px 2px -40px;
+    position: absolute; }
+    .nav .tBtn.notification {
+      -webkit-animation: btn-blink .5s step-end infinite alternate; }
+
+
+.tickets .ticket .info {
+  position: absolute;
+  height: calc(100% - 40px);
+  width: calc(34% - 40px);
+  padding: 20px;
+  left: 33%;
+  border-left: 1px solid #dddddd;
+  border-right: 1px solid #dddddd; }
+  .tickets .ticket .info h1 span {
+    font-size: 0.5em;
+    padding-left: 1em; }
+  .tickets .ticket .info .items {
+    height: calc(100% - 210px - 3em);
+    overflow: auto;
+    list-style: none;
+    padding: 0px 1.5em; }
+    .tickets .ticket .info .items .item {
+      padding: 0.5em 0px;
+      border-bottom: 1px solid #dddddd; }
+      .tickets .ticket .info .items .item .price {
+        float: right; }
+  .tickets .ticket .info h2 {
+    height: 50px;
+    position: absolute;
+    bottom: 110px; }
+  .tickets .ticket .info .subtotal, .tickets .ticket .info .tax, .tickets .ticket .info .service, .tickets .ticket .info .discount, .tickets .ticket .info .tip, .tickets .ticket .info .total {
+    width: calc(50% - 20px - 1em);
+    height: 30px;
+    position: absolute; }
+  .tickets .ticket .info > p span {
+    position: absolute;
+    right: 0px;
+    top: 0.05em; }
+  .tickets .ticket .info .subtotal, .tickets .ticket .info .service, .tickets .ticket .info .tip {
+    left: 20px; }
+  .tickets .ticket .info .tax, .tickets .ticket .info .discount, .tickets .ticket .info .total {
+    right: 20px; }
+  .tickets .ticket .info .subtotal, .tickets .ticket .info .tax {
+    bottom: 80px; }
+  .tickets .ticket .info .service, .tickets .ticket .info .discount {
+    bottom: 50px; }
+  .tickets .ticket .info .tip, .tickets .ticket .info .total {
+    bottom: 20px; }
+
+.tickets .ticket .input {
+  position: absolute;
+  height: calc(100% - 40px);
+  width: calc(33% - 40px);
+  padding: 20px;
+  left: 0%; }
+  .tickets .ticket .input .clear {
+    margin-left: 1em; }
+  .tickets .ticket .input .item {
+    height: 30px;
+    margin-bottom: 5px; }
+    .tickets .ticket .input .item a {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      text-align: center;
+      line-height: 30px; }
+    .tickets .ticket .input .item label, .tickets .ticket .input .item input {
+      display: inline-block;
+      width: calc(100% - 60px);
+      height: 2em; }
+  .tickets .ticket .input .new.item, .tickets .ticket .input .new.item * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer; }
+
+@-webkit-keyframes pay-blink {
+  50% {
+    border-color: #F00; } }
+
+.tickets .ticket .payments {
+  position: absolute;
+  height: calc(100% - 40px);
+  width: calc(33% - 40px);
+  padding: 20px;
+  right: 0%; }
+  .tickets .ticket .payments > ul {
+    list-style: none;
+    padding: 0px; }
+  .tickets .ticket .payments .payment {
+    border: 1px solid #dddddd;
+    padding: 0.5em;
+    margin-bottom: 1em;
+    cursor: pointer; }
+    .tickets .ticket .payments .payment div {
+      cursor: auto; }
+    .tickets .ticket .payments .payment .card-info p {
+      margin: 0px 0px 1em 0px; }
+    .tickets .ticket .payments .payment .messages > * {
+      width: calc(33% - 0.34em);
+      display: inline-block; }
+    .tickets .ticket .payments .payment .messages .success {
+      color: #0A0; }
+    .tickets .ticket .payments .payment .messages .fail {
+      color: #A00; }
+    .tickets .ticket .payments .payment.paid .messages a, .tickets .ticket .payments .payment.failed .messages a {
+      display: none; }
+    .tickets .ticket .payments .payment.paid {
+      background: #AFA; }
+      .tickets .ticket .payments .payment.paid .messages .success {
+        font-weight: bold;
+        display: inline-block; }
+    .tickets .ticket .payments .payment.failed {
+      background: #FAA; }
+      .tickets .ticket .payments .payment.failed.limit .messages a[msg="limit"] {
+        font-weight: bold;
+        display: inline-block; }
+      .tickets .ticket .payments .payment.failed.invalid .messages a[msg="invalid"] {
+        font-weight: bold;
+        display: inline-block; }
+      .tickets .ticket .payments .payment.failed.reject .messages a[msg="reject"] {
+        font-weight: bold;
+        display: inline-block; }
+      .tickets .ticket .payments .payment.failed.paid .messages a[msg="paid"] {
+        font-weight: bold;
+        display: inline-block; }
+      .tickets .ticket .payments .payment.failed.tech .messages a[msg="tech"] {
+        font-weight: bold;
+        display: inline-block; }
+      .tickets .ticket .payments .payment.failed.other .messages a[msg="other"] {
+        font-weight: bold;
+        display: inline-block; }
+    .tickets .ticket .payments .payment.none.enqueue .messages a[msg="enqueue"] {
+      font-weight: bold;
+      display: inline-block; }
+    .tickets .ticket .payments .payment.none.terminal .messages a[msg="terminal"] {
+      font-weight: bold;
+      display: inline-block; }
+    .tickets .ticket .payments .payment.none.processing .messages a[msg="processing"] {
+      font-weight: bold;
+      display: inline-block; }
+    .tickets .ticket .payments .payment .card-info, .tickets .ticket .payments .payment .messages {
+      display: none; }
+    .tickets .ticket .payments .payment.focus > a {
+      display: none; }
+    .tickets .ticket .payments .payment.focus > div {
+      display: block; }
+    .tickets .ticket .payments .payment.notification {
+      -webkit-animation: pay-blink .5s step-end infinite alternate; }
+
+

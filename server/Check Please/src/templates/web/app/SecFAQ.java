@@ -1,0 +1,70 @@
+package templates.web.app;
+
+public class SecFAQ {
+	public static String run() {
+		return	"<h1>Security FAQ (Frequently Asked Questions)</h1>"+
+			
+			"<p><strong>Disclaimer:</strong> This is in no sense a legal or technical document.  Some of the details have been simplified for easier reading.  Some information may be out of date.  No one may be held accountable for any misstatement on the part of the writer or misinterpretation on the part of the reader.  For the actual legal agreement, please read the Credit Card Policy.</p>"+
+			
+			"<h2><strong>Q:</strong> How do you store credit card information?</h2>"+
+			
+			"<p><strong>A:</strong> Your information is encrypted and stored on your device.  We do not store any actual credit card information on our servers.  However, if you are using a service like iCloud, the encrypted information may be backed up on that service.</p>"+
+			
+			
+			"<h2><strong>Q:</strong> How do you encrypt credit card information?</h2>"+
+			
+			"<p><strong>A:</strong> First, we encrypt your information using a password that only our servers know.  Then, if you specify your own password, we encrypt your information again using that password.  Finally, if your device has secure storage capabilities built in, we use those to encrypt your information a final time.</p>"+
+			
+			"<h2><strong>Q:</strong> What password?  I wasn\'t asked for a password.</h2>"+
+			
+			"<p><strong>A:</strong> On some devices, we feel that the built in security of the device is enough so that you do not need to enter in your own password</p>"+
+			
+			"<h2><strong>Q:</strong> Someone stole my phone and they\'re using it to pay for their meals with my Checkout Express information.  What do I do?</h2>"+
+			
+			"<p><strong>A:</strong> You should get your device remotely wiped immediately.  If this is not possible or does not solve the problem, email <a href=\"mailto:sjelin@chkex.com\">sjelin@chkex.com</a> and we can sort this all out.  We can make any previously stored information about your cards for Checkout Express useless in future transactions.   You will not need to cancel your credit card.</p>"+
+			
+			"<h2><strong>Q:</strong> What do I do if I forgot my password?</h2>"+
+			
+			"<p><strong>A:</strong> If you forgot your password you will have to re-enter your information.  There is no way to reset your password.  This is consequence of the fact that we store your information on your phone instead of on our servers.</p>"+
+			
+			"<h2><strong>Q:</strong> Why do I have to enter in my security code every time?</h2>"+
+			
+			"<p><strong>A:</strong> The security code is never meant to be stored, and is used to verify that you are physically in possession of the card</p>"+
+			
+			"<h2><strong>Q:</strong> Is there any risk that someone will be able to steal credit card information from Checkout Express?</h2>"+
+			
+			"<p><strong>A:</strong> There is almost no chance that someone could decrypt your actual credit card information (i.e. your card number, expiration date, etc.) from your device.  In order to do that, they would need unrestricted access to the information on your device, unrestricted access to the information on our servers, your password (if you specified one), and the ability to break any secure storage features built into your device.</p>"+
+			
+			"<p>However, if there is a virus on your device, it could theoretically watch your screen and steal your information before it is encrypted.</p>"+
+			
+			"<h2><strong>Q:</strong> How do you transmit credit card information?</h2>"+
+			
+			"<p><strong>A:</strong> Information is transmitted using a cryptographic protocol, either \"TLS\" or \"SSL\".  The exact details may depend on your device.  This is the industry standard method for securely sending information over a network.</p>"+
+			
+			"<h2><strong>Q:</strong> How is the credit card information charged?</h2>"+
+			
+			"<p><strong>A:</strong> Your information is forwarded along to the restaurant’s Point of Sale software and charged as though you had given your card to the waitstaff and they had manually entered your information into the system</p>"+
+			
+			"<h2><strong>Q:</strong> What information is stored?</h2>"+
+			
+			"<p><strong>A:</strong> Your full card number, the name on your card, the expiration date of the card, and the billing zip code are all stored.</p>"+
+			
+			"<h2><strong>Q:</strong> Does Checkout Express meet the PCI DSS for safely storing and transmitting credit card information?</h2>"+
+			
+			"<p><strong>A:</strong> We do not store any credit card information on our servers, so much of the PCI DSS does not apply to us.  We always make sure to encrypt your information if we are sending it over a public network.  We also do whatever we can to make sure the information stored on your device is secure.</p>"+
+			
+			"<p>If your credit card information is being backed up through a service like iOS\' Keychain, we have done our best to make sure that storing credit card information in this way is compliant with PCI DSS.  In the specific case of iOS\' Keychain, it\'s worth noting that some apps developed by Apple (e.g. Safari) also use keychain to backup credit card information</p>"+
+			
+			"<h2><strong>Q:</strong> How big is the encryption key?</h2>"+
+			
+			"<p><strong>A:</strong> 128-bits for AES that we control.</p>"+
+			
+			"<h2><strong>Q:</strong> I\'m still not sure I trust you guys.  Could I look at your source code?</h2>"+
+			
+			"<p><strong>A:</strong> Currently, yes.  You can find everything at <a href=\"https://github.com/chkex/cx\">https://github.com/chkex/cx</a>.  We may make the repository private in the future though.<p>"+
+			
+			"<h2><strong>Q:</strong> How are you integrating with the restaurant\'s Point of Sale software?</h2>"+
+			
+			"<p><strong>A:</strong> Have you heard the story of the Mechanical Turk?  Say \"hi\"</p>";
+	}
+}

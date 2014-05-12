@@ -1,0 +1,234 @@
+body {
+  background: #EEE;
+  font-family: HelveticaNeueLTPro-Roman, HelveticaNeueLTPro-Md, "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  margin: 0px;
+  font-weight: 300;
+  color: #1e1e1e;
+  position: relative; }
+
+.instructions {
+  height: 2.5em;
+  line-height: 2.5em;
+  font-size: 0.25em;
+  margin: 0px 1em;
+  color: #777;
+  text-transform: uppercase; }
+
+.list {
+  position: relative;
+  background: #FAFAFA; }
+  .list:before {
+    content: "";
+    position: absolute;
+    right: 0px;
+    height: 1px;
+    width: 100%;
+    /*	The following is buggy, and so is commented out*/
+    /*	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.2);*/
+    filter: alpha(opacity=20);
+    -ms-filter: "alpha(opacity=20)";
+    -o-filter: "alpha(opacity=20)";
+    -webkit-opacity: 0.2;
+    -moz-opacity: 0.2;
+    -o-opacity: 0.2;
+    -khtml-opacity: 0.2;
+    -ms-opacity: 0.2;
+    opacity: 0.2;
+    background: #000;
+    top: -1px; }
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+      .list:before {
+        background: transparent;
+        background-image: url("../../img/redesign/cards/thin-line.gif");
+        background-size: 1px 1px;
+        -khtml-transform: scaleY(-1);
+        -moz-transform: scaleY(-1);
+        -webkit-transform: scaleY(-1);
+        -ms-transform: scaleY(-1);
+        -o-transform: scaleY(-1);
+        transform: scaleY(-1); } }
+  .list:after {
+    content: "";
+    position: absolute;
+    right: 0px;
+    height: 1px;
+    width: 100%;
+    /*	The following is buggy, and so is commented out*/
+    /*	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.2);*/
+    filter: alpha(opacity=20);
+    -ms-filter: "alpha(opacity=20)";
+    -o-filter: "alpha(opacity=20)";
+    -webkit-opacity: 0.2;
+    -moz-opacity: 0.2;
+    -o-opacity: 0.2;
+    -khtml-opacity: 0.2;
+    -ms-opacity: 0.2;
+    opacity: 0.2;
+    background: #000;
+    bottom: -1px; }
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+      .list:after {
+        background: transparent;
+        background-image: url("../../img/redesign/cards/thin-line.gif");
+        background-size: 1px 1px; } }
+  .list .card:not(:first-child):before {
+    content: "";
+    position: absolute;
+    right: 0px;
+    height: 1px;
+    width: 100%;
+    /*	The following is buggy, and so is commented out*/
+    /*	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.2);*/
+    filter: alpha(opacity=20);
+    -ms-filter: "alpha(opacity=20)";
+    -o-filter: "alpha(opacity=20)";
+    -webkit-opacity: 0.2;
+    -moz-opacity: 0.2;
+    -o-opacity: 0.2;
+    -khtml-opacity: 0.2;
+    -ms-opacity: 0.2;
+    opacity: 0.2;
+    background: #000; }
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+      .list .card:not(:first-child):before {
+        background: transparent;
+        background-image: url("../../img/redesign/cards/thin-line.gif");
+        background-size: 1px 1px; } }
+
+.list .focus {
+  background: #FFF; }
+
+.list .card > * {
+  font-size: 0.4em;
+  padding: 0px 0.8em 0px 2.5em;
+  margin: 0px;
+  height: 2.5em;
+  line-height: 2.5em;
+  position: relative;
+  display: block;
+  text-align: right; }
+  .list .card > *:not(:first-child):before {
+    content: "";
+    position: absolute;
+    right: 0px;
+    height: 1px;
+    width: 100%;
+    /*	The following is buggy, and so is commented out*/
+    /*	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.2);*/
+    filter: alpha(opacity=20);
+    -ms-filter: "alpha(opacity=20)";
+    -o-filter: "alpha(opacity=20)";
+    -webkit-opacity: 0.2;
+    -moz-opacity: 0.2;
+    -o-opacity: 0.2;
+    -khtml-opacity: 0.2;
+    -ms-opacity: 0.2;
+    opacity: 0.2;
+    background: #000;
+    width: calc(100% - 2.5em); }
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+      .list .card > *:not(:first-child):before {
+        background: transparent;
+        background-image: url("../../img/redesign/cards/thin-line.gif");
+        background-size: 1px 1px; } }
+  .list .card > * input {
+    border: none;
+    padding: 0px 0.8em 0px 0px;
+    margin: 0px;
+    height: 100%;
+    width: calc(100% - 3.3em);
+    font-size: 1em;
+    text-align: right;
+    position: absolute;
+    right: 0px;
+    background: transparent; }
+  .list .card > * input[placeholder] {
+    font-weight: 300; }
+  .list .card > * ::-webkit-input-placeholder {
+    font-weight: 300; }
+  .list .card > * :-moz-placeholder {
+    font-weight: 300; }
+  .list .card > * ::-moz-placeholder {
+    font-weight: 300; }
+  .list .card > * :-ms-input-placeholder {
+    font-weight: 300; }
+
+.list .card a:before, .list .card a:after, .list .card .pan:before, .list .card .pan:after {
+  position: absolute;
+  width: 1.3em;
+  left: 0.6em; }
+.list .card a:before, .list .card .pan:before {
+  content: "";
+  top: 0.85em;
+  height: 0.8em;
+  background-repeat: no-repeat;
+  background-position: center; }
+.list .card a.visa:before, .list .card .pan.visa:before {
+  background-image: url("../../img/redesign/cards/visa.svg");
+  background-size: 100% auto; }
+.list .card a.mastercard:before, .list .card .pan.mastercard:before {
+  background-image: url("../../img/redesign/cards/mastercard.svg");
+  background-size: 100% auto; }
+.list .card a.amex:before, .list .card .pan.amex:before {
+  background-image: url("../../img/redesign/cards/amex.svg");
+  background-size: auto 100%; }
+.list .card a.diners:before, .list .card .pan.diners:before {
+  background-image: url("../../img/redesign/cards/diners.svg");
+  background-size: auto 100%; }
+.list .card a.discover:before, .list .card .pan.discover:before {
+  background-image: url("../../img/redesign/cards/discover.jpg");
+  background-size: auto 100%; }
+.list .card a.jcb:before, .list .card .pan.jcb:before {
+  background-image: url("../../img/redesign/cards/jcb.svg");
+  background-size: auto 100%; }
+.list .card a.unknown:before, .list .card .pan.unknown:before {
+  background-image: url("../../img/redesign/cards/card-border.svg");
+  background-size: 100% 100%;
+  /*	The following is buggy, and so is commented out*/
+  /*	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.88235);*/
+  filter: alpha(opacity=88.23529);
+  -ms-filter: "alpha(opacity=88.23529)";
+  -o-filter: "alpha(opacity=88.23529)";
+  -webkit-opacity: 0.88235;
+  -moz-opacity: 0.88235;
+  -o-opacity: 0.88235;
+  -khtml-opacity: 0.88235;
+  -ms-opacity: 0.88235;
+  opacity: 0.88235; }
+.list .card a.unknown:after, .list .card .pan.unknown:after {
+  content: "";
+  top: 1em;
+  height: 0.15em;
+  background: #1e1e1e; }
+.list .card a.new:before, .list .card .pan.new:before {
+  content: '+';
+  font-size: 1.5em;
+  left: 0.5em;
+  top: 0.5em;
+  width: 0.66667em;
+  height: 0.45em;
+  line-height: 0.45em;
+  text-align: center;
+  font-weight: 100; }
+
+.confirm {
+  display: block;
+  margin: 1.25em;
+  height: 2em;
+  line-height: 2em;
+  text-align: center;
+  background: #0886E0;
+  color: #FFF;
+  border-radius: 0.3em;
+  font-size: 0.8em; }
+
+html {
+  background: #CCC; }
+
+body {
+  max-width: 640px;
+  overflow-x: hidden;
+  margin: auto;
+  padding-bottom: 1px;
+  box-shadow: 0px 0px 1em 0px #000; }
+

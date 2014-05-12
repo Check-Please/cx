@@ -1,7 +1,8 @@
 import os, shutil, errno, re, csv, getopt, sys, subprocess, urllib2
 import bash, macros
 
-javaTmpltDir = "server/Checkout Express/src/templates" # This is ugly. w/e...
+javaProjDir = "server/Check Please"; # This is ugly. w/e...
+javaTmpltDir = javaProjDir + "/src/templates"; # This is ugly. w/e...
 tmpltExt = ".tmplt"
 tspecExt = ".tspec"
 tmpFolder = ".__TEMP_"
@@ -19,7 +20,7 @@ orderFile = "_order"
 uSet = type('', (), dict(__contains__ = lambda _,x: True))()
 webPlat = "web";
 localServer = "http://localhost:8888";
-webServer = "https://www.chkex.com";
+webServer = "https://chkplease.appspot.com";
 
 
 """ Makes the web.xml file for the server
@@ -232,6 +233,8 @@ def compileTemplateToJava(src, package):
                     strings.  The package "templates" is implied
 """
 def compileServerOnlyTemplates(src, mVars, mFuns, package=[]):
+    if not bash.exists(src):
+        bash.mkdir(src);
     tmpPath = src+"/"+tmpFolder;
     if not bash.exists(tmpPath):
         bash.mkdir(tmpPath);
@@ -493,7 +496,7 @@ for row in csv.reader(projectsForAppFil):
 projectsForAppFil.close();
 
 makeWebXML("server/servlet-list.csv",
-        "server/Checkout Express/war/WEB-INF/web.xml");
+        javaProjDir+"/war/WEB-INF/web.xml");
 
 mVars, mFuns = macros.load("build/macros");
 mVars['DEBUG'] = "true" if debug else "false";
@@ -503,7 +506,7 @@ if bash.exists(javaTmpltDir):
 compileServerOnlyTemplates("server/templates", mVars, mFuns);
 
 platforms = ["web", "iOS"];
-platformPaths = ["server/Checkout Express/war", "iOS/Checkout Express/www"];
+platformPaths = [javaProjDir+"/war", "iOS/Checkout Express/www"];
 
 if bash.exists(tmpFolder):
     bash.rm_r(tmpFolder);

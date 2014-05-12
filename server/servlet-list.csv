@@ -1,7 +1,7 @@
 WELCOME: welcome
 
 
-com.chkex.server.GreetingServiceImpl, /chkex/greet, greetServlet
+com.getthecheck.server.GreetingServiceImpl, /chkex/greet, greetServlet
 
 Admin Ops
 .AdminLoginServlet, /admin/login/
@@ -40,43 +40,3 @@ Oz
 .PayerSuccessServlet, /oz/success/
 .UpdateTickServlet, /oz/tick/
 .UpdatePayerServlet, /oz/update/
-.RedirectServlet, /0
-.RedirectServlet, /1
-.RedirectServlet, /2
-.RedirectServlet, /3
-.RedirectServlet, /4
-.RedirectServlet, /5
-.RedirectServlet, /6
-.RedirectServlet, /7
-.RedirectServlet, /8
-.RedirectServlet, /9
-.RedirectServlet, /10
-.RedirectServlet, /11
-.RedirectServlet, /12
-.RedirectServlet, /13
-.RedirectServlet, /14
-.RedirectServlet, /15
-.RedirectServlet, /16
-.RedirectServlet, /17
-.RedirectServlet, /18
-.RedirectServlet, /19
-.RedirectServlet, /20
-.RedirectServlet, /21
-.RedirectServlet, /22
-.RedirectServlet, /23
-.RedirectServlet, /24
-.RedirectServlet, /25
-.RedirectServlet, /26
-.RedirectServlet, /27
-.RedirectServlet, /28
-.RedirectServlet, /29
-.RedirectServlet, /30
-.RedirectServlet, /31
-.RedirectServlet, /32
-.RedirectServlet, /33
-.RedirectServlet, /34
-.RedirectServlet, /35
-.RedirectServlet, /36
-.RedirectServlet, /37
-.RedirectServlet, /38
-.RedirectServlet, /39
