@@ -1,4 +1,4 @@
-WELCOME: welcome
+WELCOME: website.html
 
 
 com.getthecheck.server.GreetingServiceImpl, /chkex/greet, greetServlet
@@ -22,7 +22,6 @@ CX
 .LogPositionServlet, /cx/log_pos/
 .PayServlet, /cx/pay/
 .RateServlet, /cx/rate/
-.WelcomeServlet, /welcome/
 
 CX - Split
 .AddToSplitServlet, /cx/split/add/

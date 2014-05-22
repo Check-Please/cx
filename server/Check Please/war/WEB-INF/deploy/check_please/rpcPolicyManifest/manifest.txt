@@ -1,3 +1,2 @@
 # Module check_please
 # RPC service class, partial path of RPC policy file
-com.getthecheck.client.GreetingService, 2D08FA78AF47FD4D98342A6868AEFBFA.gwt.rpc

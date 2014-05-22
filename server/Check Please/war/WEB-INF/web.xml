@@ -26,7 +26,7 @@
 
 	<!-- Default page to serve -->
 	<welcome-file-list>
-		<welcome-file>welcome</welcome-file>
+		<welcome-file>website.html</welcome-file>
 	</welcome-file-list>
 
 	<servlet>
@@ -236,18 +236,6 @@
 	<servlet-mapping>
 		<servlet-name>rateServlet</servlet-name>
 		<url-pattern>/cx/rate/</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>welcomeServlet</servlet-name>
-		<servlet-class>servlets.cx.WelcomeServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>welcomeServlet</servlet-name>
-		<url-pattern>/welcome</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>welcomeServlet</servlet-name>
-		<url-pattern>/welcome/</url-pattern>
 	</servlet-mapping>
 
 	<!-- CX - Split -->
