@@ -5,3 +5,4 @@
 !WEB-INF/**
 !WEB-INF/**/*
 WEB-INF/deploy
+**.cache.js
