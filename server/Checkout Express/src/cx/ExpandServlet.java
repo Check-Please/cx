@@ -17,6 +17,8 @@ public class ExpandServlet extends HttpServlet {
 	{
 		String path = req.getRequestURI();
 		String args = req.getQueryString();
+		if(args == null)
+			args = "";
 		if(path.startsWith("/"))
 			path = path.substring(1);
 		boolean tick = (path.length() == 0) && (args.length() > 0);
