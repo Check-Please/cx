@@ -20,7 +20,7 @@ orderFile = "_order"
 uSet = type('', (), dict(__contains__ = lambda _,x: True))()
 webPlat = "web";
 localServer = "http://localhost:8888";
-webServer = "https://chkplease.appspot.com";
+webServer = "https://www.getthecheck.com";
 
 
 """ Makes the web.xml file for the server
