@@ -1,0 +1,10 @@
+<div id="cards-view">
+	<p class="instructions">Select your card:</p>
+
+	<div class="list">
+		[[savedCards]]
+		[[newCard]]
+	</div>
+
+	<a class="confirm {{confirm_disabled}}">Select</a>
+</div>

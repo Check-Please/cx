@@ -1,0 +1,16 @@
+<div id="receipt-view">
+	<p class="instructions">Select your items:</p>
+
+	<div class="receipt" style="height: {{receiptHeight}}em">
+		[[items]]
+	</div>
+
+	<a class="all">Select all</a>
+	<a class="none">Deselect all</a>
+
+	<div class="summary">
+		[[summaries]]
+	</div>
+
+	<a class="confirm">Next</a>
+</div>

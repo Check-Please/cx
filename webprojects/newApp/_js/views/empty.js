@@ -1,0 +1,1 @@
+var EmptyView = Fluid.compileView();

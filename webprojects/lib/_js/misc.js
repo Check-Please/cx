@@ -61,6 +61,130 @@ var money = {
 	}
 };
 
+/**	Tools for dealing with credit cards
+ *
+ *	I ignore the edge cases of JCB cards starting with 2131 or 1800,
+ *	as I wasn't able to get much information on them other than that they are
+ *	15 digits long.  I also ignore 13 digit Visa cards for the same reason.
+ *	Finally, I label all cards processed like MasterCard as MasterCard, even
+ *	if they are branded as Diners Club.
+ */
+creditCards = (function() {
+	"use strict";
+	var types = {
+		VISA: "visa",
+		MASTERCARD: "mastercard",
+		AMERICAN_EXPRESS: "amex",
+		DINERS_CLUB: "diners",
+		DISCOVER: "discover",
+		JCB: "jcb"
+	}
+	types.AMEX = types.AMERICAN_EXPRESS;
+	types.DINERS = types.DINERS_CLUB;
+	function format(pan, type, sep) {
+		sep = sep == undefined ? "-" : sep;
+		type = type == undefined ? creditCards.getType(pan) : type;
+		var sepIndices =	type == types.AMEX || type == types.DINERS ?
+							[4, 10] : [4, 8, 12];
+		pan += "";//Make sure it's a string
+		for(var i = sepIndices.length-1; i >= 0; i--) {
+			j = sepIndices[i];
+			if(j < pan.length)
+				pan = pan.slice(0,j)+sep+pan.slice(j);
+		}
+		return pan;
+	}
+	function getType(pan) {
+		switch(pan.slice(0,1)) {
+			case "3": switch(pan.slice(1,2)) {
+				case "4":
+				case "7": return types.AMEX;
+				case "0":
+				case "6":
+				case "8": return types.DINERS;
+				case "5": return types.JCB;
+				default: return undefined;
+			}
+			case "4": return types.VISA;
+			case "5": return types.MASTERCARD;
+			case "6": return types.DISCOVER;
+			default: return undefined;
+		}
+	}
+	function getYear(year) {
+		year = ""+year;
+		if(year.length == 4)
+			return year;
+		else if(year.length == 3)
+			return "2"+year;
+		else if(year.length == 2) {
+			year = parseInt(year);
+			var curr = new Date().getYear() + 1900;
+			var cent = curr - (curr % 100);
+			var early = year+cent-100;
+			var med = year+cent;
+			if(Math.abs(early-curr) < Math.abs(med-curr))
+				return early;
+			var late = ear+cent+100;
+			if(Math.abs(late-curr) < Math.abs(med-curr))
+				return late;
+			return med;
+		}
+	}
+	function validate(pan, name, exprMonth, exprYear, cvv, zip)
+	{
+		if(pan.length == 0)
+			return "Please enter credit card number";
+		else if(pan.length < 8)
+			return "Credit card number too short";
+		else if(pan.length > 19)
+			return "Credit card number too long";
+		else if(!pan.match(/^\d+$/))
+			return "Credit card number must be a number";
+		else if(pan.match(/^(?:62|88|2014|2149)/) || //Luhn
+				pan.split('').reduce(function(sum, d, n) {
+					return sum + parseInt((n%2)?d:[0,2,4,6,8,1,3,5,7,9][d]);
+				}, 0) % 10 == 0)
+			return "Invalid credit card number";
+		else if(name.length == 0)
+			return "Please enter card holder name";
+		else if(name.length == 1)
+			return "Card holder name too short";
+		else if(name.length > 26)
+			return "Card holder name too long";
+		else if(exprYear.length == 0)
+			return "Please enter expiration year";
+		else if(exprYear.length == 1)
+			return "Expiration year too short";
+		else if(exprYear.length > 4)
+			return "Expiration year too long";
+		else if(!exprYear.match(/^\d+$/))
+			return "Expiration year must be a number";
+		else if(exprMonth.length == 0)
+			return "Please enter expiration month";
+		else if(!exprMonth.match(/^\d+$/))
+			return "Expiration month number must be a number";
+		else if(parseInt(exprMonth) > 12 || parseInt(exprMonth) == 0)
+			return "Expiration month invalid";
+		else if(cvv.length == 0)
+			return "Please enter card security code";
+		else if(cvv.length < 3)
+			return "Card security code too short";
+		else if(cvv.length > 4)
+			return "Card security code too long";
+		else if(!cvv.match(/^\d+$/))
+			return "Card security code must be a number";
+		else if(zip.length == 0)
+			return "Please enter billing zip code";
+		else if(zip.length != 5)
+			return "Zip code should be five digits";
+		else if(!zip.match(/^\d+$/))
+			return "Zip code number must be a number";
+	}
+	return {types: types, format: format, getType: getType,
+			getYear: getYear, validate: validate};
+})();
+
 /**	Checks if a string starts with a prefix
  *
  *	E.g.	"Hello, World!".startsWith("Hello") == true

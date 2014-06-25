@@ -20,12 +20,16 @@ How to Set Up
 	1.	Git
 	2.	The lastest JRE and JDK
 	3.	Python
-	4.	UglifyJS (install node.js, run `sudo npm install uglify-js -g`)
-	5.	SASS (install ruby, run `gem install sass`)
-	6.	Eclipse (if you need to work on or locally run the server)
-	7.	The iPhone SDK (if you are going to work on the iPhone app)
-	8.	The Andriod SDK (if you are going to work on the Andriod app)
-	9.	Microsoft Visual Studio (if you are going to work on the plugin)
+	4.	node.js
+	5.	UglifyJS (`sudo npm install uglify-js -g`)
+	6.	jQuery's node package (`npm install jquery`)
+	7.	jsdom node package (`npm install jsdom`)
+	8.	Mocha (`sudo npm install mocha -g`)
+	9.	SASS (install ruby, run `gem install sass`)
+	10.	Eclipse (if you need to work on or locally run the server)
+	11.	The iPhone SDK (if you are going to work on the iPhone app)
+	12.	The Andriod SDK (if you are going to work on the Andriod app)
+	13.	Microsoft Visual Studio (if you are going to work on the plugin)
 
 3.	Clone this project to your machine
 

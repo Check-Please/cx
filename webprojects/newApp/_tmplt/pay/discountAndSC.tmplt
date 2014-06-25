@@ -1,0 +1,1 @@
+<p class="discount serviceCharge">after a <span>{{serviceCharge}}</span> service charge and a <span>{{discount}}</span> discount</p>

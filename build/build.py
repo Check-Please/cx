@@ -244,11 +244,11 @@ def compileServerOnlyTemplates(src, mVars, mFuns, package=[]):
             compileServerOnlyTemplates(path, mVars, mFuns, package+[fil]);
         elif fil.endswith(tmpltExt):
             fil = fil[:len(fil)-len(tmpltExt)];
-            assert(bash.exists(src+"/"+fil+".tspec"));
-            tmpTmplt = tmpPath+"/"+fil+".tmplt"; 
-            tmpTspec = tmpPath+"/"+fil+".tspec"; 
-            bash.cp_r(src+"/"+fil+".tmplt", tmpTmplt);
-            bash.cp_r(src+"/"+fil+".tspec", tmpTspec);
+            assert(bash.exists(src+"/"+fil+tspecExt));
+            tmpTmplt = tmpPath+"/"+fil+tmpltExt;
+            tmpTspec = tmpPath+"/"+fil+tspecExt;
+            bash.cp_r(src+"/"+fil+tmpltExt, tmpTmplt);
+            bash.cp_r(src+"/"+fil+tspecExt, tmpTspec);
             macros.run(tmpTmplt, mVars, mFuns);
             macros.run(tmpTspec, mVars, mFuns);
             compileTemplateToJava(tmpPath+"/"+fil, package);
@@ -298,6 +298,62 @@ def compileWebTemplates(path, parentsOfT, parentsInT=[]):
                 ".".join(parentsInT) + ("." if len(parentsInT) > 0 else "") +
                 fil + ".js", parentsInT);
 
+""" Comples a template into a JS file
+
+    @param src Path of the template file pair (file extention not included)
+    @param dest The place to put the resulting 
+    @param package  The package for the templates, formatted as a list of
+                    strings.  The package "templates" is implied
+"""
+def compileTemplate(src, dest, package=[]):
+    print "Compiling template \""+src+"\"...";
+
+    #Preprocess
+    content =   "\"" + bash.readfile(src+tmpltExt).read().strip(
+                            ).replace(  "\\", "\\\\"
+                            ).replace(  "\t", "\\t"
+                            ).replace(  "\r", ""
+                            ).replace(  "\f", "\\f"
+                            ).replace(  "\'", "\\\'"
+                            ).replace(  "\"", "\\\""
+                            ).replace(  "\n", "\"+\n\t\t\t\""
+                ) + "\"";
+    varName = src[src.rfind("/")+1:];
+    varName = varName[0].lower() + varName[1:];
+
+    #Output
+    outfil = bash.writefile(dest);
+    outfil.write("var templates = templates || {};\n")
+    packageName = "templates";
+    for pack in package:
+        packageName += "."+pack;
+        outfil.write(packageName + " = " + packageName + " || {};\n");
+    outfil.write(packageName + "." + varName + " = " + content + ";")
+    outfil.close();
+
+
+""" Compiles templates for the MVC
+
+    @param path The folder containing the templates to compile
+    @param parentsOfT   Folders which are parents of the "_templates" folder,
+                        leading back to the root of the compilation
+    @param parentsInT   A list of parent folders (including the current
+                        folder), leading back to the "_templates" folder
+"""
+def compileTemplates(path, parentsOfT, parentsInT=[]):
+    jsPath = path + "/.."*len(parentsInT) + "/../" + jsFolder;
+    if not bash.exists(jsPath):
+        bash.mkdir(jsPath);
+    for fil in bash.ls(path):
+        if bash.isdir(path+"/"+fil):
+            compileTemplates(path+"/"+fil, parentsOfT, parentsInT+[fil]);
+        elif fil.endswith(tmpltExt):
+            fil = fil[:len(fil)-len(tmpltExt)];
+            compileTemplate(path+"/"+fil, jsPath + "/templates." +
+                ".".join(parentsInT) + ("." if len(parentsInT) > 0 else "") +
+                fil + ".js", parentsInT);
+
+
 """ Compiles the contents of the folder
 
     In more detail, the following is done:
@@ -320,6 +376,8 @@ def compileFolder(path, parents=[]):
         bash.sass(path+"/"+cssFolder, path+"/"+cssFolder);
     if bash.isdir(path+"/"+templateFolder):
         compileWebTemplates(path+"/"+templateFolder, parents);
+    if bash.isdir(path+"/_tmplt"): #TODO make a variable for "tmplt" folder
+        compileTemplates(path+"/_tmplt", parents);
 
 """ Deletes the contents of a folder
 

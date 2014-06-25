@@ -1,0 +1,6 @@
+<div id="error-view">
+	<h1>{{heading}}</h1>
+	<p>{{message}}</p>
+	<div class="bg">{{symbol}}</div>
+	<a class="confirm">Try again</a>
+</div>

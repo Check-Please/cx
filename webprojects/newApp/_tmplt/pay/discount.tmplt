@@ -1,0 +1,1 @@
+<p class="discount">after a <span>{{discount}}</span> discount</p>

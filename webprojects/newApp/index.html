@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Check Please</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="HandheldFriendly" content="true" />
+		<meta name="MobileOptimized" content="width" />
+		<link type="text/css" rel="Stylesheet" href="css/newApp.css" media="all" />
+IF_PLATFORM_IS web
+		<!--[if gte IE 9]><!-->
+END_IF
+			<script src="js/jquery-{{JQUERY_MODERN_VERSION}}.min.js"></script>
+IF_PLATFORM_IS web
+		<!--<![endif]-->
+		<!--[if lt IE 9]>
+			<script src="js/jquery-{{JQUERY_OLD_IE_VERSION}}.min.js"></script>
+			<script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"></script>
+			<script src="js/oldIE.js"></script>
+		<![endif]-->
+END_IF
+		<script type="text/JavaScript" src="js/lib.js"></script>
+		<script type="text/JavaScript" src="_ah/channel/jsapi"></script>
+		<script type="text/JavaScript" src="js/newApp.js"></script>
+	</head>
+	<body><div id="body">
+		<p style="position: absolute; width: 100%; height: 2em; top: 0px; left: 0px; bottom: 0px; margin: auto; line-height: 2em; text-align: center">
+			Loading Application...
+		</p>
+	</div></body>
+</html>

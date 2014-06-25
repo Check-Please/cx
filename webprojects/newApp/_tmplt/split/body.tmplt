@@ -1,0 +1,8 @@
+<div class="background">
+	<div class="wrapper">
+		<p>How many people are splitting the <span>{{name}}</span>?</p>
+		<input type="two-digit" value={{input}} maxlength="2"></input>
+		<a class="cancel">Cancel</a>
+		<a class="confirm {{confirm_disabled}}">Confrim</a>
+	</div>
+</div>

@@ -1,0 +1,5 @@
+<div class="card {{focus}} {{reqPass}}">
+	<a class={{type}}>{{pan}}</a>
+	<p class="password"><input type="password" placeholder="Password"></input></p>
+	<p class="delete"><a>Delete Card</a></p>
+</div>
