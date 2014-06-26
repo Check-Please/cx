@@ -6,9 +6,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import modeltypes.TableKey;
+
 import org.json.JSONException;
 
-import kinds.TableKey;
 import utils.GetServletBase;
 import utils.HttpErrMsg;
 import utils.MyUtils;

@@ -1,4 +1,4 @@
-<div class="background">
+<div id="split-view" class="background">
 	<div class="wrapper">
 		<p>How many people are splitting the <span>{{name}}</span>?</p>
 		<input type="two-digit" value={{input}} maxlength="2"></input>

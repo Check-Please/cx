@@ -557,6 +557,7 @@ makeWebXML("server/servlet-list.csv",
         javaProjDir+"/war/WEB-INF/web.xml");
 
 mVars, mFuns = macros.load("build/macros");
+mVars['TEST'] = "false";
 mVars['DEBUG'] = "true" if debug else "false";
 mVars['LOCAL'] = "true" if local else "false";
 if bash.exists(javaTmpltDir):
@@ -582,6 +583,8 @@ for i in xrange(0, len(platforms)):
     mVars['PLATFORM'] = plat;
     mVars['NATIVE'] = "true" if native else "false";
     mVars['SERVER'] = server if native else "";
+    mVars['MODERN'] = "true" if (native or 
+                                    mVars['TEST'] == "true") else "false";
     transferFls(tmpFolder, path, plat, debug, mVars, mFuns,
                                         uSet if i == 0 else projectsForApp);
     # Download channel API

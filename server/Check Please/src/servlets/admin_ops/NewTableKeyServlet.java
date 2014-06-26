@@ -5,8 +5,7 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import kinds.*;
-
+import modeltypes.*;
 import utils.*;
 import static utils.MyUtils.a;
 

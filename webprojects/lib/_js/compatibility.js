@@ -1,7 +1,6 @@
 //There is no good reason for you to be reading this file
 
-if(!{{NATIVE}}) {
-
+IF_NOT_MODERN
 				  /////////////////////////////////////////////
 				 /////////////////  INDEXOF  /////////////////
 				/////////////////////////////////////////////
@@ -442,4 +441,5 @@ if(!{{NATIVE}}) {
 		  window.localStorage.length = (document.cookie.match(/\=/g) || window.localStorage).length;
 		}
 	})();
-}
+
+END_IF

@@ -5,10 +5,10 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import kinds.ConnectionToTablePointer;
-import kinds.ClosedUserConnection;
-import kinds.UserConnection;
-import kinds.TableKey;
+import modeltypes.ClosedUserConnection;
+import modeltypes.ConnectionToTablePointer;
+import modeltypes.TableKey;
+import modeltypes.UserConnection;
 
 import org.json.JSONException;
 

@@ -57,7 +57,8 @@ function ajax(method, url, rawData, callback, failFunc, boringUpdate)
 	}
 
 	//Actually make request
-	var xmlhttp = window.XMLHttpRequest ? new window.XMLHttpRequest() :
+	var xmlhttp = {{MODERN}} || window.XMLHttpRequest ?
+						new window.XMLHttpRequest() :
 						new ActiveXObject("Microsoft.XMLHTTP");
 	if((callback!=null) || (failFunc!=null) || (boringUpdate!=null)) {
 		//There is an odd bug in ajax (for only chrome?) where the ready

@@ -1,18 +1,18 @@
-package kinds;
+package modeltypes;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 
-public abstract class AbstractKind
+public abstract class AbstractModelType
 {
 	private Key key;//The entity's key in the datastore
 	protected abstract String kindName();//Returns the name of the kind of the entity
 
 	/**	Default constructor.  All it does is set key to null
 	 */
-	public AbstractKind() {key = null;};
+	public AbstractModelType() {key = null;};
 
 	/**	Loads an entity from the datastore.
 	 *
@@ -21,7 +21,7 @@ public abstract class AbstractKind
 	 *
 	 *	@throws	EntityNotFoundException	Thrown the datastore has nothing to load
 	 */
-	public AbstractKind(Key k, DatastoreService ds) throws EntityNotFoundException
+	public AbstractModelType(Key k, DatastoreService ds) throws EntityNotFoundException
 	{
 		setKey(k);
 		if(!reload(ds))
@@ -33,7 +33,7 @@ public abstract class AbstractKind
 	 *	@param e	The entity to wrap
 	 *	@param ds	The datastore to add to/load from
 	 */
-	public AbstractKind(Entity e)
+	public AbstractModelType(Entity e)
 	{
 		setKey(e.getKey());
 		fromEntity(e);

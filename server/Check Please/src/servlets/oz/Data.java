@@ -3,7 +3,7 @@ package servlets.oz;
 import java.util.ArrayList;
 import java.util.List;
 
-import kinds.AbstractKind;
+import modeltypes.AbstractModelType;
 import utils.DSConverter;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -12,7 +12,7 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Text;
 
-public class Data extends AbstractKind
+public class Data extends AbstractModelType
 {
 	protected String kindName() { return getKind(); }
 	public static String getKind() { return "oz_data"; }

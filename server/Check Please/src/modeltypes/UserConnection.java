@@ -1,4 +1,4 @@
-package kinds;
+package modeltypes;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 
-public class UserConnection extends AbstractKind
+public class UserConnection extends AbstractModelType
 {
 	protected String kindName() { return getKind(); }
 	public static String getKind() { return "user_connection"; }

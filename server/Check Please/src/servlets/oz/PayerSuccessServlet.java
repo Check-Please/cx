@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import kinds.TableKey;
+import modeltypes.TableKey;
 
 import org.json.JSONException;
 

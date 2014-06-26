@@ -1,4 +1,4 @@
-package kinds;
+package modeltypes;
 
 import java.util.List;
 

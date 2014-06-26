@@ -5,9 +5,8 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import kinds.ConnectionToTablePointer;
-import kinds.TableKey;
-
+import modeltypes.ConnectionToTablePointer;
+import modeltypes.TableKey;
 import utils.GetServletBase;
 import utils.ParamWrapper;
 

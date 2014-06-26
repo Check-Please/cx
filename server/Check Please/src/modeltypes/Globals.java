@@ -1,4 +1,4 @@
-package kinds;
+package modeltypes;
 
 import java.util.Random;
 
@@ -8,7 +8,7 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
-public class Globals extends AbstractKind
+public class Globals extends AbstractModelType
 {
 
 	protected String kindName() { return getKind(); }

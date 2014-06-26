@@ -5,11 +5,11 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
+import modeltypes.TableKey;
+import modeltypes.UserConnection;
+
 import org.json.JSONArray;
 import org.json.JSONException;
-
-import kinds.UserConnection;
-import kinds.TableKey;
 
 import com.google.appengine.api.datastore.DatastoreService;
 

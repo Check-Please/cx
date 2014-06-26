@@ -1,6 +1,6 @@
 //There is no good reason for you to be reading this file
 
-IF_NOT_NATIVE
+IF_NOT_MODERN
 
 	/*
 		json2.js

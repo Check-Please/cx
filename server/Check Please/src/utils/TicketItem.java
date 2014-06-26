@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import kinds.TableKey;
+import modeltypes.TableKey;
 
 import org.json.JSONArray;
 import org.json.JSONException;

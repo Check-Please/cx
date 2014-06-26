@@ -5,9 +5,9 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import kinds.ClosedUserConnection;
-import kinds.TableKey;
-import kinds.Restaurant;
+import modeltypes.ClosedUserConnection;
+import modeltypes.Restaurant;
+import modeltypes.TableKey;
 
 import org.json.JSONException;
 

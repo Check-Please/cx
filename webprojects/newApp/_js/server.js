@@ -8,15 +8,7 @@ var server = server || {};
 (function() {
 	"use strict";
 
-	server.sendEmail = function(addr) {
-		//TODO
-	}
-
-	server.sendRating = function(rating) {
-		//TODO
-	}
-
-	server.pay = function() {
+	server.doSplit = function() {
 		//TODO
 	}
 
@@ -28,7 +20,15 @@ var server = server || {};
 		//TODO
 	}
 
-	server.doSplit = function() {
+	server.pay = function() {
+		//TODO
+	}
+
+	server.sendEmail = function(addr) {
+		//TODO
+	}
+
+	server.sendRating = function(rating) {
 		//TODO
 	}
 })();

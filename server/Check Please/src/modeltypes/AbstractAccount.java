@@ -1,4 +1,4 @@
-package kinds;
+package modeltypes;
 
 import java.util.Date;
 import java.util.UUID;
@@ -12,7 +12,7 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Text;
 
-public abstract class AbstractAccount extends AbstractKind
+public abstract class AbstractAccount extends AbstractModelType
 {
 	private String passwordHASH;
 	private String emailedCode;//Used for both email verification and password reset

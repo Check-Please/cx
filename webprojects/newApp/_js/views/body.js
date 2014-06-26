@@ -4,12 +4,14 @@ var BodyView = Fluid.compileView({
 	 */
 	calc: function(	activeView, width, height, items, split, tipSlider, tip,
 					cards, passwords, newCardInfo, cardFocus, email,
-					feedback, err){
+					feedback, loading, err){
 		////////////////////////////////////////////////
 		////		Compute Basic Style Info		////
 		////////////////////////////////////////////////
-		if((activeView == consts.views.RECEIPT) && (models.split() != null))
+		if((activeView == consts.views.RECEIPT) && (split != null))
 			activeView = consts.views.SPLIT;
+		else if((err == null) && (loading != null))
+			activeView += consts.views.LOADING;
 		var heightClasses = "";
 		var fS = Math.round(width/8);
 		var i;//get rid of warnings from uglifyjs
@@ -91,6 +93,8 @@ var BodyView = Fluid.compileView({
 												"(Enter Password)"));
 			views.push(new CardsView(cardFocus,cards,passwords,newCardInfo));
 			views.push(new FeedbackView(email, feedback));
+			views.push(new LoadingView(	loading && loading.message,
+										loading && loading.percent));
 		} else {
 			views = [new ErrorView(err.heading, err.message, err.symbol)];
 		}
@@ -100,6 +104,5 @@ var BodyView = Fluid.compileView({
 		////////////////////////
 		return {activeView: activeView, views: views,
 				heightClasses: heightClasses, fontSize: fS};
-	},
-	noMemoize: true
+	}
 });

@@ -5,9 +5,9 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import org.json.JSONException;
+import modeltypes.ClosedUserConnection;
 
-import kinds.ClosedUserConnection;
+import org.json.JSONException;
 
 import com.google.appengine.api.datastore.DatastoreService;
 

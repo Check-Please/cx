@@ -57,6 +57,7 @@ consts.views = {
 	PAY: "pay",
 	CARDS: "cards",
 	FEEDBACK: "feedback",
+	LOADING: "loading",
 	ERROR: "error"
 }
 

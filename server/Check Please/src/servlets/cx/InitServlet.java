@@ -10,17 +10,17 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
+import modeltypes.BluetoothIDToRestaurantPointer;
+import modeltypes.Client;
+import modeltypes.ConnectionToTablePointer;
+import modeltypes.Globals;
+import modeltypes.Restaurant;
+import modeltypes.TableKey;
+import modeltypes.UserConnection;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import kinds.BluetoothIDToRestaurantPointer;
-import kinds.Client;
-import kinds.ConnectionToTablePointer;
-import kinds.Globals;
-import kinds.UserConnection;
-import kinds.TableKey;
-import kinds.Restaurant;
 
 import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;

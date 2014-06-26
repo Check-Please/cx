@@ -31,7 +31,7 @@ var device = device || {};
 	 *
 	 *	@return	A string describing the platform
 	 */
-	device.getPlatform = op.id.c("{{PLATFORM}}: " + navigator.userAgent);
+	device.getPlatform=op.id.c("{{PLATFORM}}: "+window.navigator.userAgent);
 
 	/** Makes a UUID.  Should comply with the UUID spec
 	 *
@@ -48,17 +48,14 @@ var device = device || {};
 		);
 	};
 
-	if({{NATIVE}}) (function() {//Scope f to get rid of warnings
-		device.ajax = function(method, url)
-		{
-			if(!url.match(/^[a-z]*:\/\//i))
+	if({{TEST}} || {{NATIVE}}) {
+		device.ajax = function(method, url) {
+			if({{NATIVE}} && !url.match(/^[a-z]*:\/\//i))
 				arguments[1] = "{{SERVER}}" + (url[0] =="/"?"":"/") + url;
-			ajax.apply(this, $.makeArray(arguments));
+			window.ajax.apply(this, $.makeArray(arguments));
 		};
-		for(var f in ajax)
-			if(Function.prototype[f] == undefined)
-				device.ajax[f] = ajax[f];
-	})(); else
+		$.extend(device.ajax, ajax);
+	} else
 		device.ajax = ajax;
 
 	/**	Determines the information which will identify the table for the
@@ -173,14 +170,14 @@ var device = device || {};
 			k = rewriteKey(k);
 			if(arguments.length == 1) {
 				//GET
-				v = localStorage.getItem(k);
+				v = window.localStorage.getItem(k);
 				return v == undefined ? undefined : JSON.parse(v);
 			} else {
 				//SET
 				if(v !== undefined)
-					localStorage.setItem(k, JSON.stringify(v));
+					window.localStorage.setItem(k, JSON.stringify(v));
 				else
-					localStorage.removeItem(k);
+					window.localStorage.removeItem(k);
 				return v;
 			}
 		};

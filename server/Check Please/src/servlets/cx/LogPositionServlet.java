@@ -5,8 +5,8 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import kinds.UserConnection;
-import kinds.TableKey;
+import modeltypes.TableKey;
+import modeltypes.UserConnection;
 
 import org.json.JSONException;
 

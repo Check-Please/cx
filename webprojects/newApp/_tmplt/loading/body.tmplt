@@ -1,0 +1,9 @@
+<div id="loading-view" class="background">
+	<div class="wrapper">
+		<span class="percent {{hide_percent}}">(<span>{{percent}}</span>)</span>
+		<span class="message">{{message}}</span>
+		<span class="dot one">.</span>
+		<span class="dot two">.</span>
+		<span class="dot three">.</span>
+	</div>
+</div>

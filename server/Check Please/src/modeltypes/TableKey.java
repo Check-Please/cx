@@ -1,4 +1,4 @@
-package kinds;
+package modeltypes;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,7 +27,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 
-public class TableKey extends AbstractKind
+public class TableKey extends AbstractModelType
 {
 	protected String kindName() { return getKind(); }
 	public static String getKind() { return "table_key"; }

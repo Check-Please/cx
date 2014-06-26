@@ -5,10 +5,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.UUID;
 
-import org.apache.commons.codec.binary.Base64;
+import modeltypes.AbstractModelType;
+import modeltypes.Globals;
 
-import kinds.AbstractKind;
-import kinds.Globals;
+import org.apache.commons.codec.binary.Base64;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
@@ -97,18 +97,18 @@ public class MyUtils
 		return new String(Base64.encodeBase64(md.digest()));
 	}
 
-	public static AbstractKind wrapEntity(Entity e)
+	public static AbstractModelType wrapEntity(Entity e)
 	{
-		if(e.getKind().equals(kinds.ConnectionToTablePointer.getKind()))
-			return new kinds.ConnectionToTablePointer(e);
-		else if(e.getKind().equals(kinds.Globals.getKind()))
-			return new kinds.Globals(e);
-		else if(e.getKind().equals(kinds.TableKey.getKind()))
-			return new kinds.TableKey(e);
-		else if(e.getKind().equals(kinds.UserConnection.getKind()))
-			return new kinds.UserConnection(e);
-		else if(e.getKind().equals(kinds.Restaurant.getKind()))
-			return new kinds.Restaurant(e);
+		if(e.getKind().equals(modeltypes.ConnectionToTablePointer.getKind()))
+			return new modeltypes.ConnectionToTablePointer(e);
+		else if(e.getKind().equals(modeltypes.Globals.getKind()))
+			return new modeltypes.Globals(e);
+		else if(e.getKind().equals(modeltypes.TableKey.getKind()))
+			return new modeltypes.TableKey(e);
+		else if(e.getKind().equals(modeltypes.UserConnection.getKind()))
+			return new modeltypes.UserConnection(e);
+		else if(e.getKind().equals(modeltypes.Restaurant.getKind()))
+			return new modeltypes.Restaurant(e);
 		else
 			throw new IllegalArgumentException("Unknown entity kind");
 	}

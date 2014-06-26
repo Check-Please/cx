@@ -1,4 +1,4 @@
-package kinds;
+package modeltypes;
 
 import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
@@ -24,7 +24,7 @@ import com.google.appengine.api.datastore.ShortBlob;
 
 import org.apache.commons.codec.binary.Base64;
 
-public class Client extends AbstractKind
+public class Client extends AbstractModelType
 {
 	protected String kindName() { return getKind(); }
 	public static String getKind() { return "client"; }

@@ -17,10 +17,10 @@ var models = models || {};
 	//=======================================================================
 
 	/**	The key used to identify this table */
-	models.tableKey = Fluid.newModel();
+	models.tableKey = Fluid.newModel(undefined);
 
 	/**	The ID used to identify this instance of the app to the server */
-	models.connectionID = Fluid.newModel();
+	models.connectionID = Fluid.newModel(undefined);
 
 	/**	A list of possible views to nagivate to given the current state.
 	 *	Values come from consts.views */
@@ -80,7 +80,7 @@ var models = models || {};
 	 *		currNumWays - The number of ways the item is currently split
 	 *		inNumWays -	The number of ways the user has currently inputted
 	 */
-	models.split = Fluid.newModel();
+	models.split = Fluid.newModel(undefined);
 
 	/**	The tip ammount picked from the slider.  Must be a value in
 	 *	consts.tipSlider
@@ -136,6 +136,30 @@ var models = models || {};
 	 *	consts.feedback.  undefined if no beedback has been given yet
 	 */
 	models.feedback = Fluid.newModel(undefined);
+
+	/**	Information for the loading screen to show the user.  undefined if no
+	 *	loading screen needs to be shown.  Otherwise, an object with:
+	 *		message: What is currently being done
+	 *		percent: The percent done.  undefined if unknown
+	 *		incrTo: Sometimes it is desirable to have the percentage
+	 *				automatically increment.  If this is desired, this
+	 *				property should be set to the maximum percentage which
+	 *				can be incremented to.  If not, this property should not
+	 *				be specified.
+	 */
+	models.loading = Fluid.newModel(undefined);
+	models.loading.listen(function() {
+		var loading = models.loading();
+		if(loading && (loading.incrTo < loading.percent)) {
+			var current = JSON.stringify(loading);
+			setTimeout(function() {
+				if(JSON.stringify(models.loading()) == current) {
+					models.loading().incrTo++;
+					models.loading.alert();
+				}
+			}, 2000);
+		}
+	});
 
 	/**	Information about the what has gone wrong.  undefined if no error has
 	 *	yet occured.  Object has the following properties:

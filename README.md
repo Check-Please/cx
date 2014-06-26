@@ -24,12 +24,13 @@ How to Set Up
 	5.	UglifyJS (`sudo npm install uglify-js -g`)
 	6.	jQuery's node package (`npm install jquery`)
 	7.	jsdom node package (`npm install jsdom`)
-	8.	Mocha (`sudo npm install mocha -g`)
-	9.	SASS (install ruby, run `gem install sass`)
-	10.	Eclipse (if you need to work on or locally run the server)
-	11.	The iPhone SDK (if you are going to work on the iPhone app)
-	12.	The Andriod SDK (if you are going to work on the Andriod app)
-	13.	Microsoft Visual Studio (if you are going to work on the plugin)
+	8.	mocha (`npm install mocha`)
+	9.	istanbul (`npm install istanbul`)
+	10.	SASS (install ruby, run `gem install sass`)
+	11.	Eclipse (if you need to work on or locally run the server)
+	12.	The iPhone SDK (if you are going to work on the iPhone app)
+	13.	The Andriod SDK (if you are going to work on the Andriod app)
+	14.	Microsoft Visual Studio (if you are going to work on the plugin)
 
 3.	Clone this project to your machine
 

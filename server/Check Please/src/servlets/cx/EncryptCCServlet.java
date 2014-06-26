@@ -5,8 +5,8 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import kinds.CardHashToClientPointer;
-import kinds.Client;
+import modeltypes.CardHashToClientPointer;
+import modeltypes.Client;
 
 import org.json.JSONException;
 import org.json.JSONObject;

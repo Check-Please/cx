@@ -8,7 +8,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
-import kinds.TableKey;
+import modeltypes.TableKey;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -5,11 +5,12 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
+import modeltypes.Restaurant;
+import modeltypes.TableKey;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import kinds.TableKey;
-import kinds.Restaurant;
 import utils.GetServletBase;
 import utils.HttpErrMsg;
 import utils.ParamWrapper;

@@ -12,16 +12,16 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import modeltypes.Client;
+import modeltypes.ClosedUserConnection;
+import modeltypes.ConnectionToTablePointer;
+import modeltypes.Restaurant;
+import modeltypes.TableKey;
+import modeltypes.UserConnection;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import kinds.Client;
-import kinds.ConnectionToTablePointer;
-import kinds.ClosedUserConnection;
-import kinds.Restaurant;
-import kinds.UserConnection;
-import kinds.TableKey;
 
 import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelServiceFactory;
