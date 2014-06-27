@@ -154,6 +154,7 @@ var saved = saved || {};
 		});
 		device.accData(cardsID, cards);
 		device.storeSecret(ciphertextKey, ciphertext);
+		models.cards(saved.getCCs());
 	}
 
 	/**	Roughly checks a password.  False positives are very possible, though
@@ -177,7 +178,7 @@ var saved = saved || {};
 	 *
 	 *	@param	index The index of the card to get the ciphertext for
 	 */
-	saved.getCiphertext = function(index)
+	saved.getCardCiphertext = function(index)
 	{
 		return device.accData(device.accData(cardsID)[index].ciphertextKey);
 	}
@@ -191,6 +192,7 @@ var saved = saved || {};
 		var cards = device.accData(cardsID) || [];
 		cards.unshift(cards.splice(index, 1));
 		device.accData(cardsID, cards);
+		models.cards(saved.getCCs());
 	}
 
 	/**	Deletes a credit card
@@ -202,5 +204,14 @@ var saved = saved || {};
 		var cards = device.accData(cardsID) || [];
 		cards.splice(index, 1);
 		device.accData(cardsID, cards);
+		models.cards(saved.getCCs());
+	}
+
+	/**	Deletes all saved cards
+	 */
+	saved.deleteCCs = function()
+	{
+		device.accData(cardsID, []);
+		models.cards([]);
 	}
 })();

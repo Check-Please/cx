@@ -4,6 +4,11 @@
  *
  *	All the documentation for the models is also in this file
  *
+ *	The current list of models is:
+ *		tableKey, connectionID, validViews, activeView, width, height, items,
+ *		split, tipSlider, tip, cards, passwords, newCardInfo, cardFocus,
+ *		email, feedback, loading, error
+ *
  *	@owner	sjelin	
  */
 
@@ -13,7 +18,7 @@ var models = models || {};
 	"use strict";
 
 	//=======================================================================
-	//  Initialize the models
+	//  Session Information
 	//=======================================================================
 
 	/**	The key used to identify this table */
@@ -21,6 +26,10 @@ var models = models || {};
 
 	/**	The ID used to identify this instance of the app to the server */
 	models.connectionID = Fluid.newModel(undefined);
+
+	//=======================================================================
+	//  Routing Information
+	//=======================================================================
 
 	/**	A list of possible views to nagivate to given the current state.
 	 *	Values come from consts.views */
@@ -33,11 +42,35 @@ var models = models || {};
 	 *	is used instead */
 	models.activeView = Fluid.newModel("");
 
-	/**	The width of the device */
-	models.width = Fluid.newModel(1);
+	window.onhashchange = function() {
+		var hash = (location.hash || "").slice(1);
+		if(models.validViews.get().indexOf(hash) == -1)
+			hash = models.validViews.get()[0];
+		if(models.activeView.get() != hash)
+			models.activeView.set(hash);
+	}
+	models.activeView.listen(function() {
+		var hash = "#"+models.activeView.get();
+		if(hash != location.hash)
+			location.hash = hash;
+	});
+	models.validViews.listen(window.onhashchange);
 
-	/**	The height of the device */
+	//=======================================================================
+	//  Responsiveness
+	//=======================================================================
+
+	/**	The width and height of the device */
+	models.width = Fluid.newModel(1);
 	models.height = Fluid.newModel(1);
+	window.onresize = function() {
+		models.width.set($(window).width());
+		models.height.set($(window).height());
+	}
+
+	//=======================================================================
+	//  Receipt View Info
+	//=======================================================================
 
 	/**	The items on the ticket.  Map from ids to objects.
 	 *
@@ -82,6 +115,29 @@ var models = models || {};
 	 */
 	models.split = Fluid.newModel(undefined);
 
+	function updateSplit() {
+		var split = models.split.get();
+		var items = models.items.get();
+		if(split != null) {
+			var n = Object.keys(items).filer(function(id) {
+				if(!id.startsWith(split.trgt+":"))
+					return false;
+				split.name = split.name || items[id].name;
+				return items[id].status != consts.statuses.PAID;
+			});
+			if(split.currNumWays != n) {
+				split.inNumWays = (split.currNumWays = n) + "";
+				models.split.alert();
+			}
+		}
+	}
+	models.items.listen(updateSplit);
+	models.split.listen(updateSplit);
+
+	//=======================================================================
+	//  Pay View Info
+	//=======================================================================
+
 	/**	The tip ammount picked from the slider.  Must be a value in
 	 *	consts.tipSlider
 	 */
@@ -89,6 +145,35 @@ var models = models || {};
 
 	/** The amount tipped in cents.  undefined if no tip entered */
 	models.tip = Fluid.newModel(0);
+
+	var updateTip = function() {
+		var prct = undefined;
+		switch(models.tipSlider.get()) {
+			case consts.tipSlider.SMALL_TIP:	prct = 17; break;
+			case consts.tipSlider.MED_TIP:		prct = 20; break;
+			case consts.tipSlider.LARGE_TIP:	prct = 25; break;
+		}
+		if(prct != undefined) {
+			var tippable = 0;
+			var items = models.items.get();
+			for(var i in items) {
+				var item = items[i];
+				if(item.type == consts.statuses.CHECKED) {
+					tippable += (item.price + item.tax) *
+								(item.denom ? (item.num||0)/item.denom : 1);
+					for(var j = 0; j < item.mods.length; j++)
+						tippable += item.mods[j].price + item.mods[j].tax;
+				}
+			}
+			models.tip.set(money.round(tippable * prct / 10000));
+		}
+	};
+	models.tipSlider.listen(updateTip);
+	models.items.listen(updateTip);
+
+	//=======================================================================
+	//  Cards View Info
+	//=======================================================================
 
 	/**	Information about saved credit cards.  Array of objects, each with
 	 *	the following properties:
@@ -127,6 +212,10 @@ var models = models || {};
 	 *	new card  */
 	models.cardFocus = Fluid.newModel(-1);
 
+	//=======================================================================
+	//  Feedback View Info
+	//=======================================================================
+
 	/**	The email address which the receipt was sent to.  undefined if no
 	 *	receipt has been sent yet
 	 */
@@ -136,6 +225,10 @@ var models = models || {};
 	 *	consts.feedback.  undefined if no beedback has been given yet
 	 */
 	models.feedback = Fluid.newModel(undefined);
+
+	//=======================================================================
+	//  Other View Info
+	//=======================================================================
 
 	/**	Information for the loading screen to show the user.  undefined if no
 	 *	loading screen needs to be shown.  Otherwise, an object with:
@@ -169,32 +262,6 @@ var models = models || {};
 	 */
 	models.error = Fluid.newModel(undefined);
 
-	//=======================================================================
-	//  Enforce consistency across models
-	//=======================================================================
-
-	//Dimensions
-	window.onresize = function() {
-		models.width.set($(window).width());
-		models.height.set($(window).height());
-	}
-
-	//Active View
-	window.onhashchange = function() {
-		var hash = (location.hash || "").slice(1);
-		if(models.validViews.get().indexOf(hash) == -1)
-			hash = models.validViews.get()[0];
-		if(models.activeView.get() != hash)
-			models.activeView.set(hash);
-	}
-	models.activeView.listen(function() {
-		var hash = "#"+models.activeView.get();
-		if(hash != location.hash)
-			location.hash = hash;
-	});
-	models.validViews.listen(window.onhashchange);
-
-	//Errors
 	window.onerror = function() {
 		alert("JavaScript error from "+url+":\n\n"+err+" (Line #"+num+")");
 	}
@@ -202,50 +269,4 @@ var models = models || {};
 		if(models.error.get() != undefined)
 			models.validViews.set([consts.views.ERROR]);
 	});
-
-	//Split
-	function updateSplit() {
-		var split = models.split.get();
-		var items = models.items.get();
-		if(split != null) {
-			var n = Object.keys(items).filer(function(id) {
-				if(!id.startsWith(split.trgt+":"))
-					return false;
-				split.name = split.name || items[id].name;
-				return items[id].status != consts.statuses.PAID;
-			});
-			if(split.currNumWays != n) {
-				split.inNumWays = (split.currNumWays = n) + "";
-				models.split.alert();
-			}
-		}
-	}
-	models.items.listen(updateSplit);
-	models.split.listen(updateSplit);
-
-	//Tip
-	var updateTip = function() {
-		var prct = undefined;
-		switch(models.tipSlider.get()) {
-			case consts.tipSlider.SMALL_TIP:	prct = 17; break;
-			case consts.tipSlider.MED_TIP:		prct = 20; break;
-			case consts.tipSlider.LARGE_TIP:	prct = 25; break;
-		}
-		if(prct != undefined) {
-			var tippable = 0;
-			var items = models.items.get();
-			for(var i in items) {
-				var item = items[i];
-				if(item.type == consts.statuses.CHECKED) {
-					tippable += (item.price + item.tax) *
-								(item.denom ? (item.num||0)/item.denom : 1);
-					for(var j = 0; j < item.mods.length; j++)
-						tippable += item.mods[j].price + item.mods[j].tax;
-				}
-			}
-			models.tip.set(money.round(tippable * prct / 10000));
-		}
-	};
-	models.tipSlider.listen(updateTip);
-	models.items.listen(updateTip);
 })(models);

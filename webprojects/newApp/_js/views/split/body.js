@@ -6,16 +6,18 @@ var SplitView = Fluid.compileView({
 	calc: function(name, input) {
 		return {name: name,
 				input: input,
-				confirm_disabled: input.length == 0 ? "disabled" : ""};
+				confirm_disabled: (input || "0") == 0 ? "disabled" : ""};
 	},
 	listeners: {"input": models.split.sub("inNumWays")},
 	addControls: function($el) {
 		$el.find(".confirm").click(function() {
-			if(models.split.get().length == 0)
+			if(models.split().inNumWays.length == 0)
 				alert("Enter a number");
+			else if(models.split().inNumWays == 0)
+				alert("Cannot split an item zero ways");
 			else
 				server.doSplit();
 		});
-		$el.find(".cancel").click(function() {models.split.set()});
+		$el.find(".cancel").click(function() {models.split(undefined)});
 	}
 });

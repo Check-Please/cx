@@ -8,7 +8,7 @@ window.onload = function() {
 			window.location.href.substring(window.location.protocol.length);
 
 	// ERROR MESSAGES
-	var SERVER_ERRORS = {
+	var SERVER_ERROR = {
 		0: {heading: "No Table Info", symbol: "?",
 			message: "Couldn't find information about where you're sitting"},
 		1: {heading: "Invalid Table", symbol: "!",
@@ -34,7 +34,7 @@ window.onload = function() {
 
 	inParallel([device.getTableInfo, device.getPos, device.loadData],
 	function(tInfo, pos) {
-		ajax.send("cx", "init", {
+		device.ajax.send("cx", "init", {
 			isNative: {{NATIVE}},
 			tableInfo: tInfo,
 			clientID: saved.getClientID(),
@@ -45,18 +45,22 @@ window.onload = function() {
 			versionNum: {{VERSION_NUM}}
 		}, function(data) {
 			data = JSON.parse(data);
-			models.loading(undefined);
 			if(data.errCode != null)
 				models.error(SERVER_ERROR[data.errCode]||SERVER_ERROR[500]);
 			else {
 				models.tableKey(data.tKey);
 				models.connectionID(data.connectionID);
 				models.items(data.items);
+				if(data.deleteCCs)
+					saved.deleteCCs();
+				else
+					models.cards(saved.getCCs());
 			}
-		}, function() {
 			models.loading(undefined);
+		}, function() {
 			models.error({heading: "Couldn't load", symbol: "!",
 				message: "Couldn't get your order from the server"});
+			models.loading(undefined);
 		}, function(rs) {
 			models.loading({message: "Getting Order",
 							percent: rs*25, incrTo: (rs+1)*25-1});
