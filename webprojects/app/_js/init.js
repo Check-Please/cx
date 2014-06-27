@@ -48,6 +48,7 @@ window.onload = function() {
 			if(data.errCode != null)
 				models.error(SERVER_ERROR[data.errCode]||SERVER_ERROR[500]);
 			else {
+				socket.init(data.channelToken);
 				models.tableKey(data.tKey);
 				models.connectionID(data.connectionID);
 				models.items(data.items);

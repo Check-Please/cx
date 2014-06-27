@@ -172,7 +172,6 @@ public class InitServlet extends PostServletBase
 			if(tableKey == null)
 				err(ERR__NO_TABLE_KEY, out);
 			TableKey table = new TableKey(KeyFactory.createKey(TableKey.getKind(), tableKey), ds);
-			Restaurant restr = table.getRestr(ds);
 
 			List<TicketItem> items;
 			try {
@@ -210,9 +209,6 @@ public class InitServlet extends PostServletBase
 
 			JSONObject ret = new JSONObject();
 			ret.put("tKey", tableKey);
-			ret.put("restrName", restr.getName());
-			ret.put("restrAddress", restr.getAddress());
-			ret.put("restrStyle", restr.getStyle());
 			ret.put("channelToken", token);
 			ret.put("connectionID", connectionID);
 			ret.put("items", new JSONArray(items.toString()));

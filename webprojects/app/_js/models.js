@@ -43,16 +43,18 @@ var models = models || {};
 	models.activeView = Fluid.newModel("");
 
 	window.onhashchange = function() {
-		var hash = (location.hash || "").slice(1);
+		var hash = (window.location.hash || "").slice(1);
 		if(models.validViews.get().indexOf(hash) == -1)
 			hash = models.validViews.get()[0];
 		if(models.activeView.get() != hash)
 			models.activeView.set(hash);
 	}
 	models.activeView.listen(function() {
-		var hash = "#"+models.activeView.get();
-		if(hash != location.hash)
-			location.hash = hash;
+		server.logPos(models.activeView());
+		var hash = "#"+models.activeView();
+		if(hash != window.location.hash)
+			window.location.hash = hash;
+		
 	});
 	models.validViews.listen(window.onhashchange);
 
@@ -205,6 +207,8 @@ var models = models || {};
 	models.newCardInfo.listen(function() {
 		var info = models.newCardInfo.get();
 		info.type = creditCards.getType(info.pan);
+		info.exprMonth = info.exprMonth.length == 1 ?
+						"0"+info.exprMonth : info.exprMonth.substr(0,2);
 		//No need to alert() because this is the first listener
 	});
 

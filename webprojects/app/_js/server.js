@@ -17,6 +17,10 @@ var server = server || {};
 		device.ajax.send.bind(device.ajax, "cx").apply(this, arguments);
 	}
 
+	server.logPos = function(viewName) {
+		send("logPos", {viewName: viewName});
+	}
+
 	server.doSplit = function() {
 		var diff = models.split().inNumWays - models.split().currNumWays;
 		if(diff != 0) {
@@ -105,9 +109,23 @@ var server = server || {};
 
 	server.pay = function() {
 		models.loading({message: "Processing payment"});
-		send("pay", {
-			items: models.items()
-		}, function() {
+
+		var payInfo = {items: models.items()};
+		if(models.cardFocus() == -1) {
+			payInfo.pan =	models.newCardInfo().pan;
+			payInfo.name =	models.newCardInfo().name;
+			payInfo.expr =	models.newCardInfo().exprYear.slice(-2) +
+							models.newCardInfo().exprMonth;
+			payInfo.cvv =	models.newCardInfo().cvv;
+			payInfo.zip =	models.newCardInfo().zip;
+			if(payInfo.reqPass)
+				payInfo.password = models.newCardInfo().password;
+		} else
+			payInfo.cardCT = saved.getCardCiphertext(models.cardFocus());
+
+		send("pay", payInfo, function(cardCT) {
+			if((models.cardFocus() == -1) && (models.newCardInfo().save))
+				saved.saveCC(models.newCardInfo(), cardCT);
 			models.validViews([consts.views.FEEDBACK]);
 			models.loading(undefined);
 		}, function(code, _, msg) {
