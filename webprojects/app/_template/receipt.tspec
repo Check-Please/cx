@@ -1,7 +1,0 @@
-@param restrName The name of the restaurant
-@param logo	The name of the logo if it exists, null otherwise
-@param street_address The address of the restaurant
-@param city_address The address of the restaurant
-@param items The markup for the items on the ticket
-@param splitText The text of the button for splitting the bill
-@param server The server to load stuff from

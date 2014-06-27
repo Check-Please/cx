@@ -1,2 +1,0 @@
-{{splitStarted ?	"Click here to change the way the bill is being split" :
-					"Click here to split the bill"}}

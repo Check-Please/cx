@@ -1,19 +1,16 @@
-/*	The job of this module is to handle communications from the server.  The
- *	module should try to pass this information along as quickly as possible
- *	to another module (generally models.js) rather than doing any processing
- *	itself.
+/**	This module provides methods for receiving messages from the server
  *
- *	@owner sjelin
+ *	@author sjelin
  */
 
 var socket = socket || {};
 
-(function () {
+(function() {
 	"use strict";
 
 	var skt = null;
 	socket.init = function(token) {
-    	skt = (new goog.appengine.Channel(token)).open({
+    	skt = (new window.goog.appengine.Channel(token)).open({
 			'onopen': onOpen,
 			'onmessage': onMessage,
 			'onerror': onError,
@@ -28,61 +25,11 @@ var socket = socket || {};
 	function onOpen() {}
 
 	var cmds = {
-		ITEMS_AND_REMOVE_SPLIT: function(items, splitID) {
-			mvc.items(JSON.parse(items));
-			if(mvc.split() != null) {
-				delete mvc.split()[splitID];
-				mvc.split.notify();
-			}
+		SET_ITEMS: function(items) {
+			models.items(JSON.parse(items));
 		},
-		ITEMS_AND_RESTORE_SPLIT: function(items, splitID, splitItems)
-		{
-			mvc.items(JSON.parse(items));
-			splitItems = JSON.parse(splitItems);
-			if(mvc.split() != null) {
-				mvc.split()[splitID] = splitItems;
-				mvc.split.notify();
-			} else
-				mvc.split({splitID: splitItems});
-		},
-		SPLIT: function(splitID, splitVal) {
-			var val = JSON.parse(splitVal);
-			if(val == null) {
-				if(mvc.split() != null)
-					delete mvc.split()[splitID];
-			} else {
-				if(mvc.split() == null)
-					mvc.split({});
-				mvc.split()[splitID] = val;
-			}
-			mvc.split.notify();
-		},
-		START_SPLIT: function() {
-			if(mvc.split() == null)
-				mvc.split({});
-			else
-				mvc.split.notify();
-		},
-		CANCEL_SPLIT: function() {
-			if(mvc.split() == null)
-				mvc.split.notify();
-			else
-				mvc.split(null);
-		},
-		ERR: function() {
-			mvc.err(Array.prototype.join.call(arguments, "\n"));
-		},
-		DONE: function() {
-			mvc.done(true);
-		},
-		/*	type = 0 for msg update, -1 for error, 1 for paid
-		 */
-		LOAD_UPDATE: function(type, msg) {
-			switch(parseInt(type)) {
-				case 0: mvc.loadMsg(msg); break;
-				case -1: if(msg!=null) alert(msg); mvc.loadMsg(null); break;
-				case 1: mvc.loadMsg(null); mvc.paid(true); break;
-			}
+		ERROR: function(msg) {
+			models.error({heading:"Server Error", symbol:"!", message:msg});
 		}
 	}
 
@@ -91,7 +38,8 @@ var socket = socket || {};
 		msg = msg.data.trim().split("\n");
 		var cmd = msg[0].trim().toUpperCase();
 		if(cmds[cmd] == undefined)
-			mvc.err("Unknown command \""+cmd+"\" from channel");
+			models.error({heading: "Unknown command", symbol: "!",
+				message: "Unknown command \""+cmd+"\" from server"});
 		else
 			cmds[cmd].apply(this, msg.slice(1));
 	}
@@ -99,9 +47,11 @@ var socket = socket || {};
 	function onError(err)
 	{
 		if(err.code == 401)
-			mvc.err("timeout");
+			models.error({heading: "Inactive", symbol: "",
+				message: "Please reload"});
 		else
-			mvc.err("reload");
+			models.error({heading: "Unknown Error", symbol: "?",
+				message: "Please reload"});
 	}
 
 	function onClose() {}

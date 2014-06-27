@@ -1,3 +1,0 @@
-<div class="item" itemID="{{id}}" orderDate={{orderDate}}>
-	<a>&times;</a> <input type="text" value="{{shorthand}}" />
-</div>

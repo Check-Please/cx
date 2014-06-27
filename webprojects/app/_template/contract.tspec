@@ -1,3 +1,0 @@
-@param content	The content of the contract
-@param {boolean} readonly	If the contract must be agreed to or is just
-							there to be read

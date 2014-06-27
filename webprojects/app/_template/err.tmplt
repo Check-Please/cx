@@ -1,6 +1,0 @@
-<div id="err">
-	<h1>Sorry!</h1>
-	<p>Something went wrong.  We're getting the following error message:</p>
-	<p class="error">{{msg}}</p>
-	<p>Please pay your bill through the waitstaff</p>
-</div>

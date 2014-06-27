@@ -1,5 +1,0 @@
-<li class="item">
-	<span class="name">{{name}}</span>
-	<span class="price">{{price}}</span>
-	<ul class="mods">{{mods}}</ul>
-</li>
