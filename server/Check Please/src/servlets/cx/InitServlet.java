@@ -186,7 +186,7 @@ public class InitServlet extends PostServletBase
 				err(ERR__EMPTY_TICKET, out);
 				return;
 			}
-			if(table.clearOldMetadata(items, ds))
+			if(table.initMetadata(items, ds))
 				table.commit(ds);
 			String connectionID = UUID.randomUUID().toString();
 			new ConnectionToTablePointer(KeyFactory.createKey(ConnectionToTablePointer.getKind(), connectionID), tableKey).commit(ds);
@@ -211,8 +211,7 @@ public class InitServlet extends PostServletBase
 			ret.put("tKey", tableKey);
 			ret.put("channelToken", token);
 			ret.put("connectionID", connectionID);
-			ret.put("items", new JSONArray(items.toString()));
-			ret.put("split", table.getSplit(connectionID, ds));
+			ret.put("items", table.getItemsJSON(items, connectionID));
 			if(newClientKey) {
 				ret.put("deleteCCs", true);
 			}

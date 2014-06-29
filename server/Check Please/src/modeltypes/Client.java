@@ -4,13 +4,17 @@ import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import utils.DSConverter;
@@ -89,18 +93,41 @@ public class Client extends AbstractModelType
 			throw new HttpErrMsg(404, "Ciphertext malformated");
 		}
 	}
-	
+
+	/**	Makes an encryption key from a password.  Peppers the password with the base 64 encoding of key.
+	 *	If a null password is specified, simply returns key.
+	 * 
+	 *	@param	password The password to make a key from
+	 *	@return	A 128-bit encryption key
+	 *	@throws	InvalidKeySpecException
+	 *	@throws	NoSuchAlgorithmException
+	 */
+	private static final byte [] salt = "Pepper is used instead of this shitty salt".getBytes();
+	private byte [] keyFromPassword(String password) throws InvalidKeySpecException, NoSuchAlgorithmException
+	{
+    	if(password == null)
+    		return key;
+    	else {
+    		password += Base64.encodeBase64(key);
+    		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+    		KeySpec spec = new PBEKeySpec((password+new String(Base64.encodeBase64(key))).toCharArray(), salt, 1, 128);//LOL 1 iteration why am I even using PBKDF?
+    		return factory.generateSecret(spec).getEncoded();
+    	}
+	}
+
 	/**	Encrypts text using AES and the key associated with the client
 	 *	@param plaintext string
+	 *	@param password The password for the card
 	 *	@return The The IV and Ciphertext
 	 *	@throws HttpErrMsg if something goes wrong.  May be a 500 error or 404
 	 */
-	public String encrypt(String plaintext) throws HttpErrMsg
+	public String encrypt(String plaintext, String password) throws HttpErrMsg
 	{
 		if(key == null)
 			throw new HttpErrMsg(404, "No encryption key on hand");
 	    try {
-	    	SecretKey s = new SecretKeySpec(key, 0, key.length, "AES");
+	    	byte [] thisKey = keyFromPassword(password);
+	    	SecretKey s = new SecretKeySpec(thisKey, 0, thisKey.length, "AES");
 	    	Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 	    	cipher.init(Cipher.ENCRYPT_MODE, s);
 	    	AlgorithmParameters params = cipher.getParameters();

@@ -30,6 +30,17 @@ var socket = socket || {};
 		},
 		ERROR: function(msg) {
 			models.error({heading:"Server Error", symbol:"!", message:msg});
+		},
+		PAYMENT_ERROR: function(msg) {
+			models.error({	heading: "Payment Error", message: msg,
+							symbol: String.fromCharCode(215)});
+		},
+		PAYMENT_SUCCESS: function() {
+			models.validViews([consts.views.FEEDBACK]);
+			models.loading(undefined);
+		},
+		PAYMENT_UPDATE: function(msg) {
+			models.loading({message: msg});
 		}
 	}
 

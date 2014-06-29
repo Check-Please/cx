@@ -1,4 +1,4 @@
-package servlets.cx.split;
+package servlets.cx;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -6,9 +6,7 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpSession;
 
 import modeltypes.TableKey;
-import modeltypes.UserConnection;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -17,7 +15,7 @@ import utils.ParamWrapper;
 import utils.PostServletBase;
 import static utils.MyUtils.a;
 
-public class AddToSplitServlet extends PostServletBase
+public class SplitServlet extends PostServletBase
 {
 	/** A unique key for identifying something-or-other
 	 */
@@ -30,17 +28,16 @@ public class AddToSplitServlet extends PostServletBase
 	}
 	protected void configure() {
 		config = new Configuration();
-		config.path = a("/", TableKey.getKind(), "tableKey", UserConnection.getKind(), "connectionID");
+		config.path = a("/", TableKey.getKind(), "tableKey");
 		config.exists = true;
+		config.keyNames = a("connectionID");
 		config.strs = a("itemID");
-//		If for some reason the update has the old data, uncomment the following:
-//		config.txnReq = false;
+		config.longs = a("nWays");
 	}
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
 	{
-		UserConnection c = new UserConnection(p.getEntity());
-		c.addItem(p.getStr(0));
-		c.commit(ds);
-		TableKey.sendSplitUpdate(c.getKey().getName(), new JSONArray(c.getItems()), c.getKey().getParent(), ds);
+		TableKey table = new TableKey(p.getEntity());
+		table.split(p.getStr(0), p.getLong(0), p.getKeyName(0));
+		table.commit(ds);
 	}
 }

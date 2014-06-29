@@ -2,13 +2,12 @@ package utils;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Preloaded {
-	public static List<TicketItem> getTicketItems(long id, Map<String, Frac> paid) throws JSONException, UnsupportedFeatureException, HttpErrMsg
+	public static List<TicketItem> getTicketItems(long id) throws JSONException, UnsupportedFeatureException, HttpErrMsg
 	{
 		Long d = new Date(0L).getTime();
 		return OrderParser.parseOrder(id == 0L ? new JSONObject("{" +
@@ -673,6 +672,6 @@ public class Preloaded {
 					"\"price\": 90000," +
 				"}]" +
 			"}]" +
-		"}") : null, paid);
+		"}") : null);
 	}
 }

@@ -11,14 +11,15 @@ var server = server || {};
 	var send = function() {
 		$.extend(arguments[1], {
 			tableKey: models.tableKey(),
-			connectionID: models.connectionID()
+			connectionID: models.connectionID(),
+			clientID: saved.getClientID()
 		});
 		arguments[2] = arguments[2] || $.noop;
 		device.ajax.send.bind(device.ajax, "cx").apply(this, arguments);
 	}
 
 	server.logPos = function(viewName) {
-		send("logPos", {viewName: viewName});
+		send("logPos", {position: viewName});
 	}
 
 	server.doSplit = function() {
@@ -26,7 +27,7 @@ var server = server || {};
 		if(diff != 0) {
 			var trgt = models.split().trgt;
 			var nWays = models.split().inNumWays;
-			send("split", {trgt: trgt, nWays: nWays});
+			send("split", {itemID: trgt, nWays: nWays});
 			models.split(undefined);
 
 			//Rather than waiting for a message from the server, we do the
@@ -86,7 +87,7 @@ var server = server || {};
 	}
 
 	server.setAllCheck = function(checked) {
-		send("checkAll", {checked: checked, });
+		send("checkAll", {checked: checked});
 		var oldSt = consts.statuses[(checked ? "UN" : "")+"CHECKED"];
 		var newSt = consts.statuses[(checked ? "" : "UN")+"CHECKED"];
 		for(var id in models.items())
@@ -108,26 +109,34 @@ var server = server || {};
 	}
 
 	server.pay = function() {
-		models.loading({message: "Processing payment"});
+		models.loading({message: "Sending paymeny information"});
 
 		var payInfo = {items: models.items()};
+		var cmd = "pay_saved";
 		if(models.cardFocus() == -1) {
+			cmd = "pay_new";
 			payInfo.pan =	models.newCardInfo().pan;
 			payInfo.name =	models.newCardInfo().name;
 			payInfo.expr =	models.newCardInfo().exprYear.slice(-2) +
 							models.newCardInfo().exprMonth;
 			payInfo.cvv =	models.newCardInfo().cvv;
 			payInfo.zip =	models.newCardInfo().zip;
+			payInfo.save =	models.newCardInfo().save;
 			if(payInfo.reqPass)
 				payInfo.password = models.newCardInfo().password;
 		} else
 			payInfo.cardCT = saved.getCardCiphertext(models.cardFocus());
 
-		send("pay", payInfo, function(cardCT) {
+		send(cmd, payInfo, function(data) {
+			data = JSON.parse(data);
 			if((models.cardFocus() == -1) && (models.newCardInfo().save))
-				saved.saveCC(models.newCardInfo(), cardCT);
-			models.validViews([consts.views.FEEDBACK]);
-			models.loading(undefined);
+				saved.saveCC(models.newCardInfo(), data.cardCT);
+			if(data.async)
+				models.loading({message: "Processing Payment"});
+			else {
+				models.validViews([consts.views.FEEDBACK]);
+				models.loading(undefined);
+			}
 		}, function(code, _, msg) {
 			models.error({	heading: "Couldn't pay",
 							symbol: String.fromCharCode(215),

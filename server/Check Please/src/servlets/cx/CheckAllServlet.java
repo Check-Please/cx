@@ -1,4 +1,4 @@
-package servlets.cx.split;
+package servlets.cx;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,7 +15,7 @@ import utils.ParamWrapper;
 import utils.PostServletBase;
 import static utils.MyUtils.a;
 
-public class CancelSplitServlet extends PostServletBase
+public class CheckAllServlet extends PostServletBase
 {
 	/** A unique key for identifying something-or-other
 	 */
@@ -31,13 +31,12 @@ public class CancelSplitServlet extends PostServletBase
 		config.path = a("/", TableKey.getKind(), "tableKey");
 		config.exists = true;
 		config.keyNames = a("connectionID");
-		
+		config.bools = a("checked");
 	}
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
 	{
-		TableKey t = new TableKey(p.getEntity());
-		t.cancelSplit(ds);
-		t.sendCancelSplit(p.getKeyName(0), ds);
-		t.commit(ds);
+		TableKey table = new TableKey(p.getEntity());
+		table.checkAll(p.getKeyName(0), p.getBool(0));
+		table.commit(ds);
 	}
 }

@@ -1,7 +1,6 @@
 package utils;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,7 +15,7 @@ public class OrderParser {
 		long discount = mod.has("discount") ? mod.getLong("discount") : 0L; 
 		return new ItemModifier(mod.getString("name"), price, tax, serviceCharge, discount);
 	}
-	private static List<TicketItem> parseItem(JSONObject item, int itemIndex, Object tickID, Long seatNum, Long date, Map<String, Frac> paid) throws JSONException
+	private static List<TicketItem> parseItem(JSONObject item, int itemIndex, Object tickID, Long seatNum, Long date) throws JSONException
 	{
 		String name = item.getString("name");
 
@@ -60,16 +59,14 @@ public class OrderParser {
 			int q = item.getInt("quantity");
 			for(int i = 0; i < q; i++) {
 				String id_ = id+","+i;
-				items.add(new TicketItem(id_, name, price, tax, serviceCharge, discount, mods,
-						paid.containsKey(id_) ? paid.get(id_) : Frac.ZERO));
+				items.add(new TicketItem(id_, name, price, tax, serviceCharge, discount, mods));
 			}
 		} else
-			items.add(new TicketItem(id, name, price, tax, serviceCharge, discount, mods,
-					paid.containsKey(id) ? paid.get(id) : Frac.ZERO));
+			items.add(new TicketItem(id, name, price, tax, serviceCharge, discount, mods));
 		
 		return items;
 	}
-	private static List<TicketItem> parseTicket(JSONObject tick, int tickIndex, Map<String, Frac> paid) throws JSONException
+	private static List<TicketItem> parseTicket(JSONObject tick, int tickIndex) throws JSONException
 	{
 		Object tickID;
 		try {
@@ -83,7 +80,6 @@ public class OrderParser {
 		}
 		Long seatNum = tick.has("seatNum") ? tick.getLong("seatNum") : null;
 		Long dateOpened = tick.has("dateOpened") ? tick.getLong("dateOpened") : null;
-		long fee = tick.has("fee") ? tick.getLong("fee") : 0L;
 		long tax = tick.has("tax") ? tick.getLong("tax") : 0L;
 		long serviceCharge = tick.has("serviceCharge") ? tick.getLong("serviceCharge") : 0L;
 		long discount = tick.has("discount") ? tick.getLong("discount") : 0L;
@@ -91,7 +87,7 @@ public class OrderParser {
 		JSONArray rawItems = tick.getJSONArray("items");
 		List<TicketItem> items = new ArrayList<TicketItem>(rawItems.length());
 		for(int i = 0; i < rawItems.length(); i++)
-			items.addAll(parseItem(rawItems.getJSONObject(i), i, tickID, seatNum, dateOpened, paid));
+			items.addAll(parseItem(rawItems.getJSONObject(i), i, tickID, seatNum, dateOpened));
 		
 		long [] prices = new long[items.size()];
 		for(int i = 0; i < prices.length; i++) {
@@ -113,19 +109,18 @@ public class OrderParser {
 
 		for(int i = 0; i < prices.length; i++)
 			items.get(i).setTickPrices(
-					(fee*prices[i]+subtotal-1)/subtotal,
 					(tax*prices[i]+subtotal-1)/subtotal,
 					(serviceCharge*prices[i]+subtotal-1)/subtotal,
 					(discount*prices[i])/subtotal);
 		
 		return items;
 	}
-	public static List<TicketItem> parseOrder(JSONObject order, Map<String, Frac> paid) throws JSONException
+	public static List<TicketItem> parseOrder(JSONObject order) throws JSONException
 	{
 		List<TicketItem> items = new ArrayList<TicketItem>();
 		JSONArray ticks = order.getJSONArray("tickets");
 		for(int i = 0; i < ticks.length(); i++)
-			items.addAll(parseTicket(ticks.getJSONObject(i), i, paid));
+			items.addAll(parseTicket(ticks.getJSONObject(i), i));
 		return items;
 	}
 }

@@ -1,4 +1,4 @@
-package servlets.cx.split;
+package servlets.cx;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,7 +15,7 @@ import utils.ParamWrapper;
 import utils.PostServletBase;
 import static utils.MyUtils.a;
 
-public class StartSplitServlet extends PostServletBase
+public class EmailServlet extends PostServletBase
 {
 	/** A unique key for identifying something-or-other
 	 */
@@ -31,12 +31,11 @@ public class StartSplitServlet extends PostServletBase
 		config.path = a("/", TableKey.getKind(), "tableKey");
 		config.exists = true;
 		config.keyNames = a("connectionID");
+		config.strs = a("email");
+		config.txnReq = false;//It's read only
 	}
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
 	{
-		TableKey t = new TableKey(p.getEntity());
-		t.startSplit();
-		t.sendStartSplit(p.getKeyName(0), ds);
-		t.commit(ds);
+		//TODO
 	}
 }

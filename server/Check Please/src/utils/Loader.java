@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import modeltypes.Globals;
@@ -458,6 +459,11 @@ public class Loader implements ParamWrapper
 	public String getChannelID() throws IOException
 	{
 		return ChannelServiceFactory.getChannelService().parsePresence(req).clientId();
+	}
+
+	public Cookie[] getCookies()
+	{
+		return req.getCookies();
 	}
 
 	  ///////////////////////////////////////////////////////////

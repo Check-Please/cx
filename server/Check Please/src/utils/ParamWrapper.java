@@ -2,6 +2,8 @@ package utils;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.Cookie;
+
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
@@ -34,6 +36,8 @@ public interface ParamWrapper
 	public Key getKey(int i);
 	public Entity getEntity();
 	public Entity getEntity(int i);
+
 	public String getQueryString();
 	public String getChannelID() throws IOException;
+	public Cookie[] getCookies();
 }

@@ -53,12 +53,18 @@ public class CloseClientServlet extends PostServletBase
 	{
 		try {
 			ConnectionToTablePointer ptr = new ConnectionToTablePointer(KeyFactory.createKey(ConnectionToTablePointer.getKind(), cID), ds);
+
 			Key tKey = KeyFactory.createKey(TableKey.getKind(), ptr.getKeyName());
+			TableKey table = new TableKey(tKey, ds);
+			table.setConnectionStatus(cID, TableKey.cIDStatuses.CLOSED, ds);
+			table.commit(ds);
+
 			UserConnection uc = new UserConnection(tKey.getChild(UserConnection.getKind(), cID), ds);
-			new ClosedUserConnection(new TableKey(tKey, ds).getRestrUsername(), uc, cause, errMsg).commit(ds);
+			new ClosedUserConnection(table.getRestrUsername(), uc, cause, errMsg).commit(ds);
 			uc.rmv(ds);
-			TableKey.sendSplitUpdate(cID, null, tKey, ds);
+
 			ds.delete(ptr.getKey());
+
 			return true;
 		} catch (EntityNotFoundException e) {
 			return false;//We must have deleted the client already
