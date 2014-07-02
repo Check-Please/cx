@@ -165,4 +165,16 @@ var server = server || {};
 		send("rate", {rating: rating});
 		models.feedback(rating);
 	}
+
+	var unloading = false;
+	window.onunload = window.onbeforeunload = function() {
+		if(!unloading) {
+			unloading = true;
+			device.ajax.send("cx", "close", {
+				tableKey: models.tableKey(),
+				connectionID: models.connectionID(),
+				clientID: saved.getClientID()
+			});
+		}
+	};
 })();
