@@ -101,17 +101,18 @@ public class OrderParser {
 		for(long p : prices)
 			subtotal += p;
 
+		//Distribute tax/sc/discount
 		if(subtotal == 0) {
 			subtotal = prices.length;
 			for(int i = 0; i < prices.length; i++)
 				prices[i] = 1;
 		}
-
-		for(int i = 0; i < prices.length; i++)
-			items.get(i).setTickPrices(
-					(tax*prices[i]+subtotal-1)/subtotal,
-					(serviceCharge*prices[i]+subtotal-1)/subtotal,
-					(discount*prices[i])/subtotal);
+		for(int i = 0; i < prices.length; i++) {
+			TicketItem item = items.get(i);
+			item.addTax((tax*prices[i])/subtotal);
+			item.addSC((serviceCharge*prices[i])/subtotal);
+			item.addDiscount((discount*prices[i])/subtotal);
+		}
 		
 		return items;
 	}

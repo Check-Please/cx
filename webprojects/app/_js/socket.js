@@ -41,6 +41,9 @@ var socket = socket || {};
 		},
 		PAYMENT_UPDATE: function(msg) {
 			models.loading({message: msg});
+		},
+		HEARTBEAT: function(msg) {
+			server.sendHeartbeat(msg);
 		}
 	}
 

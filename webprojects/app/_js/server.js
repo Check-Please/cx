@@ -18,8 +18,12 @@ var server = server || {};
 		device.ajax.send.bind(device.ajax, "cx").apply(this, arguments);
 	}
 
+	server.sendHeartbeat: function(msg) {
+		send("heartbeat", {message: msg});
+	}
+
 	server.logPos = function(viewName) {
-		send("logPos", {position: viewName});
+		send("log_pos", {position: viewName});
 	}
 
 	server.doSplit = function() {
@@ -87,7 +91,7 @@ var server = server || {};
 	}
 
 	server.setAllCheck = function(checked) {
-		send("checkAll", {checked: checked});
+		send("check_all", {checked: checked});
 		var oldSt = consts.statuses[(checked ? "UN" : "")+"CHECKED"];
 		var newSt = consts.statuses[(checked ? "" : "UN")+"CHECKED"];
 		for(var id in models.items())
@@ -111,7 +115,14 @@ var server = server || {};
 	server.pay = function() {
 		models.loading({message: "Sending paymeny information"});
 
-		var payInfo = {items: models.items()};
+		var total = 0;
+		for(var id in models.items()) {
+			var item = models.items()[id];
+			if(item.status == consts.statuses.CHECKED)
+				total += (item.num / item.denom) * (item.price + item.tax +
+										item.serviceCarge - item.discount);
+		}
+		var payInfo = {total: Math.ceil(total/100), tip: models.tip()};
 		var cmd = "pay_saved";
 		if(models.cardFocus() == -1) {
 			cmd = "pay_new";

@@ -9,33 +9,22 @@ Admin Ops
 .CleanServlet, /admin/clean/
 .ClearDbServlet, /admin/clear_db/
 .DumpServlet, /admin/dump/
-.NewTableKeyServlet, /admin/new_table/
 .NewRestrServlet, /admin/new_restr/
+.NewTableKeyServlet, /admin/new_table/
 .TmpServlet, /admin/tmp/
 
 CX
 .ChannelConnectServlet, /_ah/channel/connected/
 .ChannelDisconnectServlet, /_ah/channel/disconnected/
+.CheckServlet, /cx/check/
+.CheckAllServlet, /cx/check_all/
 .CloseClientServlet, /cx/close/
-.EncryptCCServlet, /cx/encryptCC/
+.EmailServlet, /cx/email/
+.HeartbeatServlet, /cx/heartbeat/
 .InitServlet, /cx/init/
 .LogPositionServlet, /cx/log_pos/
-.PayServlet, /cx/pay/
+.PayNewCardServlet, /cx/pay_saved/
+.PaySavedCardServlet, /cx/pay_new/
 .RateServlet, /cx/rate/
-
-CX - Split
-.AddToSplitServlet, /cx/split/add/
-.CancelSplitServlet, /cx/split/cancel/
-.RemoveFromSplitServlet, /cx/split/remove/
-.StartSplitServlet, /cx/split/start/
-
-Oz
-.AppleResetServlet, /appleReset/
-.ConnectServlet, /oz/connect/
-.EnableServlet, /oz/enable/
-.DisconnectServlet, /oz/disconnect/
-.InitServlet, /oz/init/
-.PayerFailureServlet, /oz/failure/
-.PayerSuccessServlet, /oz/success/
-.UpdateTickServlet, /oz/tick/
-.UpdatePayerServlet, /oz/update/
+.SplitServlet, /cx/split/
+.Uncheckervlet, /cx/uncheck/

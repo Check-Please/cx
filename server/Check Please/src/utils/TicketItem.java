@@ -20,9 +20,6 @@ public class TicketItem {
 	private long tax;
 	private long serviceCharge;
 	private long discount;
-	private long tickTax;
-	private long tickSC;
-	private long tickDiscount;
 
 	private List<ItemModifier> mods;
 
@@ -33,9 +30,6 @@ public class TicketItem {
 		this.tax = tax;
 		this.serviceCharge = serviceCharge;
 		this.discount = discount;
-		this.tickTax = 0L;
-		this.tickSC = 0L;
-		this.tickDiscount = 0L;
 		this.mods = mods;
 	}
 
@@ -48,9 +42,6 @@ public class TicketItem {
 		tax = json.getLong("tax");
 		serviceCharge = json.has("serviceCharge") ? json.getLong("serviceCharge") : 0L;
 		discount = json.has("discount") ? json.getLong("discount") : 0L;
-		tickTax = json.has("tickTax") ? json.getLong("tickTax") : 0L;
-		tickSC = json.has("tickSC") ? json.getLong("tickSC") : 0L;
-		tickDiscount = json.has("tickDiscount") ? json.getLong("tickDiscount") : 0L;
 
 		JSONArray jsonMods = json.getJSONArray("mods");
 		mods = new ArrayList<ItemModifier>(jsonMods.length());
@@ -62,14 +53,20 @@ public class TicketItem {
 	public long getPrice() {
 		return price;
 	}
-	public void setTickPrices(long tickTax, long tickSC, long tickDiscount)
-	{
-		this.tickTax = tickTax;
-		this.tickSC = tickSC;
-		this.tickDiscount = tickDiscount;
+	public long getNetPrice() {
+		return price+tax+serviceCharge-discount;
 	}
 	public String getID() {
 		return id;
+	}
+	public void addTax(Long moreTax) {
+		tax += moreTax;
+	}
+	public void addSC(Long moreSC) {
+		serviceCharge += moreSC;
+	}
+	public void addDiscount(Long moreDiscount) {
+		discount += moreDiscount;
 	}
 	public List<ItemModifier> getMods() {
 		return mods;
@@ -78,16 +75,12 @@ public class TicketItem {
 	public JSONObject toJSON() throws JSONException
 	{
 		JSONObject json = new JSONObject();
-		json.put("id", id);
 		json.put("name", name);
 
 		json.put("price", price);
 		json.put("tax", tax);
 		json.put("serviceCharge", serviceCharge);
 		json.put("discount", discount);
-		json.put("tickTax", tickTax);
-		json.put("tickSC", tickSC);
-		json.put("tickDiscount", tickDiscount);
 
 		JSONArray jMods = new JSONArray();
 		for(int i = 0; i < mods.size(); i++)

@@ -14,7 +14,7 @@ import modeltypes.ClosedUserConnection;
 import modeltypes.ConnectionToTablePointer;
 import modeltypes.Restaurant;
 import modeltypes.TableKey;
-import modeltypes.TableKey.cIDStatuses;
+import modeltypes.TableKey.ConnectionStatus;
 import modeltypes.UserConnection;
 
 import org.json.JSONException;
@@ -54,7 +54,7 @@ public class PayNewCardServlet extends PostServletBase
 		config.exists = true;
 		config.bools = a("save");
 		config.strs = a("pan", "name", "expr", "cvv", "zip", "?password");
-		config.longs = a("total", "tip");//NOTE: total does not include tip
+		config.longs = a("total", "tip");//NOTE: total does not include tip, both are in cents
 		config.keyNames = a("connectionID", "clientID");
 	}
 
@@ -237,13 +237,14 @@ public class PayNewCardServlet extends PostServletBase
 		JSONObject ret = new JSONObject();
 		config.FORBID_RETRIES = true;
 		boolean sync = payInner(query, table.getRestrUsername(), table.getKey().getName(), connectionID, pan, name, expr, zip, cvv, items, table.getPayFracs(connectionID), total, tip, ds);
+		ret.put("async", !sync);
 
 		closeConnection(table, connectionID, tip, ds);
 		if(sync) {
-			table.setConnectionStatus(connectionID, cIDStatuses.PAID, ds);
+			table.setConnectionStatus(connectionID, ConnectionStatus.PAID, TicketItem.getItems(table, ds), ds);
 			ret.put("done", table.isPaid());
 		} else {
-			table.setConnectionStatus(connectionID, cIDStatuses.PROCESSING, ds);
+			table.setConnectionStatus(connectionID, ConnectionStatus.PROCESSING, TicketItem.getItems(table, ds), ds);
 		}
 
 		return ret;
@@ -262,7 +263,7 @@ public class PayNewCardServlet extends PostServletBase
 	public static void paymentSuccessCallback(TableKey table, String connectionID, DatastoreService ds) throws JSONException, HttpErrMsg
 	{
 		ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(connectionID, "PAYMENT_SUCCESS"));
-		table.setConnectionStatus(connectionID, cIDStatuses.PAID, ds);
+		table.setConnectionStatus(connectionID, ConnectionStatus.PAID, TicketItem.getItems(table, ds), ds);
 		table.commit(ds);
 	}
 
@@ -280,7 +281,7 @@ public class PayNewCardServlet extends PostServletBase
 	{
 		reopenConnection(table, connectionID, ds);
 		ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(connectionID, "PAYMENT_ERROR\n"+msg));
-		table.setConnectionStatus(connectionID, cIDStatuses.INPUTTING, ds);
+		table.setConnectionStatus(connectionID, ConnectionStatus.INPUTTING, TicketItem.getItems(table, ds), ds);
 		table.commit(ds);
 	}
 

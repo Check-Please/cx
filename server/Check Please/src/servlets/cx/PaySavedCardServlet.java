@@ -39,7 +39,7 @@ public class PaySavedCardServlet extends PostServletBase
 		config.path2 = a("/", Client.getKind(), "clientID");
 		config.exists2 = true;
 		config.strs = a("cardCT");
-		config.longs = a("total", "tip");//NOTE: total does not include tip
+		config.longs = a("total", "tip");//NOTE: total does not include tip, both are in cents
 		config.keyNames = a("connectionID");
 	}
 

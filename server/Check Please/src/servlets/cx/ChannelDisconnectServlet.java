@@ -11,6 +11,7 @@ import org.json.JSONException;
 
 import com.google.appengine.api.datastore.DatastoreService;
 
+import utils.HttpErrMsg;
 import utils.ParamWrapper;
 import utils.PostServletBase;
 
@@ -30,7 +31,7 @@ public class ChannelDisconnectServlet extends PostServletBase
 		config.txnXG = true;
 	}
 
-	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
+	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException, HttpErrMsg
 	{
 		CloseClientServlet.closeChannel(p.getChannelID(), ClosedUserConnection.CLOSE_CAUSE__DISCONNECTED, ds);
 	}

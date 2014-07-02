@@ -17,8 +17,10 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
+import utils.HttpErrMsg;
 import utils.ParamWrapper;
 import utils.PostServletBase;
+import utils.TicketItem;
 import static utils.MyUtils.a;
 
 public class CloseClientServlet extends PostServletBase
@@ -38,25 +40,25 @@ public class CloseClientServlet extends PostServletBase
 		config.keyNames = a("connectionID");
 		config.strs = a("?error");
 	}
-	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
+	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException, HttpErrMsg
 	{
 		if(p.getStr(0) == null)
 			closeChannel(p.getKeyName(0), ClosedUserConnection.CLOSE_CAUSE__CLIENT_CLOSE, ds);
 		else 
 			closeChannel(p.getKeyName(0), ClosedUserConnection.CLOSE_CAUSE__ERROR, p.getStr(0), ds);
 	}
-	public static boolean closeChannel(String cID, long cause, DatastoreService ds)
+	public static boolean closeChannel(String cID, long cause, DatastoreService ds) throws JSONException, HttpErrMsg
 	{
 		return closeChannel(cID, cause, null, ds);
 	}
-	private static boolean closeChannel(String cID, long cause, String errMsg, DatastoreService ds)
+	private static boolean closeChannel(String cID, long cause, String errMsg, DatastoreService ds) throws JSONException, HttpErrMsg
 	{
 		try {
 			ConnectionToTablePointer ptr = new ConnectionToTablePointer(KeyFactory.createKey(ConnectionToTablePointer.getKind(), cID), ds);
 
 			Key tKey = KeyFactory.createKey(TableKey.getKind(), ptr.getKeyName());
 			TableKey table = new TableKey(tKey, ds);
-			table.setConnectionStatus(cID, TableKey.cIDStatuses.CLOSED, ds);
+			table.setConnectionStatus(cID, TableKey.ConnectionStatus.CLOSED, TicketItem.getItems(table, ds), ds);
 			table.commit(ds);
 
 			UserConnection uc = new UserConnection(tKey.getChild(UserConnection.getKind(), cID), ds);

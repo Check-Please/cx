@@ -1,6 +1,6 @@
 package utils;
 
-public class UnsupportedFeatureException extends Exception
+public class UnsupportedFeatureException extends HttpErrMsg
 {
 	/** A unique key for identifying something-or-other
 	 */
@@ -14,14 +14,18 @@ public class UnsupportedFeatureException extends Exception
 
 	public UnsupportedFeatureException(Type code)
 	{
-		super();
+		super(UnsupportedFeatureException.getCode(code), UnsupportedFeatureException.getMessage(code));
 		this.code = code;
 	}
 	public Type getType()
 	{
 		return code;
 	}
-	public String getMessage()
+	private static int getCode(Type code)
+	{
+		return 404;
+	}
+	private static String getMessage(Type code)
 	{
 		switch(code) {
 			case SUBTLE_DATA__VOIDED_ITEMS: return "There are voided items on your ticket, which this app cannot handle";

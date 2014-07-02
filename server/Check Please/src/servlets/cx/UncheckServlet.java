@@ -11,8 +11,10 @@ import org.json.JSONException;
 
 import com.google.appengine.api.datastore.DatastoreService;
 
+import utils.HttpErrMsg;
 import utils.ParamWrapper;
 import utils.PostServletBase;
+import utils.TicketItem;
 import static utils.MyUtils.a;
 
 public class UncheckServlet extends PostServletBase
@@ -32,10 +34,10 @@ public class UncheckServlet extends PostServletBase
 		config.exists = true;
 		config.strs = a("itemID");
 	}
-	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
+	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException, HttpErrMsg
 	{
 		TableKey table = new TableKey(p.getEntity());
-		table.setOwner(p.getStr(0), null);
+		table.setOwner(p.getStr(0), null, TicketItem.getItems(table, ds), ds);
 		table.commit(ds);
 	}
 }

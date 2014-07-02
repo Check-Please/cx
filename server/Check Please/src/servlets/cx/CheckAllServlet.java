@@ -11,8 +11,10 @@ import org.json.JSONException;
 
 import com.google.appengine.api.datastore.DatastoreService;
 
+import utils.HttpErrMsg;
 import utils.ParamWrapper;
 import utils.PostServletBase;
+import utils.TicketItem;
 import static utils.MyUtils.a;
 
 public class CheckAllServlet extends PostServletBase
@@ -33,10 +35,13 @@ public class CheckAllServlet extends PostServletBase
 		config.keyNames = a("connectionID");
 		config.bools = a("checked");
 	}
-	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
+	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException, HttpErrMsg
 	{
 		TableKey table = new TableKey(p.getEntity());
-		table.checkAll(p.getKeyName(0), p.getBool(0));
+		if(p.getBool(0))
+			table.checkAll(p.getKeyName(0), TicketItem.getItems(table, ds), ds);
+		else
+			table.uncheckAll(p.getKeyName(0), TicketItem.getItems(table, ds), ds);
 		table.commit(ds);
 	}
 }
