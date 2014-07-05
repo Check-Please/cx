@@ -40,7 +40,7 @@ consts.ITEM_CLASSES[consts.summaries.TOTAL] = "total";
 consts.STATUSES	=Object.keys(consts.statuses).map(
 					op.get.c(consts.statuses)).sort();
 consts.SUMMARIES=Object.keys(consts.summaries).map(
-					op.get.c(consts.sumarries)).sort();
+					op.get.c(consts.summaries)).sort();
 
 
 consts.tipSlider = {

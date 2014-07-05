@@ -27,4 +27,4 @@ CX
 .PaySavedCardServlet, /cx/pay_new/
 .RateServlet, /cx/rate/
 .SplitServlet, /cx/split/
-.Uncheckervlet, /cx/uncheck/
+.UncheckServlet, /cx/uncheck/

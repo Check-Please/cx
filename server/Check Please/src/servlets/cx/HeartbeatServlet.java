@@ -13,7 +13,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import utils.ParamWrapper;
 import utils.PostServletBase;
 
-public class HeatbeatServlet extends PostServletBase
+public class HeartbeatServlet extends PostServletBase
 {
 	/** A unique key for identifying something-or-other
 	 */

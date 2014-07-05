@@ -8,8 +8,6 @@ import javax.servlet.http.HttpSession;
 import modeltypes.TableKey;
 import modeltypes.UserConnection;
 
-import org.json.JSONException;
-
 import com.google.appengine.api.datastore.DatastoreService;
 
 import utils.ParamWrapper;
@@ -33,7 +31,7 @@ public class LogPositionServlet extends PostServletBase
 		config.exists = true;
 		config.strs = a("position");
 	}
-	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
+	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException
 	{
 		UserConnection c = new UserConnection(p.getEntity());
 		c.logPosition(p.getStr(0));

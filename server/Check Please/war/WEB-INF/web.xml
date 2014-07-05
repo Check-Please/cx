@@ -298,15 +298,15 @@
 		<url-pattern>/cx/split/</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>uncheckervlet</servlet-name>
-		<servlet-class>servlets.cx.Uncheckervlet</servlet-class>
+		<servlet-name>uncheckServlet</servlet-name>
+		<servlet-class>servlets.cx.UncheckServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>uncheckervlet</servlet-name>
+		<servlet-name>uncheckServlet</servlet-name>
 		<url-pattern>/cx/uncheck</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>uncheckervlet</servlet-name>
+		<servlet-name>uncheckServlet</servlet-name>
 		<url-pattern>/cx/uncheck/</url-pattern>
 	</servlet-mapping>
 </web-app>
