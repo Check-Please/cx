@@ -1,3 +1,0 @@
-# Module check_please_url_shortener
-# RPC service class, partial path of RPC policy file
-ps.chk.client.GreetingService, F2A45A0C04892D202B18405988122466.gwt.rpc

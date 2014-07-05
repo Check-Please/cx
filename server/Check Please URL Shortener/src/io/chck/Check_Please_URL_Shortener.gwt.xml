@@ -20,7 +20,7 @@
   <!-- Other module inherits                                      -->
 
   <!-- Specify the app entry point class.                         -->
-  <entry-point class='ps.chk.client.Check_Please_URL_Shortener'/>
+  <entry-point class='io.chck.client.Check_Please_URL_Shortener'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>

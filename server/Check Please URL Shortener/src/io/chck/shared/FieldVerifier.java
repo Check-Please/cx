@@ -1,4 +1,4 @@
-package ps.chk.shared;
+package io.chck.shared;
 
 /**
  * <p>

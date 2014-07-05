@@ -1,7 +1,7 @@
-package com.getthecheck.server;
+package io.chck.server;
 
-import com.getthecheck.client.GreetingService;
-import com.getthecheck.shared.FieldVerifier;
+import io.chck.client.GreetingService;
+import io.chck.shared.FieldVerifier;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
