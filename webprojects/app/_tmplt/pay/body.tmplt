@@ -17,7 +17,7 @@
 			<a class="back"></a>
 			<span>$</span>
 			<input type="price" value={{tip}} />
-			<p class="tipPrct" style={{tipPrctHide}}>(<span>{{tipPrct}}<span>)</p>
+			<p class="tipPrct" style={{tipPrctHide}}>({{tipPrct}})</p>
 		</div>
 	</div>
 	<a class="card">

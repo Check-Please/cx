@@ -1,1 +1,6 @@
-fluid.min.js, consts.js, models.js, device.js, saved.js
+fluid.min.js
+fluid-forms.min.js
+consts.js
+models.js
+device.js
+saved.js

@@ -18,7 +18,7 @@ var server = server || {};
 		device.ajax.send.bind(device.ajax, "cx").apply(this, arguments);
 	}
 
-	server.sendHeartbeat: function(msg) {
+	server.sendHeartbeat = function(msg) {
 		send("heartbeat", {message: msg});
 	}
 

@@ -51,19 +51,21 @@ def compressJS(path, native):
 
     ignoreNext = False;
     for line in proc.stderr:
-        if re.match(r'WARN: Condition always (?:true|false) \[',
+        if re.match(r'^WARN: Condition always (?:true|false) \[',
                 line.strip()) != None or re.match(
-                r'WARN: Boolean || always true \[',
+                r'^WARN: Boolean \|\| always true \[',
                 line.strip()) != None or re.match(
-                r'WARN: Boolean && always false \[',
+                r'^WARN: Boolean && always false \[',
                 line.strip()) != None or re.match(
-                r'WARN: Dropping side-effect-free statement \[',
+                r'^WARN: Dropping side-effect-free statement \[',
                 line.strip()) != None:
             ignoreNext = True;
-        elif ignoreNext:
-            ignoreNext = False;
         else:
-            sys.stderr.write(line);
+            if not ignoreNext or not re.match(
+                    r'^WARN: Dropping unreachable code \[',
+                    line.strip()) != None:
+                sys.stderr.write(line);
+            ignoreNext = False;
     return proc.returncode;
 
 

@@ -104,18 +104,6 @@
 		<url-pattern>/admin/dump/</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>newTableKeyServlet</servlet-name>
-		<servlet-class>servlets.admin_ops.NewTableKeyServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>newTableKeyServlet</servlet-name>
-		<url-pattern>/admin/new_table</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>newTableKeyServlet</servlet-name>
-		<url-pattern>/admin/new_table/</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>newRestrServlet</servlet-name>
 		<servlet-class>servlets.admin_ops.NewRestrServlet</servlet-class>
 	</servlet>
@@ -126,6 +114,18 @@
 	<servlet-mapping>
 		<servlet-name>newRestrServlet</servlet-name>
 		<url-pattern>/admin/new_restr/</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>newTableKeyServlet</servlet-name>
+		<servlet-class>servlets.admin_ops.NewTableKeyServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>newTableKeyServlet</servlet-name>
+		<url-pattern>/admin/new_table</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>newTableKeyServlet</servlet-name>
+		<url-pattern>/admin/new_table/</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>tmpServlet</servlet-name>
@@ -166,6 +166,30 @@
 		<url-pattern>/_ah/channel/disconnected/</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>checkServlet</servlet-name>
+		<servlet-class>servlets.cx.CheckServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>checkServlet</servlet-name>
+		<url-pattern>/cx/check</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>checkServlet</servlet-name>
+		<url-pattern>/cx/check/</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>checkAllServlet</servlet-name>
+		<servlet-class>servlets.cx.CheckAllServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>checkAllServlet</servlet-name>
+		<url-pattern>/cx/check_all</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>checkAllServlet</servlet-name>
+		<url-pattern>/cx/check_all/</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>closeClientServlet</servlet-name>
 		<servlet-class>servlets.cx.CloseClientServlet</servlet-class>
 	</servlet>
@@ -178,16 +202,28 @@
 		<url-pattern>/cx/close/</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>encryptCCServlet</servlet-name>
-		<servlet-class>servlets.cx.EncryptCCServlet</servlet-class>
+		<servlet-name>emailServlet</servlet-name>
+		<servlet-class>servlets.cx.EmailServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>encryptCCServlet</servlet-name>
-		<url-pattern>/cx/encryptCC</url-pattern>
+		<servlet-name>emailServlet</servlet-name>
+		<url-pattern>/cx/email</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>encryptCCServlet</servlet-name>
-		<url-pattern>/cx/encryptCC/</url-pattern>
+		<servlet-name>emailServlet</servlet-name>
+		<url-pattern>/cx/email/</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>heartbeatServlet</servlet-name>
+		<servlet-class>servlets.cx.HeartbeatServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>heartbeatServlet</servlet-name>
+		<url-pattern>/cx/heartbeat</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>heartbeatServlet</servlet-name>
+		<url-pattern>/cx/heartbeat/</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>initServlet</servlet-name>
@@ -214,16 +250,28 @@
 		<url-pattern>/cx/log_pos/</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>payServlet</servlet-name>
-		<servlet-class>servlets.cx.PayServlet</servlet-class>
+		<servlet-name>payNewCardServlet</servlet-name>
+		<servlet-class>servlets.cx.PayNewCardServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>payServlet</servlet-name>
-		<url-pattern>/cx/pay</url-pattern>
+		<servlet-name>payNewCardServlet</servlet-name>
+		<url-pattern>/cx/pay_saved</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>payServlet</servlet-name>
-		<url-pattern>/cx/pay/</url-pattern>
+		<servlet-name>payNewCardServlet</servlet-name>
+		<url-pattern>/cx/pay_saved/</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>paySavedCardServlet</servlet-name>
+		<servlet-class>servlets.cx.PaySavedCardServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>paySavedCardServlet</servlet-name>
+		<url-pattern>/cx/pay_new</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>paySavedCardServlet</servlet-name>
+		<url-pattern>/cx/pay_new/</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>rateServlet</servlet-name>
@@ -237,164 +285,28 @@
 		<servlet-name>rateServlet</servlet-name>
 		<url-pattern>/cx/rate/</url-pattern>
 	</servlet-mapping>
-
-	<!-- CX - Split -->
 	<servlet>
-		<servlet-name>addToSplitServlet</servlet-name>
-		<servlet-class>servlets.cx.split.AddToSplitServlet</servlet-class>
+		<servlet-name>splitServlet</servlet-name>
+		<servlet-class>servlets.cx.SplitServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>addToSplitServlet</servlet-name>
-		<url-pattern>/cx/split/add</url-pattern>
+		<servlet-name>splitServlet</servlet-name>
+		<url-pattern>/cx/split</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>addToSplitServlet</servlet-name>
-		<url-pattern>/cx/split/add/</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>cancelSplitServlet</servlet-name>
-		<servlet-class>servlets.cx.split.CancelSplitServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>cancelSplitServlet</servlet-name>
-		<url-pattern>/cx/split/cancel</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>cancelSplitServlet</servlet-name>
-		<url-pattern>/cx/split/cancel/</url-pattern>
+		<servlet-name>splitServlet</servlet-name>
+		<url-pattern>/cx/split/</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>removeFromSplitServlet</servlet-name>
-		<servlet-class>servlets.cx.split.RemoveFromSplitServlet</servlet-class>
+		<servlet-name>uncheckervlet</servlet-name>
+		<servlet-class>servlets.cx.Uncheckervlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>removeFromSplitServlet</servlet-name>
-		<url-pattern>/cx/split/remove</url-pattern>
+		<servlet-name>uncheckervlet</servlet-name>
+		<url-pattern>/cx/uncheck</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>removeFromSplitServlet</servlet-name>
-		<url-pattern>/cx/split/remove/</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>startSplitServlet</servlet-name>
-		<servlet-class>servlets.cx.split.StartSplitServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>startSplitServlet</servlet-name>
-		<url-pattern>/cx/split/start</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>startSplitServlet</servlet-name>
-		<url-pattern>/cx/split/start/</url-pattern>
-	</servlet-mapping>
-
-	<!-- Oz -->
-	<servlet>
-		<servlet-name>appleResetServlet</servlet-name>
-		<servlet-class>servlets.oz.AppleResetServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>appleResetServlet</servlet-name>
-		<url-pattern>/appleReset</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>appleResetServlet</servlet-name>
-		<url-pattern>/appleReset/</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>connectServlet</servlet-name>
-		<servlet-class>servlets.oz.ConnectServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>connectServlet</servlet-name>
-		<url-pattern>/oz/connect</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>connectServlet</servlet-name>
-		<url-pattern>/oz/connect/</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>enableServlet</servlet-name>
-		<servlet-class>servlets.oz.EnableServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>enableServlet</servlet-name>
-		<url-pattern>/oz/enable</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>enableServlet</servlet-name>
-		<url-pattern>/oz/enable/</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>disconnectServlet</servlet-name>
-		<servlet-class>servlets.oz.DisconnectServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>disconnectServlet</servlet-name>
-		<url-pattern>/oz/disconnect</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>disconnectServlet</servlet-name>
-		<url-pattern>/oz/disconnect/</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>initServlet_0</servlet-name>
-		<servlet-class>servlets.oz.InitServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>initServlet_0</servlet-name>
-		<url-pattern>/oz/init</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>initServlet_0</servlet-name>
-		<url-pattern>/oz/init/</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>payerFailureServlet</servlet-name>
-		<servlet-class>servlets.oz.PayerFailureServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>payerFailureServlet</servlet-name>
-		<url-pattern>/oz/failure</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>payerFailureServlet</servlet-name>
-		<url-pattern>/oz/failure/</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>payerSuccessServlet</servlet-name>
-		<servlet-class>servlets.oz.PayerSuccessServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>payerSuccessServlet</servlet-name>
-		<url-pattern>/oz/success</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>payerSuccessServlet</servlet-name>
-		<url-pattern>/oz/success/</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>updateTickServlet</servlet-name>
-		<servlet-class>servlets.oz.UpdateTickServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>updateTickServlet</servlet-name>
-		<url-pattern>/oz/tick</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>updateTickServlet</servlet-name>
-		<url-pattern>/oz/tick/</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>updatePayerServlet</servlet-name>
-		<servlet-class>servlets.oz.UpdatePayerServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>updatePayerServlet</servlet-name>
-		<url-pattern>/oz/update</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>updatePayerServlet</servlet-name>
-		<url-pattern>/oz/update/</url-pattern>
+		<servlet-name>uncheckervlet</servlet-name>
+		<url-pattern>/cx/uncheck/</url-pattern>
 	</servlet-mapping>
 </web-app>

@@ -6,7 +6,7 @@
 		<a>Send</a>
 	</div>
 	<div class="email confirm {{sent}}">
-		<p>Your receipt has been emailed to <span>{{email}}</span></p>
+		<p>Your receipt has been emailed to {{email}}</p>
 	</div>
 	<div class="feedback">
 		<p>Rate your experience</p>
