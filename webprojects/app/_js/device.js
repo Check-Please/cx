@@ -68,6 +68,8 @@ var device = device || {};
 	 *						third is an error message.  So far, the
 	 *						following codes are in use:
 	 *							0 - No table info
+	 *							1 - Bluetooth disabled
+	 *							2 - Bluetooth not working
 	 */
 	device.getTableInfo = function(callback)
 	{

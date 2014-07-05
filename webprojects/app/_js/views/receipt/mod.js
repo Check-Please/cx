@@ -4,7 +4,7 @@ var ReceiptModView = Fluid.compileView({
 	 *	@param	price The price of the mod in cents (need not be positive)
 	 *	@param	i	The index of the mod in the list of mods of the item
 	 */
-	calc: function(name, price, i)
+	fill: function(name, price, i)
 	{
 		return {position: i+1,
 				name: name,

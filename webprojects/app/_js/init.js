@@ -22,6 +22,13 @@ window.onload = function() {
 		500:{heading:"Server Error", symbol: String.fromCharCode(9889),
 			message: "Something went wrong with on server"}
 	};
+	var GET_TABLE_ERRORS = {
+		0: SERVER_ERROR[0],
+		1: {heading: "Bluetooth disabled", symbol: String.fromCharCode(215),
+			message: "Turn on bluetooth to use this app"},
+		2: {heading: "Bluetooth error", symbol: String.fromCharCode(9889),
+			message: "Make sure bluetooth is enabled and working"}
+	}
 
 	// RENDER
 	setTimeout(window.onresize, 0);//Must be async because of a browser bug
@@ -34,9 +41,15 @@ window.onload = function() {
 
 	inParallel([device.getTableInfo, device.getPos, device.loadData],
 	function(tInfo, pos) {
+		if(tInfo[0] == null) {
+			models.error(GET_TABLE_ERRORS[tInfo[1]] || {
+				heading: "Can't find you", symbol: String.fromCharCode(9889),
+				message:tInfo[2]||"Can't get data on where you're sitting"});
+			return;
+		}
 		device.ajax.send("cx", "init", {
 			isNative: {{NATIVE}},
-			tableInfo: tInfo,
+			tableInfo: tInfo[0],
 			clientID: saved.getClientID(),
 			platform: device.getPlatform(),
 			lat: pos[0],
@@ -61,7 +74,6 @@ window.onload = function() {
 		}, function() {
 			models.error({heading: "Couldn't load", symbol: "!",
 				message: "Couldn't get your order from the server"});
-			models.loading(undefined);
 		}, function(rs) {
 			models.loading({message: "Getting Order",
 							percent: rs*25, incrTo: (rs+1)*25-1});

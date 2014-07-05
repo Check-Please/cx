@@ -13,7 +13,7 @@ var PayView = Fluid.compileView({
 	 *						-	A message about needing a password
 	 *						-	A message about needing to select a card
 	 */
-	calc: function(price, discount, sc, slider, tip, tipPrct, cardMsg) {
+	fill: function(price, discount, sc, slider, tip, tipPrct, cardMsg) {
 		return {
 			price: money.toStr(price),
 			notes:	!discount && !sc	? new EmptyView()			:
@@ -29,7 +29,8 @@ var PayView = Fluid.compileView({
 			tipPrct: tipPrct,
 			tipPrctHide: slider == null ? "" : "display: none",
 			cardMsg: cardMsg,
-			confirm_disable: cardFour && (tip!=undefined) ? "" : "disabled"};
+			confirm_disable: cardMsg.match(/^X-[0-9]{4}$/) &&
+									(tip != undefined) ? "" : "disabled"};
 	},
 	listeners: {".tip .value input": models.tip},
 	addControls: function($el) {

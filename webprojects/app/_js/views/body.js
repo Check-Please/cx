@@ -2,7 +2,7 @@ var BodyView = Fluid.compileView({
 	template: templates.body,
 	/*	See models.js for a description of what the parameters mean
 	 */
-	calc: function(	activeView, width, height, items, split, tipSlider, tip,
+	fill: function(	activeView, width, height, items, split, tipSlider, tip,
 					cards, passwords, newCardInfo, cardFocus, email,
 					feedback, loading, err){
 		////////////////////////////////////////////////
@@ -75,7 +75,7 @@ var BodyView = Fluid.compileView({
 				serviceCharge: money.round(totals.serviceCharge/100),
 				tax: money.round(totals.tax/100),
 				total: money.round(totals.total/100)
-			}), new SplitView(split.name, split.inNumWays)];
+			}), new SplitView((split||{}).name, (split||{}).inNumWays)];
 
 			////////////////////////////////////////////
 			////		 Compute Other Views		////
@@ -85,7 +85,7 @@ var BodyView = Fluid.compileView({
 									money.round(totals.serviceCharge/100),
 									tipSlider, tip,
 									10000*tip/totals.tippable,
-									cards[cardFocus] ? "(Select Card)":
+									!cards[cardFocus] ? "(Select Card)":
 										(!cards[cardFocus].reqPass || 
 											passwords[cardFocus]) ?
 												"X-"+cards[cardFocus

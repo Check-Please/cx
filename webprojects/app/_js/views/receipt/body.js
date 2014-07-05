@@ -8,7 +8,7 @@ var ReceiptView = Fluid.compileView({
 	 *	@param	summaries	A map from summary types (subtotal, etc) to the
 	 *						total for that type
 	 */
-	calc: function(items, summaries) {
+	fill: function(items, summaries) {
 		items.sort(function(a,b){return a.id<b.id ? -1 : a.id>b.id ? 1 : 0});
 		var ret = {receiptHeight: 0};
 		ret.items = {};
@@ -42,7 +42,7 @@ var ReceiptView = Fluid.compileView({
 		$el.find(".confirm").click(function() {
 			models.activeView.set(consts.views.PAY);
 		});
-		$el.find("a.all").click(server.setAllCheck(true));
-		$el.find("a.none").click(server.setAllCheck(false));
+		$el.find("a.all").click(server.setAllCheck.c(true));
+		$el.find("a.none").click(server.setAllCheck.c(false));
 	}
 });

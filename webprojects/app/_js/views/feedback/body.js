@@ -3,7 +3,7 @@ var FeedbackView = Fluid.compileView({
 	/*	@param	email See documentation for models.email
 	 *	@param	feedback See documentation for models.feedback	
 	 */
-	calc: function(email, feedback) {
+	fill: function(email, feedback) {
 		var ret = {sent: email ? "sent" : "", email: email || ""};
 		for(var rating in consts.feedback) {
 			ret[rating.toLowerCase()+"_rating"] = consts.feedback[rating];

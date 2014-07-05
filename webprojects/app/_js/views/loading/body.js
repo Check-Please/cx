@@ -3,7 +3,7 @@ var LoadingView = Fluid.compileView({
 	/*	@param	name The name of the item being split
 	 *	@param	input The current value inputted into the split view
 	 */
-	calc: function(message, percent) {
+	fill: function(message, percent) {
 		if(message == null)
 			return {};
 		else

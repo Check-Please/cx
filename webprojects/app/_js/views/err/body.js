@@ -4,7 +4,7 @@ var ErrorView = Fluid.compileView({
 	 *	@param	message The error message
 	 *	@param	symbol A character that evokes the feeling of what's wrong
 	 */
-	calc: function(heading, message, symbol) {
+	fill: function(heading, message, symbol) {
 		return {heading: heading, message: message, symbol: symbol};
 	},
 	addControls: function($el) {

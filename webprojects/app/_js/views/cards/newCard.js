@@ -5,7 +5,7 @@ var NewCardView = Fluid.compileView({
 	 *	@param	save If the card should be saved for future use
 	 *	@param	reqPass If the saved card should require a password to use
 	 */
-	calc: function(hasFocus, type, save, reqPass) {
+	fill: function(hasFocus, type, save, reqPass) {
 		return {focus: hasFocus ? "focus" : "",
 				save: save ? "save" : "",
 				reqPass: reqPass ? "reqPass" : "",

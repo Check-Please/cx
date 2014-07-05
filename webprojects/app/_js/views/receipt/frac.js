@@ -3,7 +3,7 @@ var FracView = Fluid.compileView({
 	/*	@param	num The numerator of the fraction
 	 *	@param	denom The denominator of the fraction
 	 */
-	calc: function(num, denom) {
+	fill: function(num, denom) {
 		return {num: num, denom: denom};
 	}
 });

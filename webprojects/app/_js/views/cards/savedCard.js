@@ -7,7 +7,7 @@ var SavedCardView = Fluid.compileView({
 	 *	@param	cardLen The number of digits in the card
 	 *	@param	reqPass If the card requires a password to use
 	 */
-	calc: function(index, hasFocus, cardType, lastFour, cardLen, reqPass) {
+	fill: function(index, hasFocus, cardType, lastFour, cardLen, reqPass) {
 		return {focus: hasFocus ? "focus" : "",
 				reqPass: reqPass ? "reqPass" : "",
 				type: cardType,

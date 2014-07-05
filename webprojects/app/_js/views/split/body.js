@@ -3,7 +3,7 @@ var SplitView = Fluid.compileView({
 	/*	@param	name The name of the item being split
 	 *	@param	input The current value inputted into the split view
 	 */
-	calc: function(name, input) {
+	fill: function(name, input) {
 		return {name: name,
 				input: input,
 				confirm_disabled: (input || "0") == 0 ? "disabled" : ""};

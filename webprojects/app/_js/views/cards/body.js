@@ -5,7 +5,7 @@ var CardsView = Fluid.compileView({
 	 *	@param	passwords	See documentation for models.passwords
 	 *	@param	newCardInfo	See documentation for models.newCardInfo 
 	 */
-	calc: function(cardFocusIndex, cardInfo, passwords, newCardInfo) {
+	fill: function(cardFocusIndex, cardInfo, passwords, newCardInfo) {
 		var ret = new Object();
 		ret.newCard = new NewCardView(cardFocusIndex == -1, newCardInfo.type,
 									newCardInfo.save, newCardInfo.reqPass);

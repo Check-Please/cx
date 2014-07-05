@@ -14,7 +14,7 @@ var ReceiptItemView = Fluid.compileView({
 	 *						name: The name of the modifier
 	 *						price: The price of the modifier in cents
 	 */
-	calc: function(type, pos, name, id, num, denom, price, mods) {
+	fill: function(type, pos, name, id, num, denom, price, mods) {
 		var modViews = [];
 		for(var i = 0; i < mods.length; i++)
 			modViews.push(new ReceiptModView(mods[i].name,mods[i].price,i));

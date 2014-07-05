@@ -266,11 +266,13 @@ var models = models || {};
 	 */
 	models.error = Fluid.newModel(undefined);
 
-	window.onerror = function() {
+	window.onerror = function(err, url, num) {
 		alert("JavaScript error from "+url+":\n\n"+err+" (Line #"+num+")");
 	}
 	models.error.listen(function() {
-		if(models.error.get() != undefined)
+		if(models.error.get() != undefined) {
+			models.loading(undefined);
 			models.validViews.set([consts.views.ERROR]);
+		}
 	});
 })(models);
