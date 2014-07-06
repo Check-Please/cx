@@ -1,7 +1,7 @@
-<div id="receipt-view">
+<div id="receipt-view" class={{height_class}}>
 	<p class="instructions">Select your items:</p>
 
-	<div class="receipt" style="height: {{receiptHeight}}em">
+	<div class="receipt" style="height: {{receipt_height}}em">
 		[[items]]
 	</div>
 

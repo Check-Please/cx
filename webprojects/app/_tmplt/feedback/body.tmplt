@@ -16,6 +16,6 @@
 		<a class="very good {{very_good_focus}}" rating={{very_good_rating}}></a>
 	</div>
 	<div class="app">
-		<p>Download our app for an improved experience.  Search for "Checkout Express" in the Apple App Store.</p>
+		<p>Download our app for an improved experience.  Search for "Check Please" in the Apple App Store.</p>
 	</div>
 </div>

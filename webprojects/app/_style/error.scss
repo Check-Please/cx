@@ -1,0 +1,63 @@
+@import "../../_ignore/main.scss";
+@import "vars.scss";
+
+#error-view {
+	& > * {
+		position: absolute;
+		z-index: 1;
+	}
+
+	h1 {
+		margin: 0px;
+		font-weight: inherit;
+		font-size: 1em;
+		padding: 0.4em 0px;
+		width: 100%;
+		text-align: center;
+	}
+
+	p {
+		top: 5em;
+		margin: 0px 2.5em;
+		font-size: 0.4em;
+		text-align: center;
+
+		.h_60 & {
+			display: none;
+		}
+	}
+
+	.bg {
+		z-index: 0;
+		top: 50%;
+		left: 0px;
+		width: 100%;
+		margin-top: -1em;
+		text-align: center;
+		height: 1em;
+		line-height: 1.8em;
+
+		font-size: 8em;
+		color: transparent;
+		text-shadow: 0px 0px lighten($bg-color, 1%), 0px 0px 0.1em darken($bg-color, 5%);
+
+		@include user-select(none);
+
+		.h_100 & {
+			display: none;
+		}
+	}
+
+	.confirm {
+		background: $sad-btn-color;
+		width: calc(100% - #{$side-width / 0.4});
+		bottom: 0px;
+	}
+
+	@for $i from 45 through 30 {
+		#body.h_#{$i} & {
+			h1 { padding-top: #{0.02*$i - 0.5}em; }
+			.confirm {margin-bottom: #{0.06*$i - 1.5}em; }
+		}
+	}
+}

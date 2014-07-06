@@ -1,0 +1,58 @@
+@import "../../_ignore/main.scss";
+@import "vars.scss";
+
+html, body, #body, #body > * {
+	height: 100%;
+	width: 100%;
+}
+
+#body {
+	position: relative;
+
+	& > * {
+		@include transitionAll();
+		left: 0px;
+		top: 0px;
+		position: absolute;
+		overflow: auto;
+	}
+	#loading-view, #split-view {
+		@include opacity(0);
+	}
+}
+
+#body.split {
+	#split-view { @include opacity(1) }
+}
+
+#body.loading {
+	#loading-view { @include opacity(1) }
+}
+
+#body.split, #body.loading {
+	&.receipt #receipt-view { -webkit-filter: blur(1px); }
+	&.pay #pay-view { -webkit-filter: blur(1px); }
+	&.cards #cards-view { -webkit-filter: blur(1px); }
+	&.feedback #feedback-view { -webkit-filter: blur(1px); }
+}
+
+#body.receipt {
+	#pay-view { top: 100%; }
+	#cards-view { left: 100%; }
+	#feedback-view { left: 100%; }
+}
+
+#body.pay {
+	#cards-view { left: 100%; }
+	#feedback-view { left: 100%; }
+}
+
+#body.cards {
+	#pay-view { left: -100%; }
+	#feedback-view { left: 100%; }
+}
+
+#body.feedback {
+	#pay-view { left: -100%; }
+	#cards-view { left: 100%; }
+}

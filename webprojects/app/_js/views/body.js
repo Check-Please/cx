@@ -9,21 +9,16 @@ var BodyView = Fluid.compileView({
 		////		Compute Basic Style Info		////
 		////////////////////////////////////////////////
 		if((activeView == consts.views.RECEIPT) && (split != null))
-			activeView = consts.views.SPLIT;
+			activeView = " "+consts.views.SPLIT;
 		else if((err == null) && (loading != null))
-			activeView += consts.views.LOADING;
+			activeView += " "+consts.views.LOADING;
 		var heightClasses = "";
 		var fS = Math.round(width/8);
-		var i;//get rid of warnings from uglifyjs
-		if({{DEBUG}}) {
-			for(i = 0; i <= Math.min(height/fS, 16); i += 0.1)
-				heightClasses += " h_" + i + "em";
-		} else {
-			var heights = [8, 12, 14.2];
-			for(i = 0; i <= heights.length; i++)
-				if(heights[i] < height/fS)
-					heightClasses += " h_"+heights[i]+"em";
-		}
+		var emHeight = Math.floor(height/fS*10);
+		for(var i = 30, max = Math.min(emHeight, 160); i <= max; i++)
+			heightClasses += " h" + i;
+		for(var i = Math.max(emHeight+1, 30); i <= 160; i++)
+			heightClasses += " h_" + i;
 		heightClasses = heightClasses.trim();
 
 		var views;
@@ -75,7 +70,8 @@ var BodyView = Fluid.compileView({
 				serviceCharge: money.round(totals.serviceCharge/100),
 				tax: money.round(totals.tax/100),
 				total: money.round(totals.total/100)
-			}), new SplitView((split||{}).name, (split||{}).inNumWays)];
+			}, emHeight), new SplitView((split || {}).name,
+												(split || {}).inNumWays)];
 
 			////////////////////////////////////////////
 			////		 Compute Other Views		////
@@ -91,7 +87,8 @@ var BodyView = Fluid.compileView({
 												"X-"+cards[cardFocus
 																].lastFour :
 												"(Enter Password)"));
-			views.push(new CardsView(cardFocus,cards,passwords,newCardInfo));
+			views.push(new CardsView(	cardFocus, cards, passwords,
+										newCardInfo, emHeight));
 			views.push(new FeedbackView(email, feedback));
 			views.push(new LoadingView(	loading && loading.message,
 										loading && loading.percent));

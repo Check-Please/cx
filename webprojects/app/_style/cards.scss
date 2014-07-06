@@ -1,0 +1,132 @@
+@import "../../_ignore/main.scss";
+@import "vars.scss";
+
+#cards-view {
+	.instructions {
+		height: 2.5em;
+		line-height: 2.5em;
+		font-size: 0.25em;
+		margin: 0px 1em;
+		color: $caption-color;
+		text-transform: uppercase;
+	}
+
+	.list {
+		position: relative;
+		background: $blur-color;
+
+		&:before {
+			@include thin-line(bottom);
+			top: -1px;
+		}
+		&:after {
+			@include thin-line();
+			bottom: -1px;
+		}
+
+		.card:not(:first-child):before {
+			@include thin-line();
+		}
+	}
+
+	.list .focus {
+		background: $focus-color;
+	}
+
+	.list .card > * {
+		font-size: 0.4em;
+		padding: 0px 0.8em 0px 2.5em;
+		margin: 0px;
+		height: 2.5em;
+		line-height: 2.5em;
+		position: relative;
+		display: block;
+		text-align: right;
+
+		&:not(:first-child):before {
+			@include thin-line();
+			width: calc(100% - #{2.5em});
+		}
+		input {
+			border: none;
+			padding: 0px 0.8em 0px 0px;
+			margin: 0px;
+			height: 100%;
+			width: calc(100% - 3.3em);
+			font-size: 1em;
+			text-align: right;
+			position: absolute;
+			right: 0px;
+			background: transparent;
+		}
+		input[placeholder] { font-weight: 300; }
+		::-webkit-input-placeholder { font-weight: 300; }
+		:-moz-placeholder { font-weight: 300; }
+		::-moz-placeholder { font-weight: 300; }
+		:-ms-input-placeholder { font-weight: 300; }
+	}
+
+	.list .card a, .list .card .pan {
+		&:before, &:after {
+			position: absolute;
+			width: 1.3em;
+			left: 0.6em;
+		}
+		&:before {
+			content: "";
+			top: 0.85em;
+			height: 0.8em;
+			background-repeat: no-repeat;
+			background-position: center;
+		}
+
+		&.visa:before {
+			background-image: url('../../img/redesign/cards/visa.svg');
+			background-size: 100% auto;
+		}
+		&.mastercard:before {
+			background-image: url('../../img/redesign/cards/mastercard.svg');
+			background-size: 100% auto;
+		}
+		&.amex:before {
+			background-image: url('../../img/redesign/cards/amex.svg');
+			background-size: auto 100%;
+		}
+		&.diners:before {
+			background-image: url('../../img/redesign/cards/diners.svg');
+			background-size: auto 100%;
+		}
+		&.discover:before {
+			background-image: url('../../img/redesign/cards/discover.jpg');
+			background-size: auto 100%;
+		}
+		&.jcb:before {
+			background-image: url('../../img/redesign/cards/jcb.svg');
+			background-size: auto 100%;
+		}
+
+		&.unknown:before {
+			background-image: url('../../img/redesign/cards/card-border.svg');
+			background-size: 100% 100%;
+			@include opacity( 225 / 255 );
+		}
+		&.unknown:after {
+			content: "";
+			top: 1em;
+			height: 0.15em;
+			background: $text-color;
+		}
+
+		&.new:before {
+			content: '+';
+			font-size: 1.5em;
+			left: 0.5em;
+			top: 0.5em;
+			width: 0.66667em;
+			height: 0.45em;
+			line-height: 0.45em;
+			text-align: center;
+			font-weight: 100;
+		}
+	}
+}

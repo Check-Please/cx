@@ -1,0 +1,56 @@
+$text-color: #1E1E1E;
+$faded-text-color: lighten($text-color, 45%);
+$bg-color: #EEEEEE;
+$caption-color: #777777;
+
+$item-height: 1em;
+$side-width: 1em;
+$border-opacity: 0.2;
+$unchecked-opacity: $border-opacity * 1.25;
+
+$focus-color: #FFFFFF;
+$blur-color: #FAFAFA;
+
+
+$btn-color: #0886E0;
+$btn-text-color: #FFFFFF;
+$sad-btn-color: darken(adjust-hue($btn-color, -5deg), 5%);
+
+$paid-color: #00EE00;
+$taken-color: hsl(hue($btn-color), saturation($paid-color), saturation($paid-color));
+
+$bad-color: #BB0000;
+$ok-color: #333333;
+$good-color: #00BB00;
+$thumb-color: #FFFFFF;
+
+$trans-time: 0.5s;
+
+@mixin transitionAll()
+{
+	-webkit-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time, height $trans-time, width $trans-time, background-color $trans-time, color $trans-time, -webkit-opacity $trans-time, -webkit-transform $trans-time, -webkit-filter $trans-time;
+	-moz-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time, height $trans-time, width $trans-time, background-color $trans-time, color $trans-time, -moz-opacity $trans-time, -moz-transform $trans-time;
+	-o-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time, height $trans-time, width $trans-time, background-color $trans-time, color $trans-time, -o-opacity $trans-time, -o-transform $trans-time;
+	transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time, height $trans-time, width $trans-time, background-color $trans-time, color $trans-time, opacity $trans-time, transform $trans-time;
+}
+
+@mixin thin-line($orientation:top)
+{
+	content: "";
+	position: absolute;
+	right: 0px;
+	height: 1px;
+	width: 100%;
+	@include opacity($border-opacity);
+	background: #000000;
+	@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+		& {
+			background: transparent;
+			background-image: url("../../img/redesign/receipt/thin-line.gif");
+			background-size: 1px 1px;
+			@if $orientation == bottom {
+				@include transform(scaleY(-1));
+			}
+		}
+	}
+}

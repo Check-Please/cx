@@ -1,0 +1,214 @@
+@import "../../_ignore/main.scss";
+@import "vars.scss";
+
+#receipt-view {
+	.instructions {
+		height: 2.5em;
+		line-height: 2.5em;
+		font-size: 0.25em;
+		margin: 0px $side-width;
+		color: $caption-color;
+		text-transform: uppercase;
+	}
+
+	.receipt, .summary {
+		position: relative;
+
+		&:before {
+			@include thin-line(bottom);
+			top: -1px;
+		}
+		&:after {
+			@include thin-line();
+			bottom: -1px;
+		}
+	}
+
+	.receipt .item, .summary .item {
+		height: $item-height;
+		position: relative;
+		background: $focus-color;
+
+		& > * {
+			position: absolute;
+			top: 0px;
+			margin: 0px;
+			padding: 0px;
+		}
+
+		.checkbox {
+			left: 0px;
+			width: 1em;
+			height: 1em;
+		}
+
+		.name {
+			left: 2.5em;
+			height: 2.5em;
+			line-height: 2.5em;
+			font-size: 0.4em;
+
+			.num {
+				position: relative;
+				bottom: 0.7em;
+			}
+			.num, .denom {
+				font-size: 0.5em;
+			}
+		}
+
+		.price {
+			right: 2.5em;
+			height: 2.5em;
+			line-height: 2.5em;
+			font-size: 0.4em;
+		}
+
+		.split {
+			right: 0px;
+			width: 1em;
+			height: 1em;
+
+		}
+
+		.split {
+			right: 0px;
+			width: 1em;
+			height: 1em;
+
+
+			&:before, &:after {
+				position: absolute;
+			}
+
+			&:before {
+				content: "";
+				height: 40%;
+				width: 40%;
+				top: 25%;
+				right: 30%;
+
+				background: url("../../img/redesign/receipt/split-icon.svg");
+				background-size: 75%;
+				background-position: 50% 0px;
+				background-repeat: no-repeat;
+			}
+			&:after {
+				content: "Split";
+				height: 45%;
+				width: 100%;
+				left: 0px;
+				bottom: 0px;
+				font-size: 0.2em;
+				text-align: center;
+			}
+		}
+
+		&.your, &.unpaid, &.their, &.paid {
+			&:not(:first-child):before {
+				@include thin-line();
+				width: calc(100% - #{1em});
+			}
+		}
+
+		&.your, &.unpaid {
+			.checkbox:before {
+				content: "";
+				position: absolute;
+				top: 0.25em;
+				left: 0.25em;
+				width: 0.5em;
+				height: 0.5em;
+			}
+		}
+
+		&.your .checkbox:before {
+			background: url("../../img/redesign/receipt/checked_box.svg");
+			background-size: 100%;
+		}
+
+		&.unpaid .checkbox:before {
+			background: url("../../img/redesign/receipt/unchecked_box.svg");
+			background-size: 100%;
+			@include opacity($unchecked-opacity);
+		}
+
+		&.unpaid, &.their, &.paid {
+			.price {
+				text-decoration: line-through;
+			}
+			background: $blur-color;
+		}
+
+		&.their, &.paid {
+			.split {
+				display: none;
+			}
+
+			.checkbox:before {
+				font-size: 0.2em;
+				font-weight: 400;
+				width: 5em;
+				height: 5em;
+				line-height: 5em;
+				text-align: center;
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				text-transform: uppercase;
+				@include transform(rotate(-45deg));
+			}
+		}
+
+		&.their {
+			.checkbox:before {
+				content: "Taken";
+				color: $taken-color;
+			}
+		}
+
+		&.paid {
+			.checkbox:before {
+				content: "Paid";
+				color: $paid-color;
+			}
+		}
+
+		&.subtotal {
+			margin-top: 0.5em;
+		}
+		&.total {
+			font-weight: bold;
+		}
+	}
+
+	a.all, a.none {
+		display: inline-block;
+		font-size: 0.4em;
+		margin: 0px #{$side-width / 0.4};
+		width: calc(50% - 3.75em);
+		height: 2em;
+		line-height: 2em;
+		text-align: center;
+		border-radius: 0.5em;
+		position: absolute;
+	}
+
+	a.all {
+		background: $btn-color;
+		color: $btn-text-color;
+	}
+
+	a.none {
+		box-shadow: inset 0px 0px 0px 1px rgba(0,0,0,0.25);
+		right: 0px;
+	}
+
+	.receipt {
+		margin-bottom: 0.5em;
+	}
+
+	.summary {
+		margin-top: 2em;
+	}
+}

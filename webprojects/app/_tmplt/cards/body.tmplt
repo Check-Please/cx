@@ -1,7 +1,7 @@
-<div id="cards-view">
+<div id="cards-view" class="height_class">
 	<p class="instructions">Select your card:</p>
 
-	<div class="list">
+	<div class="list" style="height: {{cards_height}}em">
 		[[savedCards]]
 		[[newCard]]
 	</div>

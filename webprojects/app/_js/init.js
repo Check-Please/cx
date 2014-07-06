@@ -19,14 +19,14 @@ window.onload = function() {
 			message: "The app needs to be updated"},
 		6: {heading: "Disabled", symbol: String.fromCharCode(215),
 			message: "The app is currently disabled"},
-		500:{heading:"Server Error", symbol: String.fromCharCode(9889),
+		500:{heading:"Server Error", symbol: String.fromCharCode(215),
 			message: "Something went wrong with on server"}
 	};
 	var GET_TABLE_ERRORS = {
 		0: SERVER_ERROR[0],
 		1: {heading: "Bluetooth disabled", symbol: String.fromCharCode(215),
 			message: "Turn on bluetooth to use this app"},
-		2: {heading: "Bluetooth error", symbol: String.fromCharCode(9889),
+		2: {heading: "Bluetooth error", symbol: String.fromCharCode(215),
 			message: "Make sure bluetooth is enabled and working"}
 	}
 
