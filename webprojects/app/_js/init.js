@@ -39,6 +39,7 @@ window.onload = function() {
 		models.cardFocus, models.email, models.feedback, models.loading,
 		models.error);
 
+	models.loading({message: "Getting Order"});
 	inParallel([device.getTableInfo, device.getPos, device.loadData],
 	function(tInfo, pos) {
 		if(tInfo[0] == null) {

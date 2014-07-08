@@ -1,5 +1,5 @@
-fluid.min.js
-fluid-forms.min.js
+fluid.js
+fluid-forms.js
 consts.js
 models.js
 device.js

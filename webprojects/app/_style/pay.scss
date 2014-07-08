@@ -167,9 +167,6 @@
 	} 
 
 	.confirm {
-		background: $sad-btn-color;
-		width: calc(100% - #{$side-width / 0.4});
-		position: absolute;
-		bottom: 0px;
+		@include abs-confirm();
 	}
 }

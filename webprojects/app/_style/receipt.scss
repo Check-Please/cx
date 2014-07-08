@@ -13,6 +13,7 @@
 
 	.receipt, .summary {
 		position: relative;
+		@include transitionAll();
 
 		&:before {
 			@include thin-line(bottom);
@@ -24,16 +25,28 @@
 		}
 	}
 
+	.receipt .item {
+		position: absolute;
+	}
+	.summary .item {
+		position: relative;
+	}
 	.receipt .item, .summary .item {
 		height: $item-height;
-		position: relative;
+		width: 100%;
+		height: 0px;
+		overflow: hidden;
+		@include transitionAll();
 		background: $focus-color;
 
-		& > * {
+		& .checkbox, & .name, & .price, & .split {
 			position: absolute;
 			top: 0px;
-			margin: 0px;
+			margin: auto;
 			padding: 0px;
+		}
+		& .checkbox, & .split {
+			bottom: 0px;
 		}
 
 		.checkbox {
@@ -104,14 +117,30 @@
 			}
 		}
 
-		&.your, &.unpaid, &.their, &.paid {
-			&:not(:first-child):before {
-				@include thin-line();
-				width: calc(100% - #{1em});
+		.mod {
+			position: absolute;
+			display: block;
+			left: 1em;
+			right: 1em;
+			height: 1em;
+			& .name, & .price {
+				font-size: 0.3em;
+				font-style: italic;
+				top: 0px;
+				bottom: 0px;
+				left: auto;
+				right: auto;
 			}
 		}
 
-		&.your, &.unpaid {
+		&.checked, &.unchecked, &.taken, &.paid {
+			&.not-first:before {
+				@include thin-line();
+				left: 1em;
+			}
+		}
+
+		&.checked, &.unchecked {
 			.checkbox:before {
 				content: "";
 				position: absolute;
@@ -122,25 +151,25 @@
 			}
 		}
 
-		&.your .checkbox:before {
+		&.checked .checkbox:before {
 			background: url("../../img/redesign/receipt/checked_box.svg");
 			background-size: 100%;
 		}
 
-		&.unpaid .checkbox:before {
+		&.unchecked .checkbox:before {
 			background: url("../../img/redesign/receipt/unchecked_box.svg");
 			background-size: 100%;
 			@include opacity($unchecked-opacity);
 		}
 
-		&.unpaid, &.their, &.paid {
+		&.unchecked, &.taken, &.paid {
 			.price {
 				text-decoration: line-through;
 			}
 			background: $blur-color;
 		}
 
-		&.their, &.paid {
+		&.taken, &.paid {
 			.split {
 				display: none;
 			}
@@ -160,7 +189,7 @@
 			}
 		}
 
-		&.their {
+		&.taken {
 			.checkbox:before {
 				content: "Taken";
 				color: $taken-color;
@@ -210,5 +239,12 @@
 
 	.summary {
 		margin-top: 2em;
+		.split {
+			display: none;
+		}
+	}
+
+	&.tall .confirm {
+		@include abs-confirm();
 	}
 }

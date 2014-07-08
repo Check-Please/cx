@@ -42,7 +42,7 @@ public class ItemModifier {
 		json.put("price", price);
 		json.put("tax", tax);
 		json.put("serviceCharge", serviceCharge);
-		json.put("serviceCharge", discount);
+		json.put("discount", discount);
 		return json;
 	}
 	public String toString()

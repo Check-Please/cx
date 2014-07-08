@@ -45,18 +45,18 @@
 
 		&:not(:first-child):before {
 			@include thin-line();
-			width: calc(100% - #{2.5em});
+			left: 2.5em;
 		}
 		input {
 			border: none;
 			padding: 0px 0.8em 0px 0px;
 			margin: 0px;
 			height: 100%;
-			width: calc(100% - 3.3em);
 			font-size: 1em;
 			text-align: right;
 			position: absolute;
 			right: 0px;
+			left: 3.3em;
 			background: transparent;
 		}
 		input[placeholder] { font-weight: 300; }

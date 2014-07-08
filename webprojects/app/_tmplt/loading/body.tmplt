@@ -1,6 +1,6 @@
 <div id="loading-view" class="background">
 	<div class="wrapper">
-		<span class="percent {{hide_percent}}">({{percent}})</span>
+		<span class="percent {{hide_percent}}">({{percent}}%)</span>
 		<span class="message">{{message}}</span>
 		<span class="dot one">.</span>
 		<span class="dot two">.</span>

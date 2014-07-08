@@ -1,0 +1,53 @@
+@import "../../_ignore/main.scss";
+@import "vars.scss";
+
+#loading-view {
+	background: rgba(200, 200, 200, 0.5);
+	.wrapper {
+		font-size: 0.5em;
+		height: 4em;
+		top: 0px;
+		bottom: 0px;
+		line-height: 4em;
+		margin: auto;
+		position: absolute;
+		text-align: center;
+		width: 100%;
+		background: rgba(255,255,255,0.95);
+		box-shadow: 0px 0px 0.5em transparentize($btn-color, 0.5);
+		.hide {
+			display: none;
+		}
+	}
+	.dot {
+		opacity: 0;
+		@include prefixed(animation, loadingDot 1.2s infinite);
+		&.one { @include prefixed(animation-delay, 0.0s); }
+		&.two { @include prefixed(animation-delay, 0.1s); }
+		&.three { @include prefixed(animation-delay, 0.2s); }
+	}
+}
+
+@-webkit-keyframes loadingDot {
+	  0% { opacity: 0; }
+	 40% { opacity: 1; }
+	 80% { opacity: 0; }
+}
+
+@-moz-keyframes loadingDot {
+	  0% { opacity: 0; }
+	 40% { opacity: 1; }
+	 80% { opacity: 0; }
+}
+
+@-o-keyframes loadingDot {
+	  0% { opacity: 0; }
+	 40% { opacity: 1; }
+	 80% { opacity: 0; }
+}
+
+@keyframes loadingDot {
+	  0% { opacity: 0; }
+	 40% { opacity: 1; }
+	 80% { opacity: 0; }
+}

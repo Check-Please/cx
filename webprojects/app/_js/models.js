@@ -104,8 +104,11 @@ var models = models || {};
 	 *	Prices are all in 100ths of a cent, with 0 as the only valid falsy
 	 *	value.  The prices also represent the cost of the item if the
 	 *	fraction was 1.
-	 */ 
-	models.items = Fluid.newModel({});
+	 */
+	var emptyItem = {name: "", status: consts.statuses.UNCHECKED,
+					num: 0, denom: 0, price: 0, discount: 0,
+					serviceCharge: 0, tax: 0, mods: []};
+	models.items = Fluid.newModel({a:emptyItem, b:emptyItem, c:emptyItem});
 
 	/*	Information about the element currently being split.  If nothing is
 	 *	currently being split, undefined.  Otherwise, an object with the

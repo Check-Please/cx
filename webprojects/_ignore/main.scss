@@ -230,11 +230,6 @@
 }
 
 @mixin opacity($x) {
-/*	The following is buggy, and so is commented out*/
-/*	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=#{$x});*/
-	filter:alpha(opacity=#{$x*100});
-	-ms-filter:"alpha(opacity=#{$x*100})";
-	-o-filter:"alpha(opacity=#{$x*100})";
 	@include prefixed(opacity, $x);
 }
 

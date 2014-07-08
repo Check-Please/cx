@@ -49,6 +49,10 @@ public class TableKey extends AbstractModelType
 		setKey(k);
 		this.restr = restr;
 		this.query = query;
+		connectionStatus = new HashMap<String, Long>();
+		itemFracs = new HashMap<String, List<Frac>>();
+		itemNums = new HashMap<String, List<Long>>();
+		itemOwners = new HashMap<String, List<String>>();
 	}
 
 	//-------------------

@@ -1,4 +1,4 @@
 <div class="mod" style="top: {{position}}em">
-	<p class="name">{{name}}</p>
+	<p class="name">&mdash; {{name}}</p>
 	<p class="price">{{price}}</p>
 </div>

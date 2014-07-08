@@ -20,6 +20,9 @@ var BodyView = Fluid.compileView({
 		for(var i = Math.max(emHeight+1, 30); i <= 160; i++)
 			heightClasses += " h_" + i;
 		heightClasses = heightClasses.trim();
+	
+		//Now watch as I ignore the MVC which I myself painstakingly build!
+		var noTrans = $("#body").css("font-size")!=(fS+"px") ? "noTrans":"";
 
 		var views;
 		if(err == null) {
@@ -36,24 +39,24 @@ var BodyView = Fluid.compileView({
 				totals.totalDiscount += frac * item.discount;
 			}
 			var elems = [];
-			for(var i in items) {
-				var item = items[i];
+			for(var id in items) {
+				var item = items[id];
 				var frac = item.denom ? (item.num || 0) / item.denom : 1;
 				var mods = [];
 				for(var j = 0; j < item.mods.length; j++) {
 					var mod = item.mods[j];
-					if(item.type == consts.statuses.CHECKED)
+					if(item.status == consts.statuses.CHECKED)
 						updateTotals(mod, frac);
 					mods.push({
 						name: mod.name,
 						price: money.round(frac*(mod.price-mod.discount)/100)
 					});
 				}
-				if(item.type == consts.statuses.CHECKED)
+				if(item.status == consts.statuses.CHECKED)
 					updateTotals(item, frac);
 				elems.push({
 					name: item.name,
-					id: item.itemID,
+					id: id,
 					status: item.status,
 					num: item.num,
 					denom: item.denom,
@@ -64,14 +67,19 @@ var BodyView = Fluid.compileView({
 
 			totals.total =	totals.subtotal + totals.discount + totals.tax +
 							totals.serviceCharge;
-			views = [new ReceiptView(elems, {
-				subtotal: money.round(totals.subtotal/100),
-				discount: money.round(totals.discount/100),
-				serviceCharge: money.round(totals.serviceCharge/100),
-				tax: money.round(totals.tax/100),
-				total: money.round(totals.total/100)
-			}, emHeight), new SplitView((split || {}).name,
-												(split || {}).inNumWays)];
+			var summaries = {};
+			summaries[consts.summaries.SUBTOTAL] =
+									money.round(totals.subtotal/100);
+			summaries[consts.summaries.DISCOUNT] =
+									money.round(totals.discount/100);
+			summaries[consts.summaries.S_C] =
+									money.round(totals.serviceCharge/100);
+			summaries[consts.summaries.TAX] =
+									money.round(totals.tax/100);
+			summaries[consts.summaries.TOTAL] =
+									money.round(totals.total/100);
+			views = [new ReceiptView(elems, summaries, emHeight),
+				new SplitView((split || {}).name, (split || {}).inNumWays)];
 
 			////////////////////////////////////////////
 			////		 Compute Other Views		////
@@ -90,7 +98,7 @@ var BodyView = Fluid.compileView({
 			views.push(new CardsView(	cardFocus, cards, passwords,
 										newCardInfo, emHeight));
 			views.push(new FeedbackView(email, feedback));
-			views.push(new LoadingView(	loading && loading.message,
+			views.push(new LoadingView(	loading ? loading.message : "Done!",
 										loading && loading.percent));
 		} else {
 			views = [new ErrorView(err.heading, err.message, err.symbol)];
@@ -99,7 +107,7 @@ var BodyView = Fluid.compileView({
 		////////////////////////
 		////	 Return		////
 		////////////////////////
-		return {activeView: activeView, views: views,
+		return {activeView: activeView, views: views, noTrans: noTrans,
 				heightClasses: heightClasses, fontSize: fS};
 	}
 });

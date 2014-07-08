@@ -3,7 +3,10 @@
  *	@owner	sjelin	
  */
 
-var consts = {};
+var consts = {
+	MOD_HEIGHT: 0.5
+};
+
 consts.statuses = {
 	CHECKED: 0,
 	UNCHECKED: 1,

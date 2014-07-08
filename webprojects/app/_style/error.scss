@@ -17,6 +17,7 @@
 	}
 
 	p {
+		text-align: center;
 		top: 5em;
 		margin: 0px 2.5em;
 		font-size: 0.4em;
@@ -50,8 +51,7 @@
 
 	.confirm {
 		background: $sad-btn-color;
-		width: calc(100% - #{$side-width / 0.4});
-		bottom: 0px;
+		@include abs-confirm();
 	}
 
 	@for $i from 45 through 30 {

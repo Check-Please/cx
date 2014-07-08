@@ -15,8 +15,9 @@ var ReceiptView = Fluid.compileView({
 		ret.items = {};
 		var totals = consts.STATUSES.map(op.id.c(0));
 		for(var i = 0; i < items.length; i++) {
-			totals[items[i].status] += 1 + items[i].mods.length;
-			ret.receipt_height += 1 + items[i].mods.length;
+			totals[items[i].status] +=
+								1 + consts.MOD_HEIGHT*items[i].mods.length;
+			ret.receipt_height += 1 + consts.MOD_HEIGHT*items[i].mods.length;
 		}
 		var positions = {};
 		for(var i = 0; i < consts.STATUSES.length; i++) {
@@ -25,7 +26,7 @@ var ReceiptView = Fluid.compileView({
 				positions[consts.STATUSES[i]] += totals[consts.STATUSES[j]];
 		}
 		for(var i = 0; i < items.length; i++) {
-			ret.items[items[i].id] = new ReceiptItem(items[i].status,
+			ret.items[items[i].id] = new ReceiptItemView(items[i].status,
 				positions[items[i].status], items[i].name, items[i].id,
 				items[i].num, items[i].denom, items[i].price, items[i].mods);
 			positions[items[i].status] += 1 + items[i].mods.length;
@@ -33,9 +34,10 @@ var ReceiptView = Fluid.compileView({
 		ret.summaries = [];
 		for(var i = 0; i < consts.SUMMARIES.length; i++) {
 			var type = consts.SUMMARIES[i];
-			if(summaries[type])
-				ret.summaries.push(new ReceiptItem(type,ret.summaries.length,
-					consts.SUMMARY_NAMES[type], 1, 1, summaries[type], []));
+			if(summaries[type] || (type == consts.summaries.TOTAL))
+				ret.summaries.push(new ReceiptItemView(type, 0,
+										consts.SUMMARY_NAMES[type], "", 1, 1,
+										summaries[type], []));
 		}
 		if(ret.receipt_height + ret.summaries.length + 6.225 < emHeight/10)
 			ret.height_class = "tall";

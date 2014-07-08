@@ -1,7 +1,7 @@
-<div class="item {{type}}" style="top: {{position}}em; height: {{height}}em">
+<div class="item {{type}} {{first}}" style="top: {{position}}em; height: {{height}}em">
 	<a class="checkbox"></a>
 	<p class="name">[[name]]</p>
 	<p class="price">{{price}}</p>
-	[[mods]]
 	<a class="split"></a>
+	[[mods]]
 </div>
