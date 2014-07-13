@@ -1,28 +1,29 @@
-<div id="pay-view">
-	<a class="back">Back</a>
-	<div class="ammount">
-		<h1>Ammount Due:</h1>
+<div id="pay-view" class={{less_than_ten}} style="overflow-y: {{overflow}}">
+	<a class="back" style={{back_bottom_padding}}>Back</a>
+	<div class="amount" style={{amount_bottom_margin}}>
+		<h1 class="caption">Amount Due:</h1>
 		<p class="price">{{price}}</p>
 		[[notes]]
 	</div>
-	<div class="tip">
-		<h1>Tip:</h1>
-		<div class="slider {{slider_focus}}">
-			<a class="small {{small_focus}}">17%</a>
-			<a class="med {{med_focus}}">20%</a>
-			<a class="large {{large_focus}}">25%</a>
-			<a class="other {{other_focus}}">Other <span "percent"></span></a>
-		</div>
-		<div class="value {{other_focus}}">
-			<a class="back"></a>
-			<span>$</span>
-			<input type="price" value={{tip}} />
-			<p class="tipPrct" style={{tipPrctHide}}>({{tipPrct}})</p>
+	<div class="tip" style={{tip_bottom_margin}}>
+		<h1 class="caption" style={{tip_cap_bottom_margin}}>Tip:</h1>
+		<div class="inputs" style={{tip_inputs_font_size}}>
+			<div class="slider {{slider_focus}}">
+				<a class="small {{small_focus}}">17%</a>
+				<a class="med {{med_focus}}">20%</a>
+				<a class="large {{large_focus}}">25%</a>
+				<a class="other {{other_focus}}">Other <span "percent"></span></a>
+			</div>
+			<div class="value {{other_focus}}">
+				<span>$</span>
+				<input type="price" value={{tip}} step="0.01" min="0" />
+				<p class="tipPrct {{tip_thank}}" style={{tip_prct_hide}}>({{tip_msg}})</p>
+			</div>
 		</div>
 	</div>
 	<a class="card">
 		<h1>Card</h1>
 		<span>{{card_msg}}</span>
 	</a>
-	<a class="confirm {{confirm_disable}}">Pay</a>
+	<a class="confirm {{confirm_disable}}" style={{confirm_margins}}>Pay</a>
 </div>

@@ -37,7 +37,7 @@ window.onload = function() {
 		models.height, models.items, models.split, models.tipSlider,
 		models.tip, models.cards, models.passwords, models.newCardInfo,
 		models.cardFocus, models.email, models.feedback, models.loading,
-		models.error);
+		models.error, models.allowLandscape);
 
 	models.loading({message: "Getting Order"});
 	inParallel([device.getTableInfo, device.getPos, device.loadData],

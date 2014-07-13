@@ -29,7 +29,7 @@ var CardsView = Fluid.compileView({
 		//Final height stuff
 		ret.cards_height++;
 		if(cardFocusIndex == -1) {
-			ret.cards_height += 5;
+			ret.cards_height += 6;
 			if(newCardInfo.save) {
 				ret.cards_height++;
 				if(newCardInfo.reqPass)
@@ -51,7 +51,8 @@ var CardsView = Fluid.compileView({
 					(!newCardInfo.save || !newCardInfo.reqPass ||
 						newCardInfo.password.length > 0)
 			) || passwords[cardFocusIndex] ||
-				!(cardInfo[cardFocusIndex]||{}).reqPass) ? "" : " disabled";
+				!(cardInfo[cardFocusIndex]||{reqPass:true}).reqPass) ?
+					"" : "disabled";
 
 		return ret;
 	},

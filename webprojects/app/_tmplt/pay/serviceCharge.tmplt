@@ -1,1 +1,1 @@
-<p class="serviceCharge">including a <span>{{serviceCharge}}</span> service charge</p>
+<p class="service-charge">including a <span>{{serviceCharge}}</span> service charge</p>

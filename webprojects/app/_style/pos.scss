@@ -11,10 +11,8 @@ html, body, #body, #body > * {
 	overflow: hidden;
 
 	& > * {
-		-webkit-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
-		-moz-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
-		-o-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
-		transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
+		@include transitionPos();
+		background: $bg-color;
 		left: 0px;
 		top: 0px;
 		position: absolute;

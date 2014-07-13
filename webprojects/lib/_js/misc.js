@@ -88,15 +88,15 @@ creditCards = (function() {
 							[4, 10] : [4, 8, 12];
 		pan += "";//Make sure it's a string
 		for(var i = sepIndices.length-1; i >= 0; i--) {
-			j = sepIndices[i];
+			var j = sepIndices[i];
 			if(j < pan.length)
 				pan = pan.slice(0,j)+sep+pan.slice(j);
 		}
 		return pan;
 	}
 	function getType(pan) {
-		switch(pan.slice(0,1)) {
-			case "3": switch(pan.slice(1,2)) {
+		switch(pan.substr(0,1)) {
+			case "3": switch(pan.substr(1,1)) {
 				case "4":
 				case "7": return types.AMEX;
 				case "0":

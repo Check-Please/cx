@@ -16,15 +16,19 @@ var ReceiptItemView = Fluid.compileView({
 	 */
 	fill: function(type, pos, name, id, num, denom, price, mods) {
 		var modViews = [];
-		for(var i = 0; i < mods.length; i++)
+		var noPricedMod = true;
+		for(var i = 0; i < mods.length; i++) {
 			modViews.push(new ReceiptModView(mods[i].name,mods[i].price,i));
+			noPricedMod = noPricedMod && !mods[i].price;
+		}
 		return {type: consts.ITEM_CLASSES[type],
 				position: pos,
 				height: 1+consts.MOD_HEIGHT*mods.length,
 				name: new ReceiptItemNameView(name, num, denom),
 				price: money.toStr(price),
 				mods: modViews,
-				first: pos == 0 ? "" : "not-first"};
+				first: pos == 0 ? "" : "not-first",
+				no_priced_mod: noPricedMod ? "no-priced-mod" : ""};
 	},
 	addControls: function($el, type, __, ___, id) {
 		if(consts.SUMMARY_NAMES[type] == undefined) {

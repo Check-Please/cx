@@ -1,0 +1,27 @@
+@import "../../_ignore/main.scss";
+@import "vars.scss";
+
+body #body #landscape-view {
+	background: #000000;
+	color: #FFFFFF;
+	.wrapper {
+		font-size: 0.07em;
+		width: (1em / 0.07);
+		height: 100%;
+		margin: auto;
+		text-align: center;
+		position: relative;
+
+		a {
+			background: $btn-color;
+			color: $btn-text-color;
+			display: block;
+			border-radius: 0.5em;
+			position: absolute;
+			left: 0px;
+			right: 0px;
+			bottom: 2.5em;
+			padding: 0.5em;
+		}
+	}
+}

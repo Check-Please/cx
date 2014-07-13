@@ -1,3 +1,5 @@
+$line-height: 1.2em;
+
 $text-color: #1E1E1E;
 $faded-text-color: lighten($text-color, 45%);
 $bg-color: #EEEEEE;
@@ -15,6 +17,7 @@ $blur-color: #FAFAFA;
 $btn-color: #0886E0;
 $btn-text-color: #FFFFFF;
 $sad-btn-color: darken(adjust-hue($btn-color, -5deg), 5%);
+$disabled-btn-color: rgba(0,0,0,0.2);
 
 $paid-color: #00EE00;
 $taken-color: hsl(hue($btn-color), saturation($paid-color), lightness($paid-color));
@@ -25,6 +28,49 @@ $good-color: #00BB00;
 $thumb-color: #FFFFFF;
 
 $trans-time: 0.5s;
+
+@mixin transitionPos()
+{
+		-webkit-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
+		-moz-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
+		-o-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
+		transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
+	.noTrans & {
+		-webkit-transition: none;
+		-moz-transition: none;
+		-o-transition: none;
+		transition: none;
+	}
+}
+
+@mixin thin-line($orientation:top)
+{
+	content: "";
+	position: absolute;
+	display: block;
+	right: 0px;
+	left: 0px;
+	height: 1px;
+	@include opacity($border-opacity);
+	background: #000000;
+	@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+		& {
+			background: transparent;
+			background-image: url("../../img/redesign/receipt/thin-line.gif");
+			background-size: 1px 1px;
+			@if $orientation == bottom {
+				@include transform(scaleY(-1));
+			}
+		}
+	}
+}
+
+@mixin abs-confirm() {
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	position: absolute;
+}
 
 @mixin transitionAll()
 {

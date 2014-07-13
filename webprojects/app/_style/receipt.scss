@@ -2,13 +2,9 @@
 @import "vars.scss";
 
 #receipt-view {
-	.instructions {
+	.caption {
 		height: 2.5em;
 		line-height: 2.5em;
-		font-size: 0.25em;
-		margin: 0px $side-width;
-		color: $caption-color;
-		text-transform: uppercase;
 	}
 
 	.receipt, .summary {
@@ -76,6 +72,13 @@
 			line-height: 2.5em;
 			font-size: 0.4em;
 		}
+		&.no-priced-mod .price {
+			top: 0px;
+			bottom: 0px;
+		}
+		&.no-priced-mod .mod .price {
+			display: none;
+		}
 
 		.split {
 			right: 0px;
@@ -130,6 +133,12 @@
 				bottom: 0px;
 				left: auto;
 				right: auto;
+			}
+			& .name {
+				left: 0px;
+			}
+			& .price {
+				right: 0px;
 			}
 		}
 

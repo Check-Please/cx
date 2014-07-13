@@ -1,4 +1,4 @@
-<div id="error-view">
+<div id="error-view" style="font-size: {{font_ratio}}em">
 	<h1>{{heading}}</h1>
 	<p>{{message}}</p>
 	<div class="bg">{{symbol}}</div>

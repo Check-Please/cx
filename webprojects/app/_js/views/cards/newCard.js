@@ -21,5 +21,17 @@ var NewCardView = Fluid.compileView({
 		".save input":		models.newCardInfo.sub("save"),
 		".reqPass input":	models.newCardInfo.sub("reqPass"),
 		".password input":	models.newCardInfo.sub("password")
+	},
+	addControls: function($el) {
+		var $saveIn = $el.find(".save input");
+		var $rpIn = $el.find(".reqPass input");
+		$el.find(".save").click(function(ev) {
+			if(ev.target != $saveIn[0])
+				$saveIn.click();
+		});
+		$el.find(".reqPass").click(function(ev) {
+			if(ev.target != $rpIn[0])
+				$rpIn.click();
+		});
 	}
 });

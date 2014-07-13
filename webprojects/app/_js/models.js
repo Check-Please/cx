@@ -278,4 +278,9 @@ var models = models || {};
 			models.validViews.set([consts.views.ERROR]);
 		}
 	});
+
+	/**	If the user has decided to use landscape, even thought the app warned
+	 *	them!  Boolean.
+	 */
+	models.allowLandscape = Fluid.newModel(false);
 })(models);

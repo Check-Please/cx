@@ -1,4 +1,4 @@
-var discountAndSCView = Fluid.compileView({
+var DiscountAndSCView = Fluid.compileView({
 	template: templates.pay.discountAndSC,
 	/*	@param	discount The discount in cents
 	 *	@param	serviceCharge The service charge in cents

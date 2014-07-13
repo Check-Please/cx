@@ -2,6 +2,7 @@
 @import "vars.scss";
 
 a {
+	@include user-select(none);
 	cursor: pointer;
 }
 a.disabled {
@@ -18,6 +19,14 @@ body {
 	position: relative;
 }
 
+.caption {
+	font-size: 0.25em;
+	margin: 0px 1em;
+	color: $caption-color;
+	text-transform: uppercase;
+	font-weight: inherit;
+}
+
 .confirm {
 	display: block;
 	margin: $side-width/0.8;
@@ -26,6 +35,21 @@ body {
 	text-align: center;
 	background: $btn-color;
 	color: $btn-text-color;
-	border-radius: 0.3em;
+	@include border-radius(0.3em);
 	font-size: 0.8em;
+	&.disabled {
+		background: $disabled-btn-color;
+		color: rgba(0,0,0,0.2);
+	}
 }
+
+select { @include no-extra-style; }
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+input[placeholder] { font-weight: 300; }
+input::-webkit-input-placeholder { font-weight: 300; }
+input:-moz-placeholder { font-weight: 300; }
+input::-moz-placeholder { font-weight: 300; }
+input:-ms-input-placeholder { font-weight: 300; }

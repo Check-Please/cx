@@ -19,13 +19,11 @@
 	p {
 		text-align: center;
 		top: 5em;
+		left: 0px;
+		right: 0px;
 		margin: 0px 2.5em;
 		font-size: 0.4em;
 		text-align: center;
-
-		.h_60 & {
-			display: none;
-		}
 	}
 
 	.bg {
@@ -52,12 +50,5 @@
 	.confirm {
 		background: $sad-btn-color;
 		@include abs-confirm();
-	}
-
-	@for $i from 45 through 30 {
-		#body.h_#{$i} & {
-			h1 { padding-top: #{0.02*$i - 0.5}em; }
-			.confirm {margin-bottom: #{0.06*$i - 1.5}em; }
-		}
 	}
 }

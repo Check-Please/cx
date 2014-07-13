@@ -1,7 +1,7 @@
 <div id="split-view" class="background">
 	<div class="wrapper">
 		<p>How many people are splitting the {{name}}?</p>
-		<input type="two-digit" value={{input}} maxlength="2"></input>
+		<input type="two-digit" value={{input}} maxlength="2" step="1" min="1"></input>
 		<a class="cancel">Cancel</a>
 		<a class="confirm {{confirm_disabled}}">Confrim</a>
 	</div>

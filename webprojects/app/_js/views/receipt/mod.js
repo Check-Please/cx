@@ -8,6 +8,6 @@ var ReceiptModView = Fluid.compileView({
 	{
 		return {position: (i+1)*consts.MOD_HEIGHT,
 				name: name,
-				price: price ? money.toStr(price) : ""};
+				price: money.toStr(price)};
 	}
 });

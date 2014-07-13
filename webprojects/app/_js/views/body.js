@@ -4,7 +4,7 @@ var BodyView = Fluid.compileView({
 	 */
 	fill: function(	activeView, width, height, items, split, tipSlider, tip,
 					cards, passwords, newCardInfo, cardFocus, email,
-					feedback, loading, err){
+					feedback, loading, err, allowLandscape){
 		////////////////////////////////////////////////
 		////		Compute Basic Style Info		////
 		////////////////////////////////////////////////
@@ -22,10 +22,13 @@ var BodyView = Fluid.compileView({
 		heightClasses = heightClasses.trim();
 	
 		//Now watch as I ignore the MVC which I myself painstakingly build!
-		var noTrans = $("#body").css("font-size")!=(fS+"px") ? "noTrans":"";
+		var noTrans =	$("#body").css("font-size") != (fS+"px") ||
+						!$("#body").hasClass("h"+emHeight) ||
+						$("#body").hasClass("h"+(emHeight+1)) ?
+						"noTrans" : "";
 
 		var views;
-		if(err == null) {
+		if((err == null) && (allowLandscape || (height > width))) {
 			////////////////////////////////////////////
 			////		Compute Receipt View		////
 			////////////////////////////////////////////
@@ -94,14 +97,18 @@ var BodyView = Fluid.compileView({
 											passwords[cardFocus]) ?
 												"X-"+cards[cardFocus
 																].lastFour :
-												"(Enter Password)"));
+												"(Enter Password)",
+									emHeight));
 			views.push(new CardsView(	cardFocus, cards, passwords,
 										newCardInfo, emHeight));
 			views.push(new FeedbackView(email, feedback));
 			views.push(new LoadingView(	loading ? loading.message : "Done!",
 										loading && loading.percent));
+		} else if(err != null) {
+			views = [new ErrorView(err.heading, err.message, err.symbol,
+																emHeight)];
 		} else {
-			views = [new ErrorView(err.heading, err.message, err.symbol)];
+			views = [new LandscapeView(height)];
 		}
 
 		////////////////////////

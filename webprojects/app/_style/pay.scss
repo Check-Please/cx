@@ -2,10 +2,63 @@
 @import "vars.scss";
 
 #pay-view {
-	.back {
+	overflow-x: hidden;
+	& > * {
+		position: relative;
+		overflow: visible
+	};
+
+	//All heights include margins/padding/etc
+	$back-height: 1em;
+	$amount-height: 3.4em;
+	$tip-short-height: 3em;
+	$tip-tall-height: 4em;
+	$card-height: $item-height;
+	$confirm-height: 3.6em;
+
+	$amount-margin: 0.4em;
+	$tip-margin: 0.8em;
+	$card-fz: 0.4;
+
+
+	$short-height: $back-height + $amount-height + $tip-short-height + $card-height + $confirm-height;
+	$tall-height: $back-height + $amount-height + $tip-tall-height + $card-height + $confirm-height;
+
+	@mixin setHeights($tip-height, $full-height) {
+		& > .back { top: 0px; }
+		.amount {
+			top: 10%;
+			margin-top: $back-height - 0.1*$full-height;
+		}
+		.tip {
+			top: 40%;
+			margin-top: $back-height + $amount-height - 0.4*$full-height;
+		}
+		.card {
+			bottom: 30%;
+			margin-bottom: (($confirm-height - 0.3*$full-height) / $card-fz);
+		}
+		.confirm { bottom: 0px; }
+	}
+
+	.h#{round($short-height / 0.1em)} & {
+		& > * {
+			position: absolute;
+			left: 0px;
+			right: 0px;
+		}
+		@include setHeights($tip-short-height, $short-height);
+	}
+	.h#{round($tall-height / 0.1em)} & {
+		@include setHeights($tip-tall-height, $tall-height);
+	}
+
+
+	& > .back {
+		display: block;
 		font-size: 0.4em;
-		position: absolute;
-		padding: 0.3em 0.6em 0.3em 1.85em;
+		height: $line-height;
+		padding: 0.3em 0.6em ($back-height / 0.4 - $line-height - 0.3em) 1.85em;
 		&:before, &:after {
 			border-left: 1px solid;
 			height: 1em;
@@ -18,13 +71,13 @@
 		&:after {@include transform(rotate(-45deg))};
 	}
 
-	.ammount {
-		position: absolute;
-		top: 1em;
+	.amount {
 		width: 100%;
+		height: $amount-height - $amount-margin;
+		margin-bottom: $amount-margin;
 	}
 
-	.ammount h1, .tip h1 {
+	.amount h1, .tip h1 {
 		font-size: 0.25em;
 		margin: 0px 1em;
 		color: $caption-color;
@@ -32,7 +85,7 @@
 		font-weight: inherit;
 	}
 
-	.ammount .price {
+	.amount .price {
 		text-align: center;
 		margin: 0px;
 		font-size: 2em;
@@ -40,30 +93,59 @@
 
 	}
 
-	.ammount .discount {
+	.amount .discount, .amount .service-charge, .amount .tax-tip-note {
 		margin: 0px;
 		font-size: 0.25em;
 		color: darken($caption-color, 15%);
-		text-align: center;
-		margin-left: 12.5em;
 		span {color: $text-color;}
+		text-align: right;
+		margin-right: 4em;
 	}
+	&.less-than-ten .amount { .discount, .service-chage, .tax-tip-note {
+		margin-right: 6.3em;
+	}}
+	.amount .discount.service-charge { margin-right: 1em; }
 
 	.tip {
-		position: absolute;
-		top: 4.5em;
+		margin-bottom: $tip-margin;
 		width: 100%;
+
+		h1 { margin-bottom: 1.4em }
+
+		.h#{round($short-height / 0.1em)} & {
+			height: $tip-short-height - $tip-margin;
+		}
+		.h#{round($tall-height / 0.1em)} & {
+			height: $tip-tall-height - $tip-margin;
+		}
+	}
+
+	.tip .inputs {
+		.h_#{round($short-height / 0.1em)} & {
+			position: relative;
+			height: 1.5em;
+		}
+		.h#{round($short-height / 0.1em)} & {
+			position: absolute;
+			top: 0.7em;
+			bottom: 0px;
+			right: 0px;
+			left: 0px;
+		}
 	}
 
 	.tip .slider {
 		font-size: 0.5em;
-		margin: 0.7em 1em;
-		position: relative;
+		margin: 0px 6.25%;
+		position: absolute;
+		top: 0px;
+		right: 0px;
+		left: 0px;
 
 		& > * {
-			background: darken($bg-color, 20%);
+			background: $disabled-btn-color;
 			display: inline-block;
-			border-radius: 3em;
+			@include border-radius(3em);
 			width: 3em;
 			height: 3em;
 			line-height: 3em;
@@ -79,34 +161,77 @@
 				right: 0px;
 			}
 		}
+		.h_#{round($tall-height / 0.1em)} & {
+			@include transitionPos();
+			&.blur {
+				left: -100%;
+				right: 100%;
+			}
+		}
 	}
 
 	.tip .value {
-		display: none;
-
-		margin: 0px 1.25em;
+		position: absolute;
+		left: 0px;
+		right: 0px;
+		bottom: 0px;
+		margin: 0px 12.5%;
 		font-size: 0.8em;
-		position: relative;
+
 		input {
 			border: none;
-			height: 1em;
 			font-size: 1em;
-			width: calc(100% - 1.1em);
-			padding: 0.1em;
-			height: calc(100% - 0.2em);
 			position: absolute;
+			left: 1em;
+			bottom: 0px;
+			padding: 0.1em;
+			width: calc(100% - 5.5em);
+			font-size: 0.86em;
+			margin: 0px;
+			@include border-radius(0px);
+		}
+		.tipPrct {
+			position: absolute;
+			right: 0px;
+			bottom: 0px;
+			top: 0px;
+			margin: auto;
+			height: 1.2em;
+			line-height: 1.2em;
+			&.thank {
+				font-size: 0.6em;
+			}
+		}
+		&.blur {
+			input { width: calc(100% - 1.5em); }
+			.tipPrct { display: none }
+		}
+		.h_#{round($tall-height / 0.1em)} & {
+			height: 1.25em;
+			top: 0px;
+			margin: auto 7.5%;
+			@include transitionPos();
+			input { @include border-radius(0.2em); }
+			&.blur {
+				left: 100%;
+				right: -100%;
+			}
+		}
+		.h#{round($tall-height / 0.1em)} & {
+			font-size: 0.6em;
+			position: absolute;
+			left: 0px;
+			bottom: 0px;
 			right: 0px;
 		}
 	}
 
 	.card {
 		background: $focus-color;
-		font-size: 0.4em;
-		height: #{$item-height / 0.4};
+		font-size: $card-fz * 1em;
 		display: block;
 		width: 100%;
-		position: absolute;
-		bottom: 9em;
+		height: ($card-height / 0.4);
 		&:before {
 			top: -1px;
 			@include thin-line(bottom);
@@ -165,8 +290,4 @@
 			bottom: 0.92em;
 		}
 	} 
-
-	.confirm {
-		@include abs-confirm();
-	}
 }

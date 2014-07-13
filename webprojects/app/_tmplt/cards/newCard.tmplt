@@ -1,9 +1,9 @@
-<div class="card {{focus}} {{save}} {{reqPass}}">
-	<a class="new">Enter new card</a>
-	<p class="pan {{type}}"><input type="cc-pan" placeholder="Card Number" maxlength="19"></input></p>
-	<p class="name"><input type="cc-name" placeholder="Name on Card" maxlength="26"></input></p>
+<div class="new card {{focus}} {{save}} {{reqPass}}">
+	<a class="new">New card</a>
+	<div class="pan {{type}}"><input type="cc-pan" step="1" min="0" placeholder="Card Number"></input></div>
+	<p class="name"><input type="cc-name" maxlength="26" step="1" min="0" placeholder="Name on Card"></input></p>
 	<p class="expire">
-		<select>
+		<select dir="rtl">
 			<option>01 - January</option>
 			<option>02 - February</option>
 			<option>03 - March</option>
@@ -17,10 +17,10 @@
 			<option>11 - November</option>
 			<option>12 - December</option>
 		</select>
-		<input type="cc-expr-year" placeholder="Expiration Year" maxlength="4"></input>
+		<input type="cc-expr-year" maxlength="4" step="1" min="0" placeholder="Expiration Year"></input>
 	</p>
-	<p class="cvv"><input type="cc-cvv" placeholder="Card Security Code" maxlength="4"></input></p>
-	<p class="zip"><input type="zip" placeholder="Billing Zip Code" maxlength="5"></input></p>
+	<p class="cvv"><input type="cc-cvv" maxlength="4" step="1" min="0" placeholder="Card Security Code"></input></p>
+	<p class="zip"><input type="zip" maxlength="5" step="1" min="0" placeholder="Billing Zip Code"></input></p>
 	<p class="save"><input type="checkbox" /> Save card for future use</p>
 	<p class="reqPass"><input type="checkbox" /> Require password to use card</p>
 	<p class="password"><input type="password" placeholder="Password"></input></p>

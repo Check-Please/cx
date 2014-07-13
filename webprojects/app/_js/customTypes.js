@@ -13,8 +13,8 @@ Fluid.defineInputType("price", {
 //Cards
 Fluid.defineInputType("cc-pan", {
 	validate: /^[0-9]{0,19}$/,
-	formatChars: /-/,
-	format: creditCards.format
+	formatChars: / /,
+	format: creditCards.format.C($, $, "  ")
 });
 Fluid.defineInputType("cc-name", {
 	validate: function(num) {

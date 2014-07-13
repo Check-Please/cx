@@ -1,0 +1,6 @@
+<div id="landscape-view" style="font-size: {{window_height}}px">
+	<div class="wrapper">
+		<p>Check Please is not designed for landscape mode.  Please tilt your phone upright to turn it back into portrait mode (or, if you are on a desktop, narrow your browser window).</p>
+		<a>I don't care, use landscape mode anyway</a>
+	</div>
+</div>

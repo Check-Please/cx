@@ -2,19 +2,16 @@
 @import "vars.scss";
 
 #cards-view {
-	.instructions {
+	.caption {
 		height: 2.5em;
 		line-height: 2.5em;
-		font-size: 0.25em;
-		margin: 0px 1em;
-		color: $caption-color;
-		text-transform: uppercase;
 	}
 
 	.list {
 		position: relative;
-		background: $blur-color;
+		@include transitionAll();
 
+		/* Lines */
 		&:before {
 			@include thin-line(bottom);
 			top: -1px;
@@ -24,15 +21,46 @@
 			bottom: -1px;
 		}
 
-		.card:not(:first-child):before {
+		.saved.card:after {
+			@include thin-line(bottom);
+			bottom: 0px;
+		}
+		.card p {
+			&:before {
+				@include thin-line();
+				left: 2.5em;
+			}
+		}
+		.new.card a:after { 
 			@include thin-line();
+			bottom: -1px;
+			left: 2.5em;
+			width: auto;
 		}
 	}
 
-	.list .focus {
-		background: $focus-color;
+	.card {
+		background: $blur-color;
+		height: 1em;
+		overflow: hidden;
+		@include transitionAll();
+
+		&.focus {
+			background: $focus-color;
+			a { cursor: default; }
+
+			&.saved.reqPass { height: 2em; }
+			&.new {
+				height: 7em;
+				&.save {
+					height: 8em;
+					&.reqPass { height: 9em; }
+				}
+			}
+		}
 	}
 
+	/* Cards Inner */
 	.list .card > * {
 		font-size: 0.4em;
 		padding: 0px 0.8em 0px 2.5em;
@@ -42,30 +70,39 @@
 		position: relative;
 		display: block;
 		text-align: right;
+	}
 
-		&:not(:first-child):before {
-			@include thin-line();
-			left: 2.5em;
-		}
-		input {
+	.list .card p, .list .card div {
+		input[type="text"], input[type="number"], input[type="password"], select {
 			border: none;
 			padding: 0px 0.8em 0px 0px;
 			margin: 0px;
 			height: 100%;
+			width: calc(100% - 3.3em);
 			font-size: 1em;
 			text-align: right;
 			position: absolute;
 			right: 0px;
-			left: 3.3em;
 			background: transparent;
 		}
-		input[placeholder] { font-weight: 300; }
-		::-webkit-input-placeholder { font-weight: 300; }
-		:-moz-placeholder { font-weight: 300; }
-		::-moz-placeholder { font-weight: 300; }
-		:-ms-input-placeholder { font-weight: 300; }
+
+		&.expire select, &.expire input {
+			width: calc(50% - 2.05em);
+		}
+
+		&.expire select {
+			left: 2.5em;
+			right: auto;
+			padding: 0px;
+		}
+
+		&.save, &.reqPass {
+			@include user-select(none);
+			cursor: pointer;
+		}
 	}
 
+	/* Icons */
 	.list .card a, .list .card .pan {
 		&:before, &:after {
 			position: absolute;
@@ -129,4 +166,6 @@
 			font-weight: 100;
 		}
 	}
+
+	&.tall .confirm { @include abs-confirm(); }
 }
