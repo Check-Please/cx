@@ -31,15 +31,15 @@ Fluid.defineInputType("cc-name", {
 });
 Fluid.defineInputType("cc-expr-year", {
 	typeAttr: "number",
-	validate: {text: /^[0-9]{0,4}$/}
+	validate: /^[0-9]{0,4}$/
 });
 Fluid.defineInputType("cc-cvv", {
 	typeAttr: "number",
-	validate: {text: /^[0-9]{0,4}$/}
+	validate: /^[0-9]{0,4}$/
 });
 Fluid.defineInputType("zip", {
 	typeAttr: "number",
-	validate: {text: /^[0-9]{0,5}$/}
+	validate: /^[0-9]{0,5}$/
 });
 
 //Feedback (polyfill)
