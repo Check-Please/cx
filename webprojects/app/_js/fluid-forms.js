@@ -50,10 +50,11 @@
 
 	//TODO remove ignore when jsdom fixes get pushed
 	/* istanbul ignore next */
-	function setCursorPos($elem, start, end, ctHash)
+	function setCursorPos($elem, start, end, ctHash, view)
 	{
-		if(		($elem[0] instanceof window.HTMLInputElement) ||
-				($elem[0] instanceof window.HTMLTextAreaElement)) try {
+		var elem = $elem[0];
+		if(		(elem instanceof window.HTMLInputElement) ||
+				(elem instanceof window.HTMLTextAreaElement)) try {
 			if(arguments.length == 2)
 				end = start;
 			start = Math.min(start, end = Math.min(end, $elem.val().length));
@@ -69,7 +70,7 @@
 				rng.select()
 			}
 			if(ctHash)
-				view.ctCursorPos[ctHash] = {s: start, e: end};
+				ctLogCursor(view, hash, $elem);
 		} catch(ex) {}
 	}
 
@@ -94,9 +95,62 @@
 		return {s: 0, e: 0};
 	}
 
+	//TODO remove ignore when jsdom fixes get pushed
+	/* istanbul ignore next */
+	function sanitizeSelection(sel, oldSel, val, formatChars)
+	{
+		//Find right of the start's strip of format chars
+		var right = sel.s;
+		while((right < val.length) && formatChars(val[right]))
+			right++;
+		//Find left side of the end's strip of format chars
+		var left = sel.e;
+		while((left > 0) && formatChars(val[left-1]))
+			left--;
+
+		//CASE 0: Not touching format chars
+		if((sel.s == right) && (sel.e == left))
+			return false;
+
+		if(sel.s == sel.e) {
+			//CASE 1: Moving cursor through format chars
+			if((oldSel.s == oldSel.e) && (sel.e != oldSel.e)) {
+				if(oldSel.s == right) {
+					sel.s = sel.e = Math.max(left-1, 0);
+					return true;
+				}
+				if(oldSel.s == left) {
+					sel.s = sel.e = Math.min(right+1, val.length);
+					return true;
+				}
+			}
+
+			//CASE 2: Cursor in middle
+			if((sel.s != right) && (sel.e != left)) {
+				sel.s = sel.e = right;
+				return true;
+			}
+
+			//CASE 3: Cursor on side
+			return false;
+		} else {
+			//CASE 4: Selection
+			sel.s = right;
+			sel.e = left;
+			return true;
+		}
+	}
+
 	function ctLogCursor(view, hash, $elem) {
-		if($elem.is(":focus"))
-			view.ctCursorPos[hash] = getTextSel($elem);
+		var sel = getTextSel($elem);
+		var val = $elem.val() || "";//sanitize in case element has no value
+		//TODO remove ignore when jsdom fixes get pushed
+		/* istanbul ignore if */
+		if((view.prevValues[hash] == val) && sanitizeSelection(sel,
+				view.ctCursorPos[hash], val, view.ctMap[hash].formatChars))
+			setCursorPos($elem, sel.s, sel.e, hash, view);
+		else
+			view.ctCursorPos[hash] = sel;
 	}
 
 	//TODO remove ignore when jsdom fixes get pushed
@@ -115,23 +169,9 @@
 		return i;
 	}
 
-	function needsRefrmt(curr, frmt, cursor, formatChars) {
-		while((cursor > 0) && formatChars(curr[cursor-1]))
-			cursor--;
-		if(curr.slice(0, cursor) != frmt.slice(0, cursor))
-			return true;
-		curr = curr.slice(cursor);
-		while((curr.length > 0) && formatChars(curr[0]))
-			curr = curr.slice(1);
-		frmt = frmt.slice(cursor);
-		while((frmt.length > 0) && formatChars(frmt[0]))
-			frmt = frmt.slice(1);
-		return curr != frmt;
-	}
-
 	//TODO remove ignore when jsdom fixes get pushed
 	/* istanbul ignore next */
-	function ctSpecialCaseUpdate($elem, type, cursor, curr, prev) {
+	function ctSpecialCaseUpdate($elem, type, cursor, curr, prev, hash,view){
 		//The only special case we have is backspace/delete keys
 		if((curr.length != prev.length-1) || (cursor.s != cursor.e))
 			return false;
@@ -139,7 +179,7 @@
 
 		var bksp = false;
 		var del = false;
-		if(cusor == 0) {
+		if(cursor == 0) {
 			if(prev.slice(1) == curr)
 				del = true;
 			else
@@ -150,7 +190,7 @@
 			else
 				return false;
 		} else {
-			if(		(prev.substr(0, cursor-1) != curr(0, cursor-1))
+			if(		(prev.substr(0, cursor-1) != curr.substr(0, cursor-1)) ||
 					(prev.substr(cursor+1) != curr.substr(cursor)))
 				return false;
 			var p = prev.substr(cursor-1, 2);
@@ -170,58 +210,64 @@
 			if(cursor == 0)
 				return false;
 			val = type.unformat(prev.slice(0, cursor-1)+prev.slice(cursor));
+			cursor--;
 		} else if(del) {
-			while((cursor < prev.length) && type.formatChars(prev[cursor]))
-				cursor++;
-			if(cursor == prev.length)
+			var i = cursor;
+			while((i < prev.length) && type.formatChars(prev[i]))
+				i++;
+			if(i == prev.length)
 				return false;
-			val = type.unformat(prev.slice(0, cursor)+prev.slice(cursor+1));
+			val = type.unformat(prev.slice(0, i) + prev.slice(i+1));
 		}
 
-		if((val == null) || type.validate(val))
+		if((val == null) || !type.validate(val))
 			return false;
 		$elem.val(type.format(val));
+		setCursorPos($elem, cursor, cursor, hash, view);
 		return true;
 	}
 
-	function ctReformat($elem, type, curr, fVal) {
-		var sel = getTextSel($elem);
-		var focus = $elem.is(":focus");
-		if(needsRefrmt(curr,fVal,focus?sel.s:curr.length,type.formatChars)) {
-			//Reformat
-			var newTextSel = undefined;
-			if(focus) {
-				newTextSel = {
-					s: transIndex(type.formatChars, sel.s, curr, fVal),
-					e: transIndex(type.formatChars, sel.e, curr, fVal)
-				};
-			}
-			$elem.val(fVal);
-			if(newTextSel != undefined)
-				setCursorPos($elem, newTextSel.s, newTextSel.e);
+	function ctReformat($elem, type, curr, fVal, hash, view) {
+		var newTextSel = undefined;
+		if($elem.is(":focus")) {
+			var sel = getTextSel($elem);
+			newTextSel = {
+				s: transIndex(type.formatChars, sel.s, curr, fVal),
+				e: transIndex(type.formatChars, sel.e, curr, fVal)
+			};
 		}
+		$elem.val(fVal);
+		if(newTextSel != undefined)
+			setCursorPos($elem, newTextSel.s, newTextSel.e, hash, view);
+	}
+
+	function revertInvalid($elem, prevVal, oldSel) {
+		$elem.val(prevVal);
+		//TODO remove ignore when jsdom fixes get pushed
+		/* istanbul ignore if */
+		if($elem.is(":focus"))
+			setCursorPos($elem,	oldSel.s, oldSel.e);
 	}
 
 	function ctKeyListener(view, hash, $elem) {
-		var curr = $elem.val();
 		var prev = view.prevValues[hash];
+		/* istanbul ignore if */
+		if(!($elem[0].validity || {valid:true}).valid)
+			return revertInvalid($elem, prev, view.ctCursorPos[hash]);
+		var curr = $elem.val();
 		if(curr != prev) {
 			var oldSel = view.ctCursorPos[hash];
 			var type = view.ctMap[hash];
 			var val = type.unformat(curr);
 			if(!type.validate(val)) {
-				//Revert
-				$elem.val(prev);
-				//TODO remove ignore when jsdom fixes get pushed
-				/* istanbul ignore if */
-				if($elem.is(":focus"))
-					setCursorPos($elem,	oldSel.s, oldSel.e);
+				revertInvalid($elem, prev, oldSel);
 			} else {
 				//Reformatting and such
 				//TODO remove ignore when jsdom fixes get pushed
 				/* istanbul ignore else */
-				if(!ctSpecialCaseUpdate($elem, type, oldSel, curr, prev))
-					ctReformat($elem, type, curr, type.format(val));
+				if(!ctSpecialCaseUpdate($elem, type, oldSel, curr, prev,
+																hash, view))
+					ctReformat($elem,type,curr,type.format(val),hash,view);
 
 				curr = $elem.val();
 				val = type.unformat(curr);
@@ -339,16 +385,17 @@
 		},
 		modifyTemplate: function(tmplt) {
 			var view = this;
-			return tmplt.replace(/type=["']\s*\w*\s*["']/g, function(match) {
-					var typeStr = match.slice(6, -1).trim();
+			return tmplt.replace(/type=["']\s*[^"']*\s*["']/g, function(m) {
+					var typeStr = m.slice(6, -1).trim();
 					if(customTypes[typeStr]) {
 						var type = customTypes[typeStr];
 						var hash = Fluid.utils.rndAttrName();
 						view.ctMap[hash] = type;
-						var q = match.slice(-1);
-						return ctHashAttr+"="+q+hash+q+" type="+q+type.attr+q;
+						var q = m.slice(-1);
+						return ctHashAttr + "=" + q + hash + q + " type=" +
+														q + type.attr + q;
 					} else
-						return match;
+						return m;
 			});
 		},
 		init: function() {
@@ -363,8 +410,8 @@
 				this.ctListeners[hash] = [];
 
 				//Add listeners for custom types
-				var keyListener = ctKeyListener.bind(null,this, hash, $elem);
-				var clickListener = ctLogCursor.bind(null,this, hash, $elem);
+				var keyListener = ctKeyListener.bind({}, this, hash, $elem);
+				var clickListener = ctLogCursor.bind({}, this, hash, $elem);
 				$elem.on("input", keyListener);
 				$elem.keypress(keyListener);
 				$elem.keydown(keyListener);
@@ -392,7 +439,8 @@
 		},
 		postValueProcessing: function(value, $elem) {	
 			if($elem.is(":focus"))
-				setCursorPos($elem, value.length, $elem.attr(ctHashAttr));
+				setCursorPos($elem, value.length, value.length,
+											$elem.attr(ctHashAttr), this);
 		}
 	});
 
