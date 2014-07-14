@@ -8,7 +8,7 @@ var BodyView = Fluid.compileView({
 		////////////////////////////////////////////////
 		////		Compute Basic Style Info		////
 		////////////////////////////////////////////////
-		if((activeView == consts.views.RECEIPT) && (split != null))
+		if((activeView == consts.views.RECEIPT) && (split.trgt != null))
 			activeView = " "+consts.views.SPLIT;
 		else if((err == null) && (loading != null))
 			activeView += " "+consts.views.LOADING;

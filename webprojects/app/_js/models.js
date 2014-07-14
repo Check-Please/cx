@@ -110,20 +110,20 @@ var models = models || {};
 					serviceCharge: 0, tax: 0, mods: []};
 	models.items = Fluid.newModel({a:emptyItem, b:emptyItem, c:emptyItem});
 
-	/*	Information about the element currently being split.  If nothing is
-	 *	currently being split, undefined.  Otherwise, an object with the
-	 *	following properties:
-	 *		trgt - The ID of the item being split
+	/*	Information about the element currently being split.  An object with
+	 *	the following properties:
+	 *		trgt -	The ID of the item being split.  undefined if nothing is
+	 *				being split
 	 *		name - The name of the item being split
 	 *		currNumWays - The number of ways the item is currently split
 	 *		inNumWays -	The number of ways the user has currently inputted
 	 */
-	models.split = Fluid.newModel(undefined);
+	models.split = Fluid.newModel({});
 
 	function updateSplit() {
 		var split = models.split.get();
 		var items = models.items.get();
-		if(split != null) {
+		if(split.trgt !== undefined) {
 			var n = Object.keys(items).filer(function(id) {
 				if(!id.startsWith(split.trgt+":"))
 					return false;

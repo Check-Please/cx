@@ -33,14 +33,30 @@ public class TableKey extends AbstractModelType
 {
 	protected String kindName() { return getKind(); }
 	public static String getKind() { return "table_key"; }
-
-	String restr;
-	String query;//How to find what's on this table's ticket
-	Map<String, Long> connectionStatus;
-	Map<String, List<Frac>> itemFracs;
-	Map<String, List<Long>> itemNums;
-	Map<String, List<String>> itemOwners;
+	
 	public static enum ConnectionStatus {PROCESSING, LEFT_WHILE_PROCESSING, PAID, INPUTTING, CLOSED};
+
+	private String restr;
+	private String query;//How to find what's on this table's ticket
+
+	/*	A map from client IDs to connection statuses.  If an connection ID is not in the map, it is
+	 *	either closed or never opened
+	 */
+	private Map<String, Long> connectionStatus;
+
+	/*	Items, when split between multiple users, are split into parts.  Each part contains the
+	 *	following information:
+	 *		num -	A number identifying the part.  Always a non-negative integer.  Part numbers are not
+	 *				reused for the lifetime of the item
+	 *		owner - The connection ID of the user who owns that part
+	 *		frac -	The fraction of the item which this part contains.  Can be null.  If some fraction
+	 *				are null, then amount of the item which is unaccounted for is divided evenly between
+	 *				the null fractions
+	 */
+	private Map<String, List<Long>> itemNums;
+	private Map<String, List<String>> itemOwners;
+	private Map<String, List<Frac>> itemFracs;
+
 	public TableKey(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
 	public TableKey(Entity e) { super(e); }
 
@@ -71,6 +87,10 @@ public class TableKey extends AbstractModelType
 			connectionStatus.remove(cID);
 		}
 	}
+
+	/*	Stores information on an item which can be used to later create the JSON object for the ticket
+	 *	for any connection ID
+	 */
 	private class ItemJSONInfo {
 		public JSONObject json;
 		public String id;
@@ -82,15 +102,11 @@ public class TableKey extends AbstractModelType
 		}
 	}
 
-	private void updateListeners(List<TicketItem> items, DatastoreService ds) throws JSONException
-	{
-		ChannelService channelService = ChannelServiceFactory.getChannelService();
-		List<ItemJSONInfo> ppItems = preprocessItems(items);
-		for(String cID : connectionStatus.keySet()) try {
-			channelService.sendMessage(new ChannelMessage(cID, "SET_ITEMS\n"+myGetItemsJSON(ppItems, cID)));
-		} catch(ChannelFailureException e) {}
-	}
-
+	/*	Combine ticket item information with the metadata in the table key to create the bases of the
+	 * JSON object for the ticket to send to a user
+	 *
+	 *	@see /webprojects/app/_js/models.js for a description of what the JSON object needs to look like
+	 */
 	private List<ItemJSONInfo> preprocessItems(List<TicketItem> items) throws JSONException
 	{
 		List<ItemJSONInfo> ret = new ArrayList<ItemJSONInfo>();
@@ -122,6 +138,17 @@ public class TableKey extends AbstractModelType
 		}
 		return ret;
 	}
+
+	private void updateListeners(List<TicketItem> items, DatastoreService ds) throws JSONException
+	{
+		ChannelService channelService = ChannelServiceFactory.getChannelService();
+		List<ItemJSONInfo> ppItems = preprocessItems(items);
+		for(String cID : connectionStatus.keySet()) try {
+			channelService.sendMessage(new ChannelMessage(cID, "SET_ITEMS\n"+myGetItemsJSON(ppItems, cID)));
+		} catch(ChannelFailureException e) {}
+	}
+
+
 	private JSONObject myGetItemsJSON(List<ItemJSONInfo> items, String connectionID) throws JSONException {
 		JSONObject ret = new JSONObject();
 		for(int i = 0; i < items.size(); i++) {
@@ -312,10 +339,12 @@ public class TableKey extends AbstractModelType
 			return false;
 	}
 	public void setConnectionStatus(String connectionID, ConnectionStatus status, List<TicketItem> items, DatastoreService ds) throws JSONException {
-		ConnectionStatus oldStatus = ConnectionStatus.values()[connectionStatus.get(connectionID).intValue()];
-		if((status == ConnectionStatus.CLOSED) && (oldStatus == ConnectionStatus.PROCESSING)) {
+		ConnectionStatus oldStatus = connectionStatus.containsKey(connectionID) ?
+										ConnectionStatus.values()[connectionStatus.get(connectionID).intValue()] :
+										ConnectionStatus.CLOSED;
+		if((oldStatus == ConnectionStatus.PROCESSING) && (status == ConnectionStatus.CLOSED)) {
 			status = ConnectionStatus.LEFT_WHILE_PROCESSING;
-		} else if((status == ConnectionStatus.LEFT_WHILE_PROCESSING) && (oldStatus == ConnectionStatus.INPUTTING)) {
+		} else if((oldStatus == ConnectionStatus.LEFT_WHILE_PROCESSING) && (status == ConnectionStatus.INPUTTING)) {
 			status = ConnectionStatus.CLOSED;
 		}
 
@@ -323,8 +352,8 @@ public class TableKey extends AbstractModelType
 		if(oldStatus == status)
 			return;
 
-		//Unfix fractions
-		if((status == ConnectionStatus.INPUTTING) && (status == ConnectionStatus.CLOSED))
+		//Clear fractions
+		if((status == ConnectionStatus.INPUTTING) || (status == ConnectionStatus.CLOSED))
 			for(String id : itemOwners.keySet()) {
 				List<String> owners =  itemOwners.get(id);
 				for(int i = 0; i < owners.size(); i++)
@@ -338,7 +367,7 @@ public class TableKey extends AbstractModelType
 		else {
 			connectionStatus.put(connectionID, new Long(status.ordinal()));
 			
-			//Fix fractions
+			//Set fractions
 			if(oldStatus == ConnectionStatus.INPUTTING)
 				for(String id : itemFracs.keySet()) {
 					List<Frac> fracs = itemFracs.get(id);

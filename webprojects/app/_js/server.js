@@ -23,7 +23,8 @@ var server = server || {};
 	}
 
 	server.logPos = function(viewName) {
-		send("log_pos", {position: viewName});
+		if(models.tableKey() != undefined)
+			send("log_pos", {position: viewName});
 	}
 
 	server.doSplit = function() {
