@@ -49,14 +49,24 @@ public class Client extends AbstractModelType
 	}
 	
 	/**	Decrypts ciphertext using AES and the key associated with the client
-	 *	@param ivAndCt The IV and Ciphertext
+	 *	@param	ivAndCt The IV and Ciphertext
+	 *	@param	password The password for the card.  null if no password
 	 *	@return The plaintext
 	 *	@throws HttpErrMsg if something goes wrong.  May be a 500 error or 404
+	 * @throws NoSuchAlgorithmException 
+	 * @throws InvalidKeySpecException 
 	 */
-	public String decrypt(String ivAndCt) throws HttpErrMsg
+	public String decrypt(String ivAndCt, String password) throws HttpErrMsg
 	{
 		if(key == null)
 			throw new HttpErrMsg(404, "No encryption key on hand");
+		
+		byte[] thisKey;
+		try {
+			thisKey = keyFromPassword(password);
+		} catch (Exception ex) {
+			throw new HttpErrMsg(500, "Could not make encryption key from password");
+		}
 		String [] tokens = ivAndCt.split(" ");
 		IvParameterSpec iv;
 		byte [] ct;
@@ -70,7 +80,7 @@ public class Client extends AbstractModelType
 		}
 		SecretKey s;
 	    try {
-	    	s = new SecretKeySpec(key, 0, key.length, "AES");
+	    	s = new SecretKeySpec(thisKey, 0, thisKey.length, "AES");
 	    } catch(Exception ex) {
 	    	throw new HttpErrMsg(500, "Could not load encryption key");
 	    }
@@ -97,7 +107,7 @@ public class Client extends AbstractModelType
 	/**	Makes an encryption key from a password.  Peppers the password with the base 64 encoding of key.
 	 *	If a null password is specified, simply returns key.
 	 * 
-	 *	@param	password The password to make a key from
+	 *	@param	password The password to make a key from.  null if no password
 	 *	@return	A 128-bit encryption key
 	 *	@throws	InvalidKeySpecException
 	 *	@throws	NoSuchAlgorithmException
@@ -110,14 +120,14 @@ public class Client extends AbstractModelType
     	else {
     		password += Base64.encodeBase64(key);
     		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-    		KeySpec spec = new PBEKeySpec((password+new String(Base64.encodeBase64(key))).toCharArray(), salt, 1, 128);//LOL 1 iteration why am I even using PBKDF?
+    		KeySpec spec = new PBEKeySpec((password+new String(Base64.encodeBase64(key))).toCharArray(), salt, 1, 128);//LOL 1 iteration why am I even using PBKDF2?
     		return factory.generateSecret(spec).getEncoded();
     	}
 	}
 
 	/**	Encrypts text using AES and the key associated with the client
-	 *	@param plaintext string
-	 *	@param password The password for the card
+	 *	@param	plaintext string
+	 *	@param	password The password for the card.  null if no password
 	 *	@return The The IV and Ciphertext
 	 *	@throws HttpErrMsg if something goes wrong.  May be a 500 error or 404
 	 */

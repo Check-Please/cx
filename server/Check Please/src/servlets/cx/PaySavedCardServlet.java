@@ -33,12 +33,13 @@ public class PaySavedCardServlet extends PostServletBase
 	protected void configure() {
 		config = new Configuration();
 		config.contentType = ContentType.JSON;
+		config.securityType = SecurityType.REJECT;
 		config.txnXG = true;
 		config.path = a("/", TableKey.getKind(), "tableKey");
 		config.exists = true;
 		config.path2 = a("/", Client.getKind(), "clientID");
 		config.exists2 = true;
-		config.strs = a("cardCT");
+		config.strs = a("cardCT", "?password");
 		config.longs = a("total", "tip");//NOTE: total does not include tip, both are in cents
 		config.keyNames = a("connectionID");
 	}
@@ -55,7 +56,7 @@ public class PaySavedCardServlet extends PostServletBase
 					break;
 				}
 		}
-		JSONObject card = new JSONObject(new Client(p.getEntity(1)).decrypt(cardCT));
+		JSONObject card = new JSONObject(new Client(p.getEntity(1)).decrypt(cardCT, p.getStr(1)));
 		out.println(PayNewCardServlet.pay(card.getString("pan"), card.getString("name"),
 				card.getString("expr"), null, card.getString("zip"), p.getLong(0), p.getLong(1),
 				new TableKey(p.getEntity()), p.getKeyName(0), ds));

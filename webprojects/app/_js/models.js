@@ -269,8 +269,9 @@ var models = models || {};
 	 */
 	models.error = Fluid.newModel(undefined);
 
-	window.onerror = function(err, url, num) {
-		alert("JavaScript error from "+url+":\n\n"+err+" (Line #"+num+")");
+	window.onerror = function(err, url, n) {
+		if(models.error() == undefined)
+			alert("JavaScript error from "+url+":\n\n"+err+" (Line #"+n+")");
 	}
 	models.error.listen(function() {
 		if(models.error.get() != undefined) {

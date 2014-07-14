@@ -31,7 +31,7 @@ public abstract class ServletBase extends HttpServlet
 	}
 	protected class Configuration {
 		public ContentType contentType = null;
-		public SecurityType securityType = null;
+		public SecurityType securityType = SecurityType.REJECT;
 
 		public boolean adminReq = false;
 		public boolean dsReq = true;

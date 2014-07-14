@@ -35,6 +35,17 @@ public class TableKey extends AbstractModelType
 	public static String getKind() { return "table_key"; }
 	
 	public static enum ConnectionStatus {PROCESSING, LEFT_WHILE_PROCESSING, PAID, INPUTTING, CLOSED};
+	private static ConnectionStatus parseCS(Long status)
+	{
+		if(status == null)
+			return ConnectionStatus.CLOSED;
+		else
+			return ConnectionStatus.values()[status.intValue()];
+	}
+	private static boolean beingPaid(ConnectionStatus status)
+	{
+		return (status == ConnectionStatus.PROCESSING) || (status == ConnectionStatus.LEFT_WHILE_PROCESSING) || (status == ConnectionStatus.PAID);
+	}
 
 	private String restr;
 	private String query;//How to find what's on this table's ticket
@@ -158,8 +169,7 @@ public class TableKey extends AbstractModelType
 			else if(item.owner == null)
 				item.json.put("status", 1);
 			else {
-				Long status = connectionStatus.get(item.owner);
-				if((status == ConnectionStatus.PROCESSING.ordinal()) || (status == ConnectionStatus.LEFT_WHILE_PROCESSING.ordinal()) || (status == ConnectionStatus.PAID.ordinal()))
+				if(beingPaid(parseCS(connectionStatus.get(item.owner))))
 					item.json.put("status", 3);
 				else
 					item.json.put("status", 2);
@@ -250,7 +260,7 @@ public class TableKey extends AbstractModelType
 			}
 		}
 		for(String owner : allOwners)
-			if(connectionStatus.get(owner) != ConnectionStatus.PAID.ordinal())
+			if(parseCS(connectionStatus.get(owner)) != ConnectionStatus.PAID)
 				return false;
 		return true;
 	}
@@ -306,12 +316,12 @@ public class TableKey extends AbstractModelType
 		String uuid = UUID.randomUUID().toString();
 		for(String cID : connectionStatus.keySet()) {
 			boolean close = true;
-			if(connectionStatus.get(cID) == ConnectionStatus.LEFT_WHILE_PROCESSING.ordinal())
+			if(parseCS(connectionStatus.get(cID)) == ConnectionStatus.LEFT_WHILE_PROCESSING)
 				close = !currentConnections.contains(cID) && oldConnections.contains(cID);
 			else try {
 				channelService.sendMessage(new ChannelMessage(cID, "HEARTBEAT\n"+uuid));
 				if(currentConnections.contains(cID) || (!oldConnections.contains(cID) &&
-									!(connectionStatus.get(cID) == ConnectionStatus.PAID.ordinal())))
+									!(parseCS(connectionStatus.get(cID)) == ConnectionStatus.PAID)))
 					close = false;
 			} catch(ChannelFailureException e) {}
 			if(close)
@@ -390,8 +400,8 @@ public class TableKey extends AbstractModelType
 		updateListeners(items, ds);
 	}
 	public void setOwner(String id, String connectionID, List<TicketItem> items, DatastoreService ds) throws JSONException, HttpErrMsg {
-		Long status = connectionStatus.get(connectionID);
-		if(status != ConnectionStatus.INPUTTING.ordinal())
+		ConnectionStatus status = parseCS(connectionStatus.get(connectionID));
+		if(status != ConnectionStatus.INPUTTING)
 			throw new HttpErrMsg("Cannot add items to this connection");
 		String [] tokens = id.split(":");
 		id = tokens[0];
@@ -410,8 +420,8 @@ public class TableKey extends AbstractModelType
 	}
 
 	public void checkAll(String connectionID, List<TicketItem> items, DatastoreService ds) throws JSONException, HttpErrMsg {
-		Long status = connectionStatus.get(connectionID);
-		if(status != ConnectionStatus.INPUTTING.ordinal())
+		ConnectionStatus status = parseCS(connectionStatus.get(connectionID));
+		if(status != ConnectionStatus.INPUTTING)
 			throw new HttpErrMsg("Cannot add items to this connection");
 		for(String id : itemOwners.keySet()) {
 			List<String> owners = itemOwners.get(id);
@@ -425,8 +435,8 @@ public class TableKey extends AbstractModelType
 	}
 
 	public void uncheckAll(String connectionID, List<TicketItem> items, DatastoreService ds) throws JSONException, HttpErrMsg {
-		Long status = connectionStatus.get(connectionID);
-		if(status != ConnectionStatus.INPUTTING.ordinal())
+		ConnectionStatus status = parseCS(connectionStatus.get(connectionID));
+		if(status != ConnectionStatus.INPUTTING)
 			throw new HttpErrMsg("Cannot remove items from this connection");
 		for(String id : itemOwners.keySet()) {
 			List<String> owners = itemOwners.get(id);
@@ -438,8 +448,8 @@ public class TableKey extends AbstractModelType
 	}
 
 	public void split(String id, Long nWays, String connectionID, List<TicketItem> items, DatastoreService ds) throws JSONException, HttpErrMsg {
-		Long status = connectionStatus.get(connectionID);
-		if(status != ConnectionStatus.INPUTTING.ordinal())
+		ConnectionStatus status = parseCS(connectionStatus.get(connectionID));
+		if(status != ConnectionStatus.INPUTTING)
 			throw new HttpErrMsg("Cannot split items this connection");
 		List<Integer> myParts = new ArrayList<Integer>();
 		List<Integer> theirParts = new ArrayList<Integer>();
@@ -452,7 +462,7 @@ public class TableKey extends AbstractModelType
 				myParts.add(i);
 			else if((owner == null) || (connectionStatus.get(owner) == null))
 				unownedParts.add(i);
-			else if(connectionStatus.get(owner) == ConnectionStatus.INPUTTING.ordinal())
+			else if(parseCS(connectionStatus.get(owner)) == ConnectionStatus.INPUTTING)
 				theirParts.add(i);
 		}
 

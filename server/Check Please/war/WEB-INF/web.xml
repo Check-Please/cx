@@ -255,11 +255,11 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>payNewCardServlet</servlet-name>
-		<url-pattern>/cx/pay_saved</url-pattern>
+		<url-pattern>/cx/pay_new</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>payNewCardServlet</servlet-name>
-		<url-pattern>/cx/pay_saved/</url-pattern>
+		<url-pattern>/cx/pay_new/</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>paySavedCardServlet</servlet-name>
@@ -267,11 +267,11 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>paySavedCardServlet</servlet-name>
-		<url-pattern>/cx/pay_new</url-pattern>
+		<url-pattern>/cx/pay_saved</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>paySavedCardServlet</servlet-name>
-		<url-pattern>/cx/pay_new/</url-pattern>
+		<url-pattern>/cx/pay_saved/</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>rateServlet</servlet-name>

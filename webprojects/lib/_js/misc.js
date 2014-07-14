@@ -125,7 +125,7 @@ creditCards = (function() {
 			var med = year+cent;
 			if(Math.abs(early-curr) < Math.abs(med-curr))
 				return early;
-			var late = ear+cent+100;
+			var late = early+cent+100;
 			if(Math.abs(late-curr) < Math.abs(med-curr))
 				return late;
 			return med;
@@ -133,6 +133,15 @@ creditCards = (function() {
 	}
 	function validate(pan, name, exprMonth, exprYear, cvv, zip)
 	{
+		if(arguments.length == 1) {
+			name = arguments[0].name;
+			exprMonth = arguments[0].exprMonth;
+			exprYear = arguments[0].exprYear;
+			cvv = arguments[0].cvv;
+			zip = arguments[0].zip;
+			pan = arguments[0].pan;
+		}
+
 		if(pan.length == 0)
 			return "Please enter credit card number";
 		else if(pan.length < 8)
@@ -141,10 +150,10 @@ creditCards = (function() {
 			return "Credit card number too long";
 		else if(!pan.match(/^\d+$/))
 			return "Credit card number must be a number";
-		else if(pan.match(/^(?:62|88|2014|2149)/) || //Luhn
-				pan.split('').reduce(function(sum, d, n) {
+		else if(!(pan.match(/^(?:62|88|2014|2149)/) || //Luhn
+				(pan.split('').reduce(function(sum, d, n) {
 					return sum + parseInt((n%2)?d:[0,2,4,6,8,1,3,5,7,9][d]);
-				}, 0) % 10 == 0)
+				}, 0) % 10 == 0)))
 			return "Invalid credit card number";
 		else if(name.length == 0)
 			return "Please enter card holder name";
@@ -180,6 +189,13 @@ creditCards = (function() {
 			return "Zip code should be five digits";
 		else if(!zip.match(/^\d+$/))
 			return "Zip code number must be a number";
+
+		exprYear = parseInt(getYear(exprYear));
+		exprMonth = parseInt(exprMonth);
+		var year = new Date().getYear() + 1900;
+		var month = new Date().getMonth() + 1;
+		if((year > exprYear) || ((year == exprYear) && (month > exprMonth)))
+			return "Card has expired";
 	}
 	return {types: types, format: format, getType: getType,
 			getYear: getYear, validate: validate};

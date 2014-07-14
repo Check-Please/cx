@@ -105,7 +105,7 @@ var saved = saved || {};
 		var cards = device.accData(cardsID) || [];
 		var ret = [];
 		var year = new Date().getYear() + 1900;
-		var month = new Date().getYear() + 1;
+		var month = new Date().getMonth() + 1;
 		for(var i = cards.length-1; i >= 0; i--)
 			if(		(cards[i].exprYear > year) || (
 					(cards[i].exprYear == year) &&
@@ -140,7 +140,7 @@ var saved = saved || {};
 	 */
 	saved.saveCC = function(ccInfo, ciphertext)
 	{
-		var ciphertextKey = device.makeUUID();
+		var ciphertextKey = device.makeUUID().split("-").join("");
 		var cards = device.accData(cardsID) || [];
 		cards.push({
 			lastFour: ccInfo.pan.slice(-4),

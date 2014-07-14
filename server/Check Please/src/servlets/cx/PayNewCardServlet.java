@@ -49,6 +49,7 @@ public class PayNewCardServlet extends PostServletBase
 	protected void configure() {
 		config = new Configuration();
 		config.contentType = ContentType.JSON;
+		config.securityType = SecurityType.REJECT;
 		config.txnXG = true;
 		config.path = a("/", TableKey.getKind(), "tableKey");
 		config.exists = true;
@@ -108,7 +109,7 @@ public class PayNewCardServlet extends PostServletBase
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException, HttpErrMsg
 	{
 		String pan = p.getStr(0);
-		String name = p.getStr(1);
+		String name = p.getStr(1).toUpperCase();
 		String expr = p.getStr(2);
 		String cvv = p.getStr(3);
 		String zip = p.getStr(4);

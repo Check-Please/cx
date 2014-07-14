@@ -23,8 +23,8 @@ CX
 .HeartbeatServlet, /cx/heartbeat/
 .InitServlet, /cx/init/
 .LogPositionServlet, /cx/log_pos/
-.PayNewCardServlet, /cx/pay_saved/
-.PaySavedCardServlet, /cx/pay_new/
+.PayNewCardServlet, /cx/pay_new/
+.PaySavedCardServlet, /cx/pay_saved/
 .RateServlet, /cx/rate/
 .SplitServlet, /cx/split/
 .UncheckServlet, /cx/uncheck/

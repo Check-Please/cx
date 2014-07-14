@@ -87,18 +87,19 @@ var BodyView = Fluid.compileView({
 			////////////////////////////////////////////
 			////		 Compute Other Views		////
 			////////////////////////////////////////////
+			var lastFour = null;
+			if(cardFocus == -1) {
+				if(creditCards.validate(newCardInfo) == null)
+					lastFour = newCardInfo.pan.slice(-4);
+			} else if(!cards[cardFocus].reqPass || passwords[cardFocus])
+				lastFour = cards[cardFocus].lastFour;
 			views.push(new PayView(	money.round(totals.total/100),
-									money.round(totals.totalDiscount/100),
-									money.round(totals.serviceCharge/100),
-									tipSlider, tip,
-									10000*tip/totals.tippable,
-									!cards[cardFocus] ? "(Select Card)":
-										(!cards[cardFocus].reqPass || 
-											passwords[cardFocus]) ?
-												"X-"+cards[cardFocus
-																].lastFour :
-												"(Enter Password)",
-									emHeight));
+						money.round(totals.totalDiscount/100),
+						money.round(totals.serviceCharge/100),
+						tipSlider, tip, 10000*tip/totals.tippable,
+						lastFour != null ? "X-"+lastFour : cardFocus == -1 ?
+							"(Select Card)" : "(Enter Password)",
+						emHeight));
 			views.push(new CardsView(	cardFocus, cards, passwords,
 										newCardInfo, emHeight));
 			views.push(new FeedbackView(email, feedback));

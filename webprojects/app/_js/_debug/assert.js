@@ -7,8 +7,9 @@ function assert(condition, msg) {
 		} catch(err) {
 			msg += "\n\n" + err.stack;
 			console.log(msg);
-			if(mvc.inited())
-				mvc.err(msg+"\n\n"+err.stack);
+			models.error({	heading: "Assertion Failed",
+							symbol: String.fromCharCode(215),
+							message: msg+"\n\n"+err.stack});
 			throw err;
 		}
 	}

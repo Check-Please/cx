@@ -168,6 +168,7 @@ var device = device || {};
 	function buildStorageAtopLocalData(rewriteKey)
 	{
 		return function(k, v) {
+			console.log(k);
 			{{ASSERT: k.match(/^[_0-9a-z]*$/i)}};
 			k = rewriteKey(k);
 			if(arguments.length == 1) {

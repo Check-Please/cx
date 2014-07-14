@@ -114,8 +114,27 @@ var server = server || {};
 	}
 
 	server.pay = function() {
+
+		//Get data from models and validate that we're ready to pay
+		var tip = parseInt(models.tip());
+		if(isNaN(tip))
+			return alert("Enter a tip");
+		var focus = models.cardFocus();
+		var newCC;
+		var password; //Password for saved card
+		if(focus == -1) {
+			newCC = models.newCardInfo();
+			if(creditCards.validate(newCC) != null)
+				return alert("Select a credit card");
+		} else if(models.cards()[focus].reqPass) {
+			password = models.passwords()[focus];
+			if(!password)
+				return alert("Enter card password");
+		}
+
 		models.loading({message: "Sending paymeny information"});
 
+		//Prepare data to send to server
 		var total = 0;
 		for(var id in models.items()) {
 			var item = models.items()[id];
@@ -123,26 +142,29 @@ var server = server || {};
 				total += (item.num / item.denom) * (item.price + item.tax +
 										item.serviceCarge - item.discount);
 		}
-		var payInfo = {total: Math.ceil(total/100), tip: models.tip()};
+		var payInfo = {total: Math.ceil(total/100), tip: tip};
 		var cmd = "pay_saved";
-		if(models.cardFocus() == -1) {
+		if(focus == -1) {
 			cmd = "pay_new";
-			payInfo.pan =	models.newCardInfo().pan;
-			payInfo.name =	models.newCardInfo().name;
-			payInfo.expr =	models.newCardInfo().exprYear.slice(-2) +
-							models.newCardInfo().exprMonth;
-			payInfo.cvv =	models.newCardInfo().cvv;
-			payInfo.zip =	models.newCardInfo().zip;
-			payInfo.save =	models.newCardInfo().save;
-			if(payInfo.reqPass)
-				payInfo.password = models.newCardInfo().password;
-		} else
-			payInfo.cardCT = saved.getCardCiphertext(models.cardFocus());
+			payInfo.pan =	newCC.pan;
+			payInfo.name =	newCC.name;
+			payInfo.expr =	newCC.exprYear.slice(-2) + newCC.exprMonth;
+			payInfo.cvv =	newCC.cvv;
+			payInfo.zip =	newCC.zip;
+			payInfo.save =	newCC.save;
+			if(newCC.reqPass)
+				payInfo.password = newCC.password;
+		} else {
+			payInfo.cardCT = saved.getCardCiphertext(focus);
+			if(password != null)
+				payInfo.password = password;
+		}
 
+		//Pay!
 		send(cmd, payInfo, function(data) {
 			data = JSON.parse(data);
-			if((models.cardFocus() == -1) && (models.newCardInfo().save))
-				saved.saveCC(models.newCardInfo(), data.cardCT);
+			if((focus == -1) && (newCC.save))
+				saved.saveCC(newCC, data.cardCT);
 			if(data.async)
 				models.loading({message: "Processing Payment"});
 			else {

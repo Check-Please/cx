@@ -59,9 +59,7 @@ var CardsView = Fluid.compileView({
 	updateControls: function(_, $el, fIndex, cInfo, pass, newCC) {
 		$el.find(".confirm")[0].onclick = function() {
 			if(fIndex == -1) {
-				var err = creditCards.validate(newCC.pan, newCC.name,
-											newCC.exprMonth, newCC.exprYear,
-											newCC.cvv, newCC.zip);
+				var err = creditCards.validate(newCC);
 				if(err != undefined)
 					return alert(err);
 			} else if(cInfo[fIndex] == undefined)
