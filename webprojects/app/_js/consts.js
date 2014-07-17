@@ -4,7 +4,8 @@
  */
 
 var consts = {
-	MOD_HEIGHT: 0.5
+	MOD_HEIGHT: 0.5,
+	FOCUS_DELAY: 501
 };
 
 consts.statuses = {
@@ -63,6 +64,9 @@ consts.views = {
 	LOADING: "loading",
 	ERROR: "error"
 }
+
+consts.INPUT_VIEWS = [	consts.views.RECEIPT, consts.views.PAY,
+						consts.views.CARDS];
 
 
 consts.feedback = {

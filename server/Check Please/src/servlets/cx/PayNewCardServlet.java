@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
@@ -53,11 +54,34 @@ public class PayNewCardServlet extends PostServletBase
 		config.txnXG = true;
 		config.path = a("/", TableKey.getKind(), "tableKey");
 		config.exists = true;
-		config.bools = a("save");
+		config.bools = a("save", "?protectCT");
 		config.strs = a("pan", "name", "expr", "cvv", "zip", "?password");
 		config.longs = a("total", "tip");//NOTE: total does not include tip, both are in cents
 		config.keyNames = a("connectionID", "clientID");
+		config.FORBID_RETRIES = true;
 	}
+
+	public static final String COOKIED_CT_PREFIX = "cookie:";
+
+    private static int getYear(String yearStr) {                                                                                                                                   
+    	if(yearStr.length() == 3)
+    		return Integer.parseInt("2"+yearStr);
+	    else if(yearStr.length() == 2) {
+	    	int year = Integer.parseInt(yearStr);
+	    	int curr = Calendar.getInstance().get(Calendar.YEAR);
+           	int cent = curr - (curr % 100);
+           	int early = year+cent-100;
+           	int med = year+cent;
+           	if(Math.abs(early-curr) < Math.abs(med-curr))
+           		return early;
+           	int late = early+cent+100;
+           	if(Math.abs(late-curr) < Math.abs(med-curr))
+           		return late;
+           	return med;
+	    }
+	    else
+	    	return Integer.parseInt(yearStr);
+    }                                                                                                                                                          
 
 	private void validate(String pan, String name, String expr, String cvv, String zip) throws HttpErrMsg
 	{
@@ -86,13 +110,12 @@ public class PayNewCardServlet extends PostServletBase
 		if(!expr.matches("\\d+"))
 			throw new HttpErrMsg("Expiration date is not a number");
 		Calendar date = new GregorianCalendar();
-		//TODO: The following will have Y2.1K bugs
-		int exprYear = Integer.parseInt(expr.substring(0, 2));
+		int exprYear = getYear(expr.substring(0, 2));
 		int exprMonth = Integer.parseInt(expr.substring(2, 4));
 		if((exprMonth == 0) || (exprMonth > 12))
 			throw new HttpErrMsg("No such month");
-		if((date.get(Calendar.YEAR) % 100 > exprYear) ||
-				((date.get(Calendar.YEAR) % 100 == exprYear) &&
+		if((date.get(Calendar.YEAR) > exprYear) ||
+				((date.get(Calendar.YEAR) == exprYear) &&
 					(date.get(Calendar.MONTH)+1 > exprMonth)))
 			throw new HttpErrMsg("This card has expired");
 		if((cvv.length() < 3) || (cvv.length() > 4))
@@ -124,6 +147,8 @@ public class PayNewCardServlet extends PostServletBase
 			info.put("name", name);
 			info.put("expr", expr);
 			info.put("zip", zip);
+			if(p.getStr(5) != null)
+				info.put("password", MyUtils.protectPassword(p.getStr(5)));
 			Client c;
 			try {
 				c = new Client(KeyFactory.createKey(Client.getKind(), p.getKeyName(1)), ds);
@@ -134,7 +159,17 @@ public class PayNewCardServlet extends PostServletBase
 				c.setKey();
 				c.commit(ds);
 			}
-			ret.put("cardCT", c.encrypt(info.toString(), p.getStr(5)));
+			String ciphertext = c.encrypt(info.toString());
+			if(p.getBool(1) != null && p.getBool(1)) {
+				String id = UUID.randomUUID().toString();
+				int exprYear = getYear(expr.substring(0, 2));
+				int exprMonth = Integer.parseInt(expr.substring(2, 4));
+				Calendar date = new GregorianCalendar();
+				date.set(exprYear, exprMonth, 2);//Use a 1 day buffer to deal with time zones
+				p.saveCookie(id, ciphertext, date.getTime());
+				ret.put("cardCT", COOKIED_CT_PREFIX+id);
+			} else
+				ret.put("cardCT", ciphertext);
 		}
 
 		out.println(ret.toString());
@@ -236,7 +271,6 @@ public class PayNewCardServlet extends PostServletBase
 		//Pay
 		JSONObject query = new JSONObject(table.getQuery());
 		JSONObject ret = new JSONObject();
-		config.FORBID_RETRIES = true;
 		boolean sync = payInner(query, table.getRestrUsername(), table.getKey().getName(), connectionID, pan, name, expr, zip, cvv, items, table.getPayFracs(connectionID), total, tip, ds);
 		ret.put("async", !sync);
 

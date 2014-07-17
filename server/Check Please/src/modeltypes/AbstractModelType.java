@@ -16,7 +16,7 @@ public abstract class AbstractModelType
 
 	/**	Loads an entity from the datastore.
 	 *
-	 *	@param	key	The key of the entity
+	 *	@param	symKey	The key of the entity
 	 *	@param	ds	The datastore to load from
 	 *
 	 *	@throws	EntityNotFoundException	Thrown the datastore has nothing to load

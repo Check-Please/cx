@@ -96,7 +96,7 @@ var BodyView = Fluid.compileView({
 			views.push(new PayView(	money.round(totals.total/100),
 						money.round(totals.totalDiscount/100),
 						money.round(totals.serviceCharge/100),
-						tipSlider, tip, 10000*tip/totals.tippable,
+						tipSlider, tip, 1000000*tip/totals.tippable,
 						lastFour != null ? "X-"+lastFour : cardFocus == -1 ?
 							"(Select Card)" : "(Enter Password)",
 						emHeight));

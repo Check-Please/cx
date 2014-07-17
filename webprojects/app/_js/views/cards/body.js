@@ -9,13 +9,14 @@ var CardsView = Fluid.compileView({
 	fill: function(cardFocusIndex,cardInfo,passwords,newCardInfo,emHeight) {
 		var ret = {cards_height: 0};
 		ret.newCard = new NewCardView(cardFocusIndex == -1, newCardInfo.type,
-									newCardInfo.save, newCardInfo.reqPass);
+									newCardInfo.pan.length, newCardInfo.save,
+									newCardInfo.reqPass);
 		ret.savedCards = [];
 		for(var i = 0; i < cardInfo.length; i++) {
 			var focus = i == cardFocusIndex;
 			ret.savedCards.push(new SavedCardView(i, ret.cards_height, focus,
-					cardInfo[i].type, cardInfo[i].lastFour, cardInfo[i].len),
-					cardInfo[i].reqPass);
+					cardInfo[i].type, cardInfo[i].lastFour, cardInfo[i].len,
+					cardInfo[i].reqPass));
 
 			//Height of card
 			ret.cards_height++;

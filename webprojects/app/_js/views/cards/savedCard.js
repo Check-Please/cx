@@ -11,13 +11,15 @@ var SavedCardView = Fluid.compileView({
 	fill: function(index,pos,hasFocus,cardType,lastFour,cardLen,reqPass) {
 		return {focus: hasFocus ? "focus" : "",
 				reqPass: reqPass ? "reqPass" : "",
-				type: cardType,
+				type: cardType ? cardType : "unknown",
 				position: pos,
-				pan: "XXXXXXXXXXXXXXXXXXX".substr(0, cardLen-4) + lastFour};
+				pan: creditCards.format("XXXXXXXXXXXXXXXXXXX".substr(0,
+						cardLen-4) + lastFour, cardType, "  ")};
 	},
 	listeners: function(i) {return {
 							".password input": models.passwords.sub(i)};},
-	addControlers: function($el, index) {
+	addControls: function($el, index) {
+		$el.find("a.pan").click(function() {models.cardFocus(index);});
 		$el.find(".delete a").click(saved.deleteCC.c(index));
 	}
 });

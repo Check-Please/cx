@@ -1,14 +1,17 @@
 package utils;
 
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
 
+import javax.xml.bind.DatatypeConverter;
+
 import modeltypes.AbstractModelType;
 import modeltypes.Globals;
-
-import org.apache.commons.codec.binary.Base64;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
@@ -45,56 +48,50 @@ public class MyUtils
 			rand = new Random();
 		return rand;
 	}
-/*	private static String [] firstNames = {"Sophia", "Emma", "Olivia", "Isabella", "Ava", "Lily", "Zoe", "Chloe", "Mia", "Madison", "Emily", "Ella", "Madelyn", "Abigail", "Aubrey", "Addison", "Avery", "Layla", "Hailey", "Amelia", "Hannah", "Charlotte", "Kaitlyn", "Harper", "Kaylee", "Sophie", "Mackenzie", "Peyton", "Riley", "Grace", "Brooklyn", "Sarah", "Aaliyah", "Anna", "Arianna", "Ellie", "Natalie", "Isabelle", "Lillian", "Evelyn", "Elizabeth", "Lyla", "Lucy", "Claire", "Makayla", "Kylie", "Audrey", "Maya", "Leah", "Gabriella", "Annabelle", "Savannah", "Nora", "Reagan", "Scarlett", "Samantha", "Alyssa", "Allison", "Elena", "Stella", "Alexis", "Victoria", "Aria", "Molly", "Maria", "Bailey", "Sydney", "Bella", "Mila", "Taylor", "Kayla", "Eva", "Jasmine", "Gianna", "Alexandra", "Julia", "Eliana", "Kennedy", "Brianna", "Ruby", "Lauren", "Alice", "Violet", "Kendall", "Morgan", "Caroline", "Piper", "Brooke", "Elise", "Alexa", "Sienna", "Reese", "Clara", "Paige", "Kate", "Nevaeh", "Sadie", "Quinn", "Isla", "Eleanor", "Aiden", "Jackson", "Ethan", "Liam", "Mason", "Noah", "Lucas", "Jacob", "Jayden", "Jack", "Logan", "Ryan", "Caleb", "Benjamin", "William", "Michael", "Alexander", "Elijah", "Matthew", "Dylan", "James", "Owen", "Connor", "Brayden", "Carter", "Landon", "Joshua", "Luke", "Daniel", "Gabriel", "Nicholas", "Nathan", "Oliver", "Henry", "Andrew", "Gavin", "Cameron", "Eli", "Max", "Isaac", "Evan", "Samuel", "Grayson", "Tyler", "Zachary", "Wyatt", "Joseph", "Charlie", "Hunter", "David", "Anthony", "Christian", "Colton", "Thomas", "Dominic", "Austin", "John", "Sebastian", "Cooper", "Levi", "Parker", "Isaiah", "Chase", "Blake", "Aaron", "Alex", "Adam", "Tristan", "Julian", "Jonathan", "Christopher", "Jace", "Nolan", "Miles", "Jordan", "Carson", "Colin", "Ian", "Riley", "Xavier", "Hudson", "Adrian", "Cole", "Brody", "Leo", "Jake", "Bentley", "Sean", "Jeremiah", "Asher", "Nathaniel", "Micah", "Jason", "Ryder", "Declan", "Hayden", "Brandon", "Easton", "Lincoln", "Harrison"};
-	private static String [] lastNames = {"Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor", "Anderson", "Thomas", "Jackson", "White", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Robinson", "Clark", "Rodriguez", "Lewis", "Lee", "Walker", "Hall", "Allen", "Young", "Hernandez", "King", "Wright", "Lopez", "Hill", "Scott", "Green", "Adams", "Baker", "Gonzalez", "Nelson", "Carter", "Mitchell", "Perez", "Roberts", "Turner", "Phillips", "Campbell", "Parker", "Evans", "Edwards", "Collins", "Stewart", "Sanchez", "Morris", "Rogers", "Reed", "Cook", "Morgan", "Bell", "Murphy", "Bailey", "Rivera", "Cooper", "Richardson", "Cox", "Howard", "Ward", "Torres", "Peterson", "Gray", "Ramirez", "James", "Watson", "Brooks", "Kelly", "Sanders", "Price", "Bennett", "Wood", "Barnes", "Ross", "Henderson", "Coleman", "Jenkins", "Perry", "Powell", "Long", "Patterson", "Hughes", "Flores", "Washington", "Butler", "Simmons", "Foster", "Gonzales", "Bryant", "Alexander", "Russell", "Griffin", "Diaz", "Hayes"};
-	public static String randomFirstName()
-	{
-		return firstNames[getRandom().nextInt(firstNames.length)];
-	}
-	public static String randomLastName()
-	{
-		return lastNames[getRandom().nextInt(lastNames.length)];
-	}
-*/
 
-	private static char [] alphabet64 = null;
-	public static String encode64(long val)
+	private static byte [] saltAndHash(String str, byte [] salt) throws HttpErrMsg
 	{
-		if(alphabet64 == null)
-			alphabet64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_".toCharArray();
-		return encode(val, alphabet64);
-	}
-	public static String encode(long val, char [] alphabet)
-	{
-		if(val < 0)
-			throw new IllegalArgumentException("Cannot encode negative value");
-		if(alphabet.length < 2)
-			throw new IllegalArgumentException("Cannot encode into alphabet with less than two symbols");
-		String ret = "";
-		do {
-			int d = (int) (val % alphabet.length);
-			val /= alphabet.length;
-			ret += alphabet[d];
-		} while(val > 0);
-		return ret;
-	}
-
-	/**  Runs SHA-256 on a string and returns a base 64 encoding of the hash
-	 *
-	 * @param	s The string to be encoded
-	 * @return	A base 64 encoding of the hash
-	 * @throws	HttpErrMsg if SHA-256 is somehow missing
-	 */
-	public static String sha256(String s) throws HttpErrMsg
-	{
-		MessageDigest md;
+		byte [] data = str.getBytes(Charset.forName("UTF-8"));
+		final MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("SHA-256");
 		} catch (NoSuchAlgorithmException e) {
-			throw new HttpErrMsg(500, "Encription algorithm missing");
+			throw new HttpErrMsg(500, "SHA-256 missing");
 		}
-		md.update(s.getBytes());
-		return new String(Base64.encodeBase64(md.digest()));
+		final byte [] saltyData = new byte[salt.length + data.length];
+		System.arraycopy(salt, 0, saltyData, 0, salt.length);
+		System.arraycopy(data, 0, saltyData, salt.length, data.length);
+		md.update(saltyData);
+
+		final byte [] hash = md.digest();
+		final byte [] saltyHash = new byte[salt.length + hash.length];
+		System.arraycopy(salt, 0, saltyHash, 0, salt.length);
+		System.arraycopy(hash, 0, saltyHash, salt.length, hash.length);
+		return saltyHash;
+	}
+
+	private static final int saltiness = 16;//Mmm... Salt
+
+	public static String protectPassword(String password) throws HttpErrMsg
+	{
+		final byte [] salt = new byte[saltiness];
+		try {
+			SecureRandom.getInstance("SHA1PRNG").nextBytes(salt);
+		} catch (NoSuchAlgorithmException e) {
+			throw new HttpErrMsg(500, "Cannot generate salt");
+		}
+		return DatatypeConverter.printBase64Binary(saltAndHash(password, salt));
+	}
+
+
+	public static boolean checkProtectedPassword(String password, String proPass64) throws HttpErrMsg
+	{
+		final byte [] proPass = DatatypeConverter.parseBase64Binary(proPass64);
+		final byte [] salt = new byte[saltiness];
+		if(proPass.length < salt.length)
+			return false;
+		System.arraycopy(proPass, 0, salt, 0, salt.length);
+		return Arrays.equals(proPass, saltAndHash(password, salt));
 	}
 
 	public static AbstractModelType wrapEntity(Entity e)

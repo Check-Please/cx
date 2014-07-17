@@ -1,21 +1,22 @@
 package modeltypes;
 
-import java.security.AlgorithmParameters;
+import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
+import javax.crypto.Mac;
 import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
 
 import utils.DSConverter;
 import utils.HttpErrMsg;
@@ -26,21 +27,20 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.ShortBlob;
 
-import org.apache.commons.codec.binary.Base64;
-
 public class Client extends AbstractModelType
 {
 	protected String kindName() { return getKind(); }
 	public static String getKind() { return "client"; }
 	List<String> connectionIDs;
-	byte [] key;
+	byte [] symKey;
+	byte [] authKey;
 	public Client(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
 	public Client(Entity e) { super(e); }
 	public Client(Key k)
 	{
 		setKey(k);
 		connectionIDs = new ArrayList<String>(1);
-		key = null;
+		symKey = null;
 	}
 
 	public void logConnection(String cID)
@@ -49,138 +49,161 @@ public class Client extends AbstractModelType
 	}
 	
 	/**	Decrypts ciphertext using AES and the key associated with the client
-	 *	@param	ivAndCt The IV and Ciphertext
-	 *	@param	password The password for the card.  null if no password
-	 *	@return The plaintext
+	 *	@param	digestIVAndEncMsgBase64 The auth digest, IV, and Ciphertext
+	 *	@return The plaintext or null if the key does not match the ciphertext
 	 *	@throws HttpErrMsg if something goes wrong.  May be a 500 error or 404
-	 * @throws NoSuchAlgorithmException 
-	 * @throws InvalidKeySpecException 
 	 */
-	public String decrypt(String ivAndCt, String password) throws HttpErrMsg
+	public String decrypt(final String digestIVAndEncMsgBase64) throws HttpErrMsg
 	{
-		if(key == null)
+		if(!this.hasPrivateKey())
 			throw new HttpErrMsg(404, "No encryption key on hand");
-		
-		byte[] thisKey;
-		try {
-			thisKey = keyFromPassword(password);
-		} catch (Exception ex) {
-			throw new HttpErrMsg(500, "Could not make encryption key from password");
-		}
-		String [] tokens = ivAndCt.split(" ");
-		IvParameterSpec iv;
-		byte [] ct;
-		try {
-			if(tokens.length != 2)
-				throw new Exception();
-			iv = new IvParameterSpec(Base64.decodeBase64(tokens[0].getBytes()));
-			ct = Base64.decodeBase64(tokens[1].getBytes());
-		} catch(Exception e) {
-			throw new HttpErrMsg(404, "Encrypted credit card information was malformated");
-		}
-		SecretKey s;
-	    try {
-	    	s = new SecretKeySpec(thisKey, 0, thisKey.length, "AES");
-	    } catch(Exception ex) {
-	    	throw new HttpErrMsg(500, "Could not load encryption key");
-	    }
-		Cipher cipher;
-		try {
-			cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-		} catch (Exception e) {
-	    	throw new HttpErrMsg(500, "Could not load cipher");
-		}
-		try {
-			cipher.init(Cipher.DECRYPT_MODE, s, iv);
-		} catch (InvalidKeyException e) {
-	    	throw new HttpErrMsg(500, "Encryption key corrupted");
-		} catch (InvalidAlgorithmParameterException e) {
-			throw new HttpErrMsg(404, "IV malformated");
-		}
-		try {
-			return new String(cipher.doFinal(ct));
-		} catch (Exception e) {
-			throw new HttpErrMsg(404, "Ciphertext malformated");
-		}
-	}
 
-	/**	Makes an encryption key from a password.  Peppers the password with the base 64 encoding of key.
-	 *	If a null password is specified, simply returns key.
-	 * 
-	 *	@param	password The password to make a key from.  null if no password
-	 *	@return	A 128-bit encryption key
-	 *	@throws	InvalidKeySpecException
-	 *	@throws	NoSuchAlgorithmException
-	 */
-	private static final byte [] salt = "Pepper is used instead of this shitty salt".getBytes();
-	private byte [] keyFromPassword(String password) throws InvalidKeySpecException, NoSuchAlgorithmException
-	{
-    	if(password == null)
-    		return key;
-    	else {
-    		password += Base64.encodeBase64(key);
-    		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-    		KeySpec spec = new PBEKeySpec((password+new String(Base64.encodeBase64(key))).toCharArray(), salt, 1, 128);//LOL 1 iteration why am I even using PBKDF2?
-    		return factory.generateSecret(spec).getEncoded();
-    	}
+		final SecretKey symK = new SecretKeySpec(symKey, 0, symKey.length, "AES");
+		final SecretKey authK = new SecretKeySpec(authKey, 0, authKey.length, "HmacSHA256");
+		final byte[] digestIVAndEncMsg = DatatypeConverter.parseBase64Binary(digestIVAndEncMsgBase64);
+
+		try {
+			final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+
+			//Separate digest from remainder
+			Mac mac = Mac.getInstance(authK.getAlgorithm());
+			try {
+				mac.init(authK);
+			} catch (InvalidKeyException e) {
+				throw new HttpErrMsg(500, "Invalid MAC key");
+			}
+			final byte [] digest = new byte[mac.getMacLength()];
+			if(digest.length > digestIVAndEncMsg.length)
+				throw new HttpErrMsg(404, "Couldn't decrypt card (ciphertext length incorrect)");
+			System.arraycopy(digestIVAndEncMsg, 0, digest, 0, digest.length);
+			final byte[] ivAndEncMsg = new byte[digestIVAndEncMsg.length - digest.length];
+			System.arraycopy(digestIVAndEncMsg, digest.length, ivAndEncMsg, 0, ivAndEncMsg.length);
+
+			//Check Digest
+			if(!Arrays.equals(digest, mac.doFinal(ivAndEncMsg)))
+				return null;
+
+			//Separate IV from encoded message
+			final byte[] ivData = new byte[cipher.getBlockSize()];
+			if(ivData.length > ivAndEncMsg.length)
+				throw new HttpErrMsg(404, "Couldn't decrypt card (ciphertext length incorrect)");
+			System.arraycopy(ivAndEncMsg, 0, ivData, 0, ivData.length);
+			final IvParameterSpec iv = new IvParameterSpec(ivData);
+			final byte[] endMsg = new byte[ivAndEncMsg.length - ivData.length];
+			System.arraycopy(ivAndEncMsg, ivData.length, endMsg, 0, endMsg.length);
+
+			//Decrypt
+			try {
+				cipher.init(Cipher.DECRYPT_MODE, symK, iv);
+			} catch (InvalidKeyException e) {
+				throw new HttpErrMsg(500, "Invalid encryption key");
+			} catch (InvalidAlgorithmParameterException e) {
+				throw new HttpErrMsg(404, "Couldn't decrypt card (IV malformated)");
+			}
+			final byte[] plaintext;
+			try {
+				plaintext = cipher.doFinal(endMsg);
+			} catch (BadPaddingException e) {
+				return null;
+			}
+			return new String(plaintext, Charset.forName("UTF-8"));
+		} catch (GeneralSecurityException e) {
+			throw new IllegalStateException("Unexpected exception during decryption", e);
+		}
 	}
 
 	/**	Encrypts text using AES and the key associated with the client
 	 *	@param	plaintext string
-	 *	@param	password The password for the card.  null if no password
 	 *	@return The The IV and Ciphertext
 	 *	@throws HttpErrMsg if something goes wrong.  May be a 500 error or 404
 	 */
-	public String encrypt(String plaintext, String password) throws HttpErrMsg
+	public String encrypt(final String plaintext) throws HttpErrMsg
 	{
-		if(key == null)
+		if(!this.hasPrivateKey())
 			throw new HttpErrMsg(404, "No encryption key on hand");
-	    try {
-	    	byte [] thisKey = keyFromPassword(password);
-	    	SecretKey s = new SecretKeySpec(thisKey, 0, thisKey.length, "AES");
-	    	Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-	    	cipher.init(Cipher.ENCRYPT_MODE, s);
-	    	AlgorithmParameters params = cipher.getParameters();
-	    	return	new String(Base64.encodeBase64(params.getParameterSpec(IvParameterSpec.class).getIV()))+" "+
-	    			new String(Base64.encodeBase64(cipher.doFinal(plaintext.getBytes())));
-	    } catch(Exception ex) {
-	    	throw new HttpErrMsg(500, "Could not encrypt data");
-	    }
+
+		final SecretKey symK = new SecretKeySpec(symKey, 0, symKey.length, "AES");
+		final SecretKey authK = new SecretKeySpec(authKey, 0, authKey.length, "HmacSHA256");
+		final byte[] encodedMessage = plaintext.getBytes(Charset.forName("UTF-8"));
+
+		try {
+			final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+
+			//Generate random IV using block size (possibly create a method for this)
+			final byte[] ivData = new byte[cipher.getBlockSize()];
+			SecureRandom.getInstance("SHA1PRNG").nextBytes(ivData);
+			final IvParameterSpec iv = new IvParameterSpec(ivData);
+
+			//Encrypt
+			try {
+				cipher.init(Cipher.ENCRYPT_MODE, symK, iv);
+			} catch (InvalidKeyException e) {
+				throw new HttpErrMsg(500, "Invalid encryption key");
+			}
+			final byte[] encMsg = cipher.doFinal(encodedMessage);
+
+			//Concatenate IV and encrypted message
+			final byte[] ivAndEncMsg = new byte[ivData.length + encMsg.length];
+			System.arraycopy(ivData, 0, ivAndEncMsg, 0, ivData.length);
+			System.arraycopy(encMsg, 0, ivAndEncMsg, ivData.length, encMsg.length);
+
+			//Make auth digest
+			Mac mac = Mac.getInstance(authK.getAlgorithm());
+			try {
+				mac.init(authK);
+			} catch (InvalidKeyException e) {
+				throw new HttpErrMsg(500, "Invalid MAC key");
+			}
+			final byte [] digest = mac.doFinal(ivAndEncMsg);
+
+			//Put everything together
+			final byte[] digestIVAndEncMsg = new byte[digest.length + ivAndEncMsg.length];
+			System.arraycopy(digest, 0, digestIVAndEncMsg, 0, digest.length);
+			System.arraycopy(ivAndEncMsg, 0, digestIVAndEncMsg, digest.length, ivAndEncMsg.length);
+
+			return DatatypeConverter.printBase64Binary(digestIVAndEncMsg);
+		} catch (GeneralSecurityException e) {
+			throw new IllegalStateException("Unexpected exception during encryption", e);
+		}
 	}
 
 	public boolean hasPrivateKey()
 	{
-		return key != null;
+		return (symKey != null) && (authKey != null);
 	}
 
 	public void setKey() throws HttpErrMsg
 	{
-		KeyGenerator keyGen;
 		try {
-			keyGen = KeyGenerator.getInstance("AES");
-		} catch (NoSuchAlgorithmException e) {
-			throw new HttpErrMsg(500, "Could not generate encryption key");
+			KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+			keyGen.init(128);
+			symKey = keyGen.generateKey().getEncoded();
+			authKey = KeyGenerator.getInstance("HmacSHA256").generateKey().getEncoded();
+		} catch (GeneralSecurityException e) {
+			throw new IllegalStateException("Unexpected exception during key generation", e);
 		}
-		keyGen.init(128); // for example
-		key = keyGen.generateKey().getEncoded();
 	}
 
 	public Entity toEntity()
 	{
 		Entity e = new Entity(getKey());
 		DSConverter.setList(e, "connectionIDs", connectionIDs);
-		if(key != null) {
-			e.setProperty("rsaMod", new ShortBlob(key));
+		if(hasPrivateKey()) {
+			e.setProperty("symKey", new ShortBlob(symKey));
+			e.setProperty("authKey", new ShortBlob(authKey));
 		}
 		return e;
 	}
 	public void fromEntity(Entity e)
 	{
 		connectionIDs = DSConverter.getList(e, "connectionIDs");
-		if(e.hasProperty("rsaMod")) {
-			key = ((ShortBlob) e.getProperty("rsaMod")).getBytes();
-		} else
-			key = null;
+		if(e.hasProperty("symKey") && e.hasProperty("authKey")) {
+			symKey = ((ShortBlob) e.getProperty("symKey")).getBytes();
+			authKey = ((ShortBlob) e.getProperty("authKey")).getBytes();
+		} else {
+			symKey = null;
+			authKey = null;
+		}
 	}
 }
 

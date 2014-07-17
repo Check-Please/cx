@@ -14,7 +14,14 @@ var server = server || {};
 			connectionID: models.connectionID(),
 			clientID: saved.getClientID()
 		});
+		arguments.length = Math.max(arguments.length, 4);
 		arguments[2] = arguments[2] || $.noop;
+		arguments[3] = arguments[3] || function(code, _, msg) {
+			models.error({	heading: code == 404 ?	"Bad Ajax" :
+													code+" Error",
+							symbol: String.fromCharCode(215),
+							message: msg});
+		};
 		device.ajax.send.bind(device.ajax, "cx").apply(this, arguments);
 	}
 
@@ -103,6 +110,9 @@ var server = server || {};
 
 	server.toggleItemCheck = function(itemID) {
 		var item = models.items()[itemID];
+		if(item.status == consts.statuses.PAID)
+			return;
+
 		if(item.status == consts.statuses.CHECKED) {
 			send("uncheck", {itemID: itemID});
 			item.status = consts.statuses.UNCHECKED;
@@ -114,7 +124,6 @@ var server = server || {};
 	}
 
 	server.pay = function() {
-
 		//Get data from models and validate that we're ready to pay
 		var tip = parseInt(models.tip());
 		if(isNaN(tip))
@@ -142,7 +151,8 @@ var server = server || {};
 				total += (item.num / item.denom) * (item.price + item.tax +
 										item.serviceCarge - item.discount);
 		}
-		var payInfo = {total: Math.ceil(total/100), tip: tip};
+		var payInfo = {	total: Math.ceil(total/100), tip: tip,
+						protectCT: device.putSecretsInCookies()};
 		var cmd = "pay_saved";
 		if(focus == -1) {
 			cmd = "pay_new";
@@ -155,21 +165,56 @@ var server = server || {};
 			if(newCC.reqPass)
 				payInfo.password = newCC.password;
 		} else {
-			payInfo.cardCT = saved.getCardCiphertext(focus);
+			payInfo.cardCT = models.cards()[focus].ciphertext;
 			if(password != null)
 				payInfo.password = password;
 		}
 
 		//Pay!
 		send(cmd, payInfo, function(data) {
-			data = JSON.parse(data);
-			if((focus == -1) && (newCC.save))
-				saved.saveCC(newCC, data.cardCT);
-			if(data.async)
-				models.loading({message: "Processing Payment"});
-			else {
-				models.validViews([consts.views.FEEDBACK]);
+			data = data.trim();
+			if(/^\w+$/i.test(data)) {
+				models.activeView(consts.views.CARDS);
 				models.loading(undefined);
+				if(data.startsWith("PASSWORD_")) {
+					var $pass = $(".focus.saved.card .password input");
+					$pass.val("");
+					$pass.change();//Trigger listeners
+					var focusTime = new Date().getTime()+consts.FOCUS_DELAY;
+					if(data == "PASSWORD_NO_REQ")
+						alert("The card you picked doesn't need a password");
+					else if(data == "PASSWORD_REQ")
+						alert("The card you selected requires a password");
+					else
+						alert("The password you entered is incorrect");
+					setTimeout(function() {
+						$pass.focus();
+					}, Math.max(0, focusTime - new Date().getTime()));
+				} else if(data.startsWith("KEY_")) {
+					saved.deleteCCs();
+					//This one is too complicated to explain...
+					alert("Please re-enter credit card information");
+				} else {
+					saved.deleteCC(models.cardFocus());
+					if(data == "NO_CIPHERTEXT")
+						alert(	"Saved credit card information partially "+
+								"missing.  Please use a different card or "+
+								"re-enter information.");
+					else
+						alert(	"Saved credit card information corrupted.  "+
+								"Please use a different card or re-enter "+
+								"information.");
+				}
+			} else {
+				data = JSON.parse(data);
+				if((focus == -1) && (newCC.save))
+					saved.saveCC(newCC, data.cardCT);
+				if(data.async)
+					models.loading({message: "Processing Payment"});
+				else {
+					models.validViews([consts.views.FEEDBACK]);
+					models.loading(undefined);
+				}
 			}
 		}, function(code, _, msg) {
 			models.error({	heading: "Couldn't pay",
@@ -188,16 +233,4 @@ var server = server || {};
 		send("rate", {rating: rating});
 		models.feedback(rating);
 	}
-
-	var unloading = false;
-	window.onunload = window.onbeforeunload = function() {
-		if(!unloading) {
-			unloading = true;
-			device.ajax.send("cx", "close", {
-				tableKey: models.tableKey(),
-				connectionID: models.connectionID(),
-				clientID: saved.getClientID()
-			});
-		}
-	};
 })();

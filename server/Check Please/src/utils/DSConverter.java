@@ -160,7 +160,9 @@ public class DSConverter {
 			public Object rawGet(String k) { return g.rawGet(k); }
 			public Object get(String k)
 			{
-				return new Frac((Long) g.get(k+numSfx), (Long) g.get(k+denomSfx));
+				Long num = (Long) g.get(k+numSfx);
+				Long denom = (Long) g.get(k+denomSfx);
+				return (num == null || denom == null) ? null : new Frac(num, denom);
 			}
 		};
 	}
@@ -172,11 +174,15 @@ public class DSConverter {
 			public Object rawGet(String k) { return g.rawGet(k); }
 			public Object get(String k) { return g.get(k); }
 			public void set(String k, Object v) {
-				if(!(v instanceof Frac))
-					throw new IllegalArgumentException("Frac setter must set fracs");
-				Frac f = (Frac) v;
-				s.set(k+numSfx, f.getNum());
-				s.set(k+denomSfx, f.getDenom());
+				if(v == null)
+					rmv(k);
+				else {
+					if(!(v instanceof Frac))
+						throw new IllegalArgumentException("Frac setter must set fracs");
+					Frac f = (Frac) v;
+					s.set(k+numSfx, f.getNum());
+					s.set(k+denomSfx, f.getDenom());
+				}
 			}
 			public void set(String k, Object v, Object meta) {set(k,v);}
 			public void rmv(String k) {

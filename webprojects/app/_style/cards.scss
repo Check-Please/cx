@@ -31,7 +31,7 @@
 				left: 2.5em;
 			}
 		}
-		.new.card a:after { 
+		.new.card > a:after { 
 			@include thin-line();
 			bottom: -1px;
 			left: 2.5em;
@@ -41,15 +41,23 @@
 
 	.card {
 		background: $blur-color;
+		position: absolute;
+		left: 0px;
+		right: 0px;
+		width: 100%;
 		height: 1em;
+		&.new { bottom: 0px; }
 		overflow: hidden;
 		@include transitionAll();
 
 		&.focus {
 			background: $focus-color;
-			a { cursor: default; }
+			& > a { cursor: default; }
 
-			&.saved.reqPass { height: 2em; }
+			&.saved {
+				height: 2em;
+				&.reqPass { height: 3em; }
+			}
 			&.new {
 				height: 7em;
 				&.save {
@@ -70,6 +78,26 @@
 		position: relative;
 		display: block;
 		text-align: right;
+	}
+
+	.list .saved.card {
+		.password { display: none; }
+		&.reqPass .password { display: block; }
+		.delete a {
+			background: $btn-color;
+			color: $btn-text-color;
+			display: inline-block;
+			padding: 0.4em 0.6em;
+			border-radius: 0.4em;
+			font-size: 0.8em;
+			position: absolute;
+			right: 1em;
+			height: 1.2em;
+			line-height: 1.2em;
+			top: 0px;
+			bottom: 0px;
+			margin: auto;
+		}
 	}
 
 	.list .card p, .list .card div {
@@ -103,7 +131,19 @@
 	}
 
 	/* Icons */
-	.list .card a, .list .card .pan {
+	.list .new.card a.new:before {
+		content: '+';
+		position: absolute;
+		font-size: 1.5em;
+		left: 0.5em;
+		top: 0.5em;
+		width: 0.66667em;
+		height: 0.45em;
+		line-height: 0.45em;
+		text-align: center;
+		font-weight: 100;
+	}
+	.list .card .pan {
 		&:before, &:after {
 			position: absolute;
 			width: 1.3em;
@@ -152,18 +192,6 @@
 			top: 1em;
 			height: 0.15em;
 			background: $text-color;
-		}
-
-		&.new:before {
-			content: '+';
-			font-size: 1.5em;
-			left: 0.5em;
-			top: 0.5em;
-			width: 0.66667em;
-			height: 0.45em;
-			line-height: 0.45em;
-			text-align: center;
-			font-weight: 100;
 		}
 	}
 

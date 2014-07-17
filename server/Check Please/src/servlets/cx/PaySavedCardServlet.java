@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import com.google.appengine.api.datastore.DatastoreService;
 
 import utils.HttpErrMsg;
+import utils.MyUtils;
 import utils.ParamWrapper;
 import utils.PostServletBase;
 import static utils.MyUtils.a;
@@ -42,22 +43,50 @@ public class PaySavedCardServlet extends PostServletBase
 		config.strs = a("cardCT", "?password");
 		config.longs = a("total", "tip");//NOTE: total does not include tip, both are in cents
 		config.keyNames = a("connectionID");
+		config.FORBID_RETRIES = true;
 	}
 
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException, HttpErrMsg
 	{
 		String cardCT = p.getStr(0);
-		if(cardCT.startsWith("cookie:")) {
-			cardCT = cardCT.substring(7);
+		String error = null;
+		if(cardCT.startsWith(PayNewCardServlet.COOKIED_CT_PREFIX)) {
+			String name = cardCT.substring(PayNewCardServlet.COOKIED_CT_PREFIX.length());
+			cardCT = null;
 			Cookie [] cookies = p.getCookies();
-			for(int i = 0; i < cookies.length; i++)
-				if(cookies[i].getName() == cardCT) {
+			for(int i = 0; i < cookies.length; i++) {
+				if(name.equals(cookies[i].getName())) {
 					cardCT = cookies[i].getValue();
 					break;
 				}
+			}
+			if(cardCT == null)
+				error = "NO_CIPHERTEXT";
 		}
-		JSONObject card = new JSONObject(new Client(p.getEntity(1)).decrypt(cardCT, p.getStr(1)));
-		out.println(PayNewCardServlet.pay(card.getString("pan"), card.getString("name"),
+		
+		JSONObject card = null;
+		try {
+			String plaintext = new Client(p.getEntity(1)).decrypt(cardCT);
+			if(plaintext == null) {
+				error = "KEY_INCORRECT";
+			} else {
+				card = new JSONObject(plaintext);
+				if(p.getStr(1) == null) {
+					if(card.has("password"))
+						error = "PASSWORD_NO_REQ";
+				} if(card.has("password")) {
+					if(!MyUtils.checkProtectedPassword(p.getStr(1), card.getString("password")))
+						error = "PASSWORD_INCORRECT";
+				} else
+					error = "PASSWORD_REQ";
+			}
+		} catch(JSONException ex) {
+			error = "PLAINTEXT_MALFORMATTED";
+		}
+		if(error != null)
+			out.println(error);
+		else
+			out.println(PayNewCardServlet.pay(card.getString("pan"), card.getString("name"),
 				card.getString("expr"), null, card.getString("zip"), p.getLong(0), p.getLong(1),
 				new TableKey(p.getEntity()), p.getKeyName(0), ds));
 	}

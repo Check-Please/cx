@@ -1,5 +1,6 @@
 package utils;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
@@ -39,5 +40,7 @@ public interface ParamWrapper
 
 	public String getQueryString();
 	public String getChannelID() throws IOException;
+
 	public Cookie[] getCookies();
+	public void saveCookie(String name, String value, Date expiry);
 }

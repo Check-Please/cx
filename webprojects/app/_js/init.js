@@ -68,8 +68,10 @@ window.onload = function() {
 				models.items(data.items);
 				if(data.deleteCCs)
 					saved.deleteCCs();
-				else
+				else {
 					models.cards(saved.getCCs());
+					models.cardFocus(0);
+				}
 			}
 			models.loading(undefined);
 		}, function() {
@@ -79,6 +81,7 @@ window.onload = function() {
 			models.loading({message: "Getting Order",
 							percent: rs*25, incrTo: (rs+1)*25-1});
 		});
+		models.cards(saved.getCCs());
 	});
 
 	if(device.getDebugID() != null) {

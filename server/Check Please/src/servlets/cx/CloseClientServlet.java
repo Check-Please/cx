@@ -8,13 +8,11 @@ import javax.servlet.http.HttpSession;
 import modeltypes.ClosedUserConnection;
 import modeltypes.ConnectionToTablePointer;
 import modeltypes.TableKey;
-import modeltypes.UserConnection;
 
 import org.json.JSONException;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 import utils.HttpErrMsg;
@@ -56,17 +54,9 @@ public class CloseClientServlet extends PostServletBase
 		try {
 			ConnectionToTablePointer ptr = new ConnectionToTablePointer(KeyFactory.createKey(ConnectionToTablePointer.getKind(), cID), ds);
 
-			Key tKey = KeyFactory.createKey(TableKey.getKind(), ptr.getKeyName());
-			TableKey table = new TableKey(tKey, ds);
+			TableKey table = new TableKey(KeyFactory.createKey(TableKey.getKind(), ptr.getKeyName()), ds);
 			table.setConnectionStatus(cID, TableKey.ConnectionStatus.CLOSED, TicketItem.getItems(table, ds), ds);
 			table.commit(ds);
-
-			UserConnection uc = new UserConnection(tKey.getChild(UserConnection.getKind(), cID), ds);
-			new ClosedUserConnection(table.getRestrUsername(), uc, cause, errMsg).commit(ds);
-			uc.rmv(ds);
-
-			ds.delete(ptr.getKey());
-
 			return true;
 		} catch (EntityNotFoundException e) {
 			return false;//We must have deleted the client already

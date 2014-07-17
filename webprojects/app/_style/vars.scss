@@ -29,12 +29,20 @@ $thumb-color: #FFFFFF;
 
 $trans-time: 0.5s;
 
+@mixin transitionColor()
+{
+	-webkit-transition: color $trans-time, background $trans-time;
+	-moz-transition: color $trans-time, background $trans-time;
+	-o-transition: color $trans-time, background $trans-time;
+	transition: color $trans-time, background $trans-time;
+}
+
 @mixin transitionPos()
 {
-		-webkit-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
-		-moz-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
-		-o-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
-		transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
+	-webkit-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
+	-moz-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
+	-o-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
+	transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time;
 	.noTrans & {
 		-webkit-transition: none;
 		-moz-transition: none;

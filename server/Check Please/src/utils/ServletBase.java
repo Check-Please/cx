@@ -95,7 +95,7 @@ public abstract class ServletBase extends HttpServlet
 			throw new IllegalStateException("Transaction must be cross-group, but isn't required");
 	}
 
-	private static String admin_pass_sha256 = "n1c0TSkuq2RQ+qQLUCn+mg/Pga7Hfc40K8kdQqG2N40=";//There are over 100 bits of entropy in the source password.  Attempt to reverse the hash as your own risk.
+	private static String admin_pass_hash = "sxAARoUS0bJ7+cgv7UMvp3EdiJ5rTnsQZM8Xcwxnh2fNtOEBXIcEAKeSCXGzNpGm";
 	public static String admin_pass_key = "fVCvW8";
 
 	public void do____Wrapper(HttpServletRequest req, HttpServletResponse resp) throws IOException
@@ -141,7 +141,7 @@ public abstract class ServletBase extends HttpServlet
 			if(config.adminReq) {
 				if(req.getSession().getAttribute(admin_pass_key) == null)
 					throw new HttpErrMsg("No admin login");
-				if(!MyUtils.sha256(req.getSession().getAttribute(admin_pass_key).toString()).equals(admin_pass_sha256))
+				if(!MyUtils.checkProtectedPassword(req.getSession().getAttribute(admin_pass_key).toString(), admin_pass_hash))
 					throw new HttpErrMsg("Incorrect admin password");
 			}
 			int numRetries = MAX_RETRIES;
@@ -214,10 +214,13 @@ public abstract class ServletBase extends HttpServlet
 						doReq(l, req.getSession(), ds, resp);
 						if(config.txnReq && !config.readOnly)
 							txn.commit();
+						l.saveCookies(resp, req.isSecure());
 						success = true;
 					} catch(ConcurrentModificationException e) {
 						if(numRetries-- == 0 || config.FORBID_RETRIES)
 							throw e;
+						else
+							l.reset();
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();

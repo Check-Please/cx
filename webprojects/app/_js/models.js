@@ -33,9 +33,7 @@ var models = models || {};
 
 	/**	A list of possible views to nagivate to given the current state.
 	 *	Values come from consts.views */
-	models.validViews = Fluid.newModel([	consts.views.RECEIPT,
-											consts.views.PAY,
-											consts.views.CARDS]);
+	models.validViews = Fluid.newModel(consts.INPUT_VIEWS);
 
 	/**	The view currently being shown.  Should be an element of
 	 *	models.validViews.  If it isn't, the first value in models.validViews
@@ -45,13 +43,15 @@ var models = models || {};
 	window.onhashchange = function() {
 		var hash = (window.location.hash || "").slice(1);
 		if(models.validViews.get().indexOf(hash) == -1)
-			hash = models.validViews.get()[0];
+			window.location.hash = "#"+(hash = models.validViews.get()[0]);
 		if(models.activeView.get() != hash)
 			models.activeView.set(hash);
 	}
 	models.activeView.listen(function() {
-		server.logPos(models.activeView());
-		var hash = "#"+models.activeView();
+		var view = models.activeView();
+		if(consts.INPUT_VIEWS.indexOf(view) != -1)
+			server.logPos(view);
+		var hash = "#"+view;
 		if(hash != window.location.hash)
 			window.location.hash = hash;
 		
@@ -163,7 +163,7 @@ var models = models || {};
 			var items = models.items.get();
 			for(var i in items) {
 				var item = items[i];
-				if(item.type == consts.statuses.CHECKED) {
+				if(item.status == consts.statuses.CHECKED) {
 					tippable += (item.price + item.tax) *
 								(item.denom ? (item.num||0)/item.denom : 1);
 					for(var j = 0; j < item.mods.length; j++)
@@ -188,6 +188,19 @@ var models = models || {};
 	 *		reqPass:	If a password is required to use this card
 	 */
 	models.cards = Fluid.newModel([]);
+
+	/**	Which card is currently selected.  -1 means the user is entering a
+	 *	new card  */
+	models.cardFocus = Fluid.newModel(-1);
+
+	function updateFocusIndex() {
+		var len = models.cards().length;
+		if(models.cardFocus() >= len)
+			models.cardFocus(len-1);
+	}
+
+	models.cards.listen(updateFocusIndex);
+	models.cardFocus.listen(updateFocusIndex);
 
 	/**	A list of passwords that have been entered for each saved card */
 	models.passwords = Fluid.newModel([]);
@@ -214,10 +227,6 @@ var models = models || {};
 						"0"+info.exprMonth : info.exprMonth.substr(0,2);
 		//No need to alert() because this is the first listener
 	});
-
-	/**	Which card is currently selected.  -1 means the user is entering a
-	 *	new card  */
-	models.cardFocus = Fluid.newModel(-1);
 
 	//=======================================================================
 	//  Feedback View Info
@@ -277,6 +286,7 @@ var models = models || {};
 		if(models.error.get() != undefined) {
 			models.loading(undefined);
 			models.validViews.set([consts.views.ERROR]);
+			window.onunload();
 		}
 	});
 

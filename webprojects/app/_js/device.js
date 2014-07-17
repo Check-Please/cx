@@ -212,18 +212,9 @@ var device = device || {};
 	 */
 	device.accData = buildStorageAtopLocalData(op.p.c("acc::"));
 
-	/**	Store a secret in the most secure way possible.  Need not be
-	 *	accessible client side.  Stores information in accData which can be
-	 *	used by the server to determine the secret.
-	 *
-	 *	@param	key	The key to find the information for the server at
-	 *	@param	secret The secret to store
+	/**	Indicates if it is better to use accData or HttpOnly secure cookies
 	 */
-	device.storeSecret = function(key, secret) {
-		var uuid = device.makeUUID();
-		device.accData(key, "cookie:"+uuid);
-		window.document.cookie = uuid+"="+secret+"; secure; HttpOnly";
-	}
+	device.putSecretsInCookies = op.id.c(true);
 
 	/**	Local storage for general purpose data
 	 *

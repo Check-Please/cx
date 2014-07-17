@@ -12,11 +12,9 @@ import javax.servlet.http.HttpSession;
 
 import modeltypes.BluetoothIDToRestaurantPointer;
 import modeltypes.Client;
-import modeltypes.ConnectionToTablePointer;
 import modeltypes.Globals;
 import modeltypes.Restaurant;
 import modeltypes.TableKey;
-import modeltypes.UserConnection;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -186,10 +184,11 @@ public class InitServlet extends PostServletBase
 				err(ERR__EMPTY_TICKET, out);
 				return;
 			}
-			if(table.initMetadata(items, ds))
-				table.commit(ds);
+			table.initMetadata(items, ds);
 			String connectionID = UUID.randomUUID().toString();
-			new ConnectionToTablePointer(KeyFactory.createKey(ConnectionToTablePointer.getKind(), connectionID), tableKey).commit(ds);
+			table.newConnection(connectionID, p.getStr(1), items, ds);
+			table.commit(ds);
+
 			String token = ChannelServiceFactory.getChannelService().createChannel(connectionID);
 			Client c;
 			try {
@@ -205,7 +204,6 @@ public class InitServlet extends PostServletBase
 				newClientKey = true;
 			}
 			c.commit(ds);
-			new UserConnection(table.getKey().getChild(UserConnection.getKind(), connectionID), p.getStr(1)).commit(ds);
 
 			JSONObject ret = new JSONObject();
 			ret.put("tKey", tableKey);

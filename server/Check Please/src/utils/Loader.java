@@ -1,11 +1,15 @@
 package utils;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import modeltypes.Globals;
 
@@ -41,7 +45,11 @@ public class Loader implements ParamWrapper
 	private List<List<List<String>>> keyName2DLists;
 	private List<Key> keys;
 	private List<Entity> entities;
-	
+
+	private List<String> newCookieNames;
+	private List<String> newCookieValues;
+	private List<Date> newCookieExpiries;
+
 	public Loader(HttpServletRequest req)
 	{
 		init(req, null);
@@ -57,6 +65,13 @@ public class Loader implements ParamWrapper
 		this.req = req;
 		if(ds != null)
 			setDS(ds);
+		reset();
+	}
+
+	public void reset() {
+		newCookieNames = new ArrayList<String>();
+		newCookieValues = new ArrayList<String>();
+		newCookieExpiries = new ArrayList<Date>();
 		keys = new ArrayList<Key>();
 		entities = new ArrayList<Entity>();
 	}
@@ -464,6 +479,22 @@ public class Loader implements ParamWrapper
 	public Cookie[] getCookies()
 	{
 		return req.getCookies();
+	}
+
+	public void saveCookie(String name, String value, Date expiry)
+	{
+		newCookieNames.add(name);
+		newCookieValues.add(value);
+		newCookieExpiries.add(expiry);
+	}
+
+	public void saveCookies(HttpServletResponse resp, boolean secure)
+	{
+		DateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z");
+		for(int i = 0; i < newCookieNames.size(); i++)
+			resp.addHeader("Set-Cookie", newCookieNames.get(i)+"="+newCookieValues.get(i)+
+					"; expires="+dateFormat.format(newCookieExpiries.get(i))+
+					"; path=/"+(secure ? "; secure" : "")+"; HttpOnly");
 	}
 
 	  ///////////////////////////////////////////////////////////

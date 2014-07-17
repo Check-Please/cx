@@ -29,11 +29,11 @@ public abstract class AbstractAccount extends AbstractModelType
 	}
 	public void setPassword(String password) throws HttpErrMsg
 	{
-		this.passwordHASH = MyUtils.sha256(password);
+		this.passwordHASH = MyUtils.protectPassword(password);
 	}
 	public boolean checkPassword(String password) throws HttpErrMsg
 	{
-		return this.passwordHASH.equals(MyUtils.sha256(password));
+		return MyUtils.checkProtectedPassword(password, this.passwordHASH);
 	}
 	public String makePasswordResetKey()
 	{

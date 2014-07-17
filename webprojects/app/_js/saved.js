@@ -114,10 +114,12 @@ var saved = saved || {};
 					type: cards[i].type,
 					lastFour: cards[i].lastFour,
 					len: cards[i].len,
-					reqPass: cards[i].reqPass
+					reqPass: cards[i].reqPass,
+					ciphertext: cards[i].ciphertext
 				});
 			else
 				cards.splice(i, 1);
+		cards.reverse();
 		device.accData(cardsID, cards);
 		return ret;
 	}
@@ -126,7 +128,7 @@ var saved = saved || {};
 	{
 		var ret = 0;
 		for(var i = 0; i < str.length; i++)
-			ret = (ret + str.charCodeAt(i)) % 5;
+			ret = (2*ret + str.charCodeAt(i)) % 5;
 		return ret;
 	}
 
@@ -140,20 +142,20 @@ var saved = saved || {};
 	 */
 	saved.saveCC = function(ccInfo, ciphertext)
 	{
-		var ciphertextKey = device.makeUUID().split("-").join("");
 		var cards = device.accData(cardsID) || [];
+		var month = parseInt(ccInfo.exprMonth);
+		var year = creditCards.getYear(ccInfo.exprYear);
 		cards.push({
 			lastFour: ccInfo.pan.slice(-4),
 			len: ccInfo.pan.length,
 			type: ccInfo.type,
 			reqPass: ccInfo.reqPass,
-			exprMonth: ccInfo.exprMonth,
-			exprYear: creditCards.getYear(ccInfo.exprMonth),
-			ciphertextKey: ciphertextKey,
+			exprMonth: month,
+			exprYear: year,
+			ciphertext: ciphertext,
 			passMod5: strMod5(ccInfo.password)
 		});
 		device.accData(cardsID, cards);
-		device.storeSecret(ciphertextKey, ciphertext);
 		models.cards(saved.getCCs());
 	}
 
@@ -171,17 +173,6 @@ var saved = saved || {};
 		return cards[index].passMod5 == strMod5(pass);
 	}
 
-
-	/**	Get the ciphertext for the card at a given index.  Need not match
-	 *	the ciphertext passed to saved.saveCC(), but must be comprehensible
-	 *	to the sever
-	 *
-	 *	@param	index The index of the card to get the ciphertext for
-	 */
-	saved.getCardCiphertext = function(index)
-	{
-		return device.accData(device.accData(cardsID)[index].ciphertextKey);
-	}
 
 	/**	Logs that a credit card has just been used
 	 *

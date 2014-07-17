@@ -31,7 +31,7 @@ var PayView = Fluid.compileView({
 				tipPrct < 100 ? (Math.floor(tipPrct * 10) / 10)+"%" :
 				tipPrct < 1000 ? Math.floor(tipPrct) +"%" :
 				tipPrct < 10000 ? (Math.floor(tipPrct / 10) / 10)+"x" :
-				tipPrct < 100000 ? Math.floor(tipPrct)+"x" : "Thank You!";
+				tipPrct < 100000 ? Math.floor(tipPrct /100)+"x":"Thank You!";
 		var ret = {
 			price: money.toStr(price),
 			notes:	!discount && !sc	? new TaxTipNoteView()		:
@@ -64,7 +64,13 @@ var PayView = Fluid.compileView({
 	listeners: {".tip .value input": models.tip},
 	addControls: function($el) {
 		$el.find("> .back").click(models.activeView.c(consts.views.RECEIPT));
-		$el.find(".card").click(models.activeView.c(consts.views.CARDS));
+		$el.find(".card").click(function() {
+			models.activeView(consts.views.CARDS);
+			setTimeout(function() {
+				$(	"#cards-view .focus.saved.card .password input").add(
+					"#cards-view .focus.new.card .pan input").focus();
+			}, consts.FOCUS_DELAY);
+		});
 
 		$el.find(".tip .slider .small").click(function() {
 			models.tipSlider.set(consts.tipSlider.SMALL_TIP);
@@ -87,7 +93,7 @@ var PayView = Fluid.compileView({
 			if($el.parent().hasClass("h130"))
 				setFocus();
 			else
-				setTimeout(setFocus, 600);
+				setTimeout(setFocus, consts.FOCUS_DELAY);
 		});
 		$el.find(".tip .value .back").click(function() {
 			models.tipSlider.set(consts.tipSlider.MED_TIP);
