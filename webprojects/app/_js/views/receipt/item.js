@@ -34,7 +34,8 @@ var ReceiptItemView = Fluid.compileView({
 		if(consts.SUMMARY_NAMES[type] == undefined) {
 			$el.find(".checkbox").click(server.toggleItemCheck.c(id));
 			$el.find(".split").click(function() {
-				models.split({trgt: id.split(":")[0]});
+				models.split({trgt: models.funs.splitID(id)[0]});
+				$("#split-view input").focus();
 			});
 		}
 	}

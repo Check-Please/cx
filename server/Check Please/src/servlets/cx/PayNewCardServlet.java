@@ -6,17 +6,13 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
 import modeltypes.Client;
-import modeltypes.ClosedUserConnection;
-import modeltypes.ConnectionToTablePointer;
-import modeltypes.Restaurant;
+import modeltypes.Globals;
 import modeltypes.TableKey;
 import modeltypes.TableKey.ConnectionStatus;
-import modeltypes.UserConnection;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,15 +51,13 @@ public class PayNewCardServlet extends PostServletBase
 		config.path = a("/", TableKey.getKind(), "tableKey");
 		config.exists = true;
 		config.bools = a("save", "?protectCT");
-		config.strs = a("pan", "name", "expr", "cvv", "zip", "?password");
+		config.strs = a("pan", "name", "expr", "cvv", "zip", "?password", "cookieID");
 		config.longs = a("total", "tip");//NOTE: total does not include tip, both are in cents
 		config.keyNames = a("connectionID", "clientID");
 		config.FORBID_RETRIES = true;
 	}
 
-	public static final String COOKIED_CT_PREFIX = "cookie:";
-
-    private static int getYear(String yearStr) {                                                                                                                                   
+	private static int getYear(String yearStr) {                                                                                                                                   
     	if(yearStr.length() == 3)
     		return Integer.parseInt("2"+yearStr);
 	    else if(yearStr.length() == 2) {
@@ -161,13 +155,14 @@ public class PayNewCardServlet extends PostServletBase
 			}
 			String ciphertext = c.encrypt(info.toString());
 			if(p.getBool(1) != null && p.getBool(1)) {
-				String id = UUID.randomUUID().toString();
 				int exprYear = getYear(expr.substring(0, 2));
 				int exprMonth = Integer.parseInt(expr.substring(2, 4));
 				Calendar date = new GregorianCalendar();
 				date.set(exprYear, exprMonth, 2);//Use a 1 day buffer to deal with time zones
-				p.saveCookie(id, ciphertext, date.getTime());
-				ret.put("cardCT", COOKIED_CT_PREFIX+id);
+				p.saveCookie(	Globals.CARD_CT_COOKIE,
+								ciphertext.substring(0, Globals.COOKIE_CARD_CT_LEN),
+								"/cx/pay_saved/"+p.getStr(6), date.getTime());
+				ret.put("cardCT", Globals.COOKIED_CARD_CT_PREFIX+ciphertext.substring(Globals.COOKIE_CARD_CT_LEN));
 			} else
 				ret.put("cardCT", ciphertext);
 		}
@@ -206,39 +201,6 @@ public class PayNewCardServlet extends PostServletBase
 			throw new HttpErrMsg("Unknown query method");
 	}
 
-	/*	Closes the connection without sending a split update
-	 *
-	 *	@param	table The table key
-	 *	@param	connectionID The ID for the connection of the user who made this payment
-	 *	@param	tip	The tip the client paid
-	 *	@param	ds The datastore
-	 */
-	private static void closeConnection(TableKey table, String connectionID, long tip, DatastoreService ds) throws JSONException, HttpErrMsg
-	{
-		ds.delete(KeyFactory.createKey(ConnectionToTablePointer.getKind(), connectionID));
-		UserConnection uc = new UserConnection(MyUtils.get_NoFail(table.getKey().getChild(UserConnection.getKind(), connectionID), ds));
-		ClosedUserConnection cuc = new ClosedUserConnection(table.getRestrUsername(), uc, ClosedUserConnection.CLOSE_CAUSE__PAID);
-		cuc.setTip(tip);
-		cuc.commit(ds);
-		uc.rmv(ds);
-	}
-
-	/*	Reopens a connection
-	 *
-	 *	This is called in case the client was closed for an asyncronous payment which later failed.
-	 *
-	 *	@param	table The table key
-	 *	@param	connectionID The ID for the connection of the user who made the failed payment
-	 *	@param	ds The datastore
-	 */
-	private static void reopenConnection(TableKey table, String connectionID, DatastoreService ds)
-	{
-		new ConnectionToTablePointer(KeyFactory.createKey(ConnectionToTablePointer.getKind(), connectionID), table.getKey().getName()).commit(ds);
-		ClosedUserConnection cuc = new ClosedUserConnection(MyUtils.get_NoFail(KeyFactory.createKey(Restaurant.getKind(), table.getRestrUsername()).getChild(ClosedUserConnection.getKind(), connectionID), ds));
-		new UserConnection(table, cuc).commit(ds);
-		cuc.rmv(ds);
-	}
-
 	/**	Pays
 	 *
 	 *	@param	pan The card number
@@ -265,7 +227,7 @@ public class PayNewCardServlet extends PostServletBase
 		} catch (UnsupportedFeatureException e) {
 			throw new HttpErrMsg(e.getMessage());
 		}
-		if(total != table.getTotalToPay(items, connectionID))
+		if(total.longValue() != table.getTotalToPay(items, connectionID))
 			throw new HttpErrMsg("Please reload the app");
 
 		//Pay
@@ -274,13 +236,16 @@ public class PayNewCardServlet extends PostServletBase
 		boolean sync = payInner(query, table.getRestrUsername(), table.getKey().getName(), connectionID, pan, name, expr, zip, cvv, items, table.getPayFracs(connectionID), total, tip, ds);
 		ret.put("async", !sync);
 
-		closeConnection(table, connectionID, tip, ds);
 		if(sync) {
 			table.setConnectionStatus(connectionID, ConnectionStatus.PAID, TicketItem.getItems(table, ds), ds);
-			ret.put("done", table.isPaid());
+			boolean paid = table.isPaid();
+			if(paid)
+				table.clearMetadata();
+			ret.put("done", paid);
 		} else {
 			table.setConnectionStatus(connectionID, ConnectionStatus.PROCESSING, TicketItem.getItems(table, ds), ds);
 		}
+		table.commit(ds);
 
 		return ret;
 	}
@@ -299,6 +264,8 @@ public class PayNewCardServlet extends PostServletBase
 	{
 		ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(connectionID, "PAYMENT_SUCCESS"));
 		table.setConnectionStatus(connectionID, ConnectionStatus.PAID, TicketItem.getItems(table, ds), ds);
+		if(table.isPaid())
+			table.clearMetadata();
 		table.commit(ds);
 	}
 
@@ -314,7 +281,6 @@ public class PayNewCardServlet extends PostServletBase
 	 */
 	public static void paymentFailureCallback(TableKey table, String connectionID, String msg, DatastoreService ds) throws JSONException, HttpErrMsg
 	{
-		reopenConnection(table, connectionID, ds);
 		ChannelServiceFactory.getChannelService().sendMessage(new ChannelMessage(connectionID, "PAYMENT_ERROR\n"+msg));
 		table.setConnectionStatus(connectionID, ConnectionStatus.INPUTTING, TicketItem.getItems(table, ds), ds);
 		table.commit(ds);

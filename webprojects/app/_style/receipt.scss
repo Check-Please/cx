@@ -104,7 +104,7 @@
 				top: 25%;
 				right: 30%;
 
-				background: url("../../img/redesign/receipt/split-icon.svg");
+				background: url("../img/app/split-icon.svg");
 				background-size: 75%;
 				background-position: 50% 0px;
 				background-repeat: no-repeat;
@@ -161,12 +161,12 @@
 		}
 
 		&.checked .checkbox:before {
-			background: url("../../img/redesign/receipt/checked_box.svg");
+			background: url("../img/app/checked_box.svg");
 			background-size: 100%;
 		}
 
 		&.unchecked .checkbox:before {
-			background: url("../../img/redesign/receipt/unchecked_box.svg");
+			background: url("../img/app/unchecked_box.svg");
 			background-size: 100%;
 			@include opacity($unchecked-opacity);
 		}
@@ -198,15 +198,14 @@
 			}
 		}
 
-		&.taken {
-			.checkbox:before {
-				content: "Taken";
-				color: $taken-color;
-			}
+		&.taken .checkbox:before {
+			content: "Taken";
+			color: $taken-color;
 		}
 
-		&.paid {
-			.checkbox:before {
+		&.paid .checkbox {
+			cursor: default;
+			&:before {
 				content: "Paid";
 				color: $paid-color;
 			}
@@ -223,7 +222,7 @@
 	a.all, a.none {
 		display: inline-block;
 		font-size: 0.4em;
-		margin: 0px #{$side-width / 0.4};
+		margin: 0px ($side-width / 0.4);
 		width: calc(50% - 3.75em);
 		height: 2em;
 		line-height: 2em;
@@ -248,7 +247,7 @@
 
 	.summary {
 		margin-top: 2em;
-		.split {
+		.split, .checkbox {
 			display: none;
 		}
 	}

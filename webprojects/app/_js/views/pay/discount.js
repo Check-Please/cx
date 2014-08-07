@@ -3,6 +3,6 @@ var DiscountView = Fluid.compileView({
 	/*	@param	discount The discount in cents
 	 */
 	fill: function(discount) {
-		return {discount: discount?money.toStr(-discount).substr(1):"$0.00"};
+		return {discount: money.toStr(-(discount || 0)).substr(1)};
 	}
 });

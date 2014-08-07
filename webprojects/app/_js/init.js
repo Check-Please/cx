@@ -1,4 +1,4 @@
-window.onload = function() {
+$(document).ready(function() {
 	"use strict";
 
 	// SSL
@@ -9,25 +9,17 @@ window.onload = function() {
 
 	// ERROR MESSAGES
 	var SERVER_ERROR = {
-		0: {heading: "No Table Info", symbol: "?",
-			message: "Couldn't find information about where you're sitting"},
-		1: {heading: "Invalid Table", symbol: "!",
-			message: "Couldn't find information about where you're sitting"},
-		2: {heading: "Empty", symbol: String.fromCharCode(216),
-			message: "There are no unpaid items at this table"},
-		5: {heading: "Update", symbol: String.fromCharCode(10227), 
-			message: "The app needs to be updated"},
-		6: {heading: "Disabled", symbol: String.fromCharCode(215),
-			message: "The app is currently disabled"},
-		500:{heading:"Server Error", symbol: String.fromCharCode(215),
-			message: "Something went wrong with on server"}
+		0: text.getError("NO_TABLE_INFO", "?"),
+		1: text.getError("INVALID_TABLE", "!"),
+		2: text.getError("EMPTY_TABLE"),
+		5: text.getError("UPDATE_REQ", String.fromCharCode(10227)),
+		6: text.getError("APP_DISABLED"),
+		500: text.getError("500_ERROR")
 	};
 	var GET_TABLE_ERRORS = {
 		0: SERVER_ERROR[0],
-		1: {heading: "Bluetooth disabled", symbol: String.fromCharCode(215),
-			message: "Turn on bluetooth to use this app"},
-		2: {heading: "Bluetooth error", symbol: String.fromCharCode(215),
-			message: "Make sure bluetooth is enabled and working"}
+		1: text.getError("BLUETOOTH_DISABLED"),
+		2: text.getError("BLUETOOTH_ERROR")
 	}
 
 	// RENDER
@@ -37,15 +29,16 @@ window.onload = function() {
 		models.height, models.items, models.split, models.tipSlider,
 		models.tip, models.cards, models.passwords, models.newCardInfo,
 		models.cardFocus, models.email, models.feedback, models.loading,
-		models.error, models.allowLandscape);
+		models.error, models.done, models.allowLandscape);
 
-	models.loading({message: "Getting Order"});
+	models.loading({message: text.GETTING_ORDER_LOAD_MSG});
 	inParallel([device.getTableInfo, device.getPos, device.loadData],
 	function(tInfo, pos) {
 		if(tInfo[0] == null) {
 			models.error(GET_TABLE_ERRORS[tInfo[1]] || {
-				heading: "Can't find you", symbol: String.fromCharCode(9889),
-				message:tInfo[2]||"Can't get data on where you're sitting"});
+				heading: text.NO_LOCATION_DATA_HDG,
+				symbol: String.fromCharCode(9889),
+				message: tInfo[2] || text.NO_LOCATION_DATA_MSG});
 			return;
 		}
 		device.ajax.send("cx", "init", {
@@ -75,10 +68,9 @@ window.onload = function() {
 			}
 			models.loading(undefined);
 		}, function() {
-			models.error({heading: "Couldn't load", symbol: "!",
-				message: "Couldn't get your order from the server"});
+			models.error(text.getError("LOADING_ORDER_ERROR", "!"));
 		}, function(rs) {
-			models.loading({message: "Getting Order",
+			models.loading({message: text.GETTING_ORDER_LOAD_MSG,
 							percent: rs*25, incrTo: (rs+1)*25-1});
 		});
 		models.cards(saved.getCCs());
@@ -90,4 +82,4 @@ window.onload = function() {
 				"http://jsconsole.com/remote.js?"+device.getDebugID());
 		$("head").append($script);
 	}
-}
+});

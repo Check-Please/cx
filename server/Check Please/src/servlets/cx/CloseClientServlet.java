@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import modeltypes.ClosedUserConnection;
+import modeltypes.Globals;
 import modeltypes.ConnectionToTablePointer;
 import modeltypes.TableKey;
 
@@ -41,9 +41,9 @@ public class CloseClientServlet extends PostServletBase
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException, HttpErrMsg
 	{
 		if(p.getStr(0) == null)
-			closeChannel(p.getKeyName(0), ClosedUserConnection.CLOSE_CAUSE__CLIENT_CLOSE, ds);
+			closeChannel(p.getKeyName(0), Globals.CLOSE_CAUSE__CLIENT_CLOSE, ds);
 		else 
-			closeChannel(p.getKeyName(0), ClosedUserConnection.CLOSE_CAUSE__ERROR, p.getStr(0), ds);
+			closeChannel(p.getKeyName(0), Globals.CLOSE_CAUSE__ERROR, p.getStr(0), ds);
 	}
 	public static boolean closeChannel(String cID, long cause, DatastoreService ds) throws JSONException, HttpErrMsg
 	{

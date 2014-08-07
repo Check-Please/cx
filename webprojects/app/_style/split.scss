@@ -1,0 +1,61 @@
+@import "../../_ignore/main.scss";
+@import "vars.scss";
+
+#split-view .wrapper {
+	$font-ratio: 0.5;
+	$padding: 1em;
+	$spacing: ($padding / 2);
+	$in-v-padding: 0.2em;
+	$btn-width: 5em;
+	height: 3*$line-height + 2*$spacing + 2*$in-v-padding + $btn-height;
+	padding: $padding 0px;
+	p {
+		line-height: $line-height;
+		height: $line-height*2;
+		overflow: hidden;
+		padding: 0px $padding;
+		margin: 0px 0px $spacing 0px;
+	}
+	.input {
+		width: 100%;
+		height: $line-height + 2*$in-v-padding;
+		position: relative;
+
+		input {
+			font-size: 1em;
+			border: 0px;
+			padding: 0.2em $padding;
+			width: calc(100% - #{2*$padding});
+			height: $line-height;
+			line-height: $line-height;
+		}
+
+		&:before {
+			@include thin-line(bottom);
+			top: -1px;
+		}
+		&:after {
+			@include thin-line();
+			bottom: -1px;
+		}
+	}
+	.confirm, .cancel {
+		position: absolute;
+		bottom: ($padding / $btn-font-size) * 1em;
+		width: $btn-width;
+		margin: 0px;
+	}
+	.confirm {
+		right: ($padding / $btn-font-size) * 1em;
+	}
+	.cancel {
+		right: $btn-width+(($padding+$spacing) / $btn-font-size) * 1em;
+		height: $btn-height;
+		line-height: $btn-height;
+		@include border-radius($btn-border-radius);
+		font-size: $btn-font-size;
+		color: $btn-text-color;
+		background: grayscale($btn-color);
+		text-align: center;
+	}
+}

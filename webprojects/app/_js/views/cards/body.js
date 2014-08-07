@@ -64,12 +64,12 @@ var CardsView = Fluid.compileView({
 				if(err != undefined)
 					return alert(err);
 			} else if(cInfo[fIndex] == undefined)
-				return alert("Please select a card");
+				return alert(text.PICK_CARD_ALERT);
 			else if(cInfo[fIndex].reqPass) {
 				if((pass[fIndex] || "").length == 0)
-					return alert("Please enter card password");
+					return alert(text.ENTER_CARD_NUM_ALERT);
 				if(!saved.quickCheckCCPass(fIndex, pass[fIndex]))
-					return alert("Incorrect password");
+					return alert(text.PASSWORD_QCHECK_FAIL);
 			}
 			models.activeView.set(consts.views.PAY);
 		}

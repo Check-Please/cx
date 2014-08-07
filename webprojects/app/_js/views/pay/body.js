@@ -27,11 +27,13 @@ var PayView = Fluid.compileView({
 			}).join("; ");
 		};
 
-		var tipMsg = !parseFloat(tip) ? "0%" : isNaN(tipPrct) ? "Thank you!":
+		var tipMsg = !parseFloat(tip) ? "0%" : isNaN(tipPrct) ?
+					text.TIP_ON_ZERO :
 				tipPrct < 100 ? (Math.floor(tipPrct * 10) / 10)+"%" :
 				tipPrct < 1000 ? Math.floor(tipPrct) +"%" :
 				tipPrct < 10000 ? (Math.floor(tipPrct / 10) / 10)+"x" :
-				tipPrct < 100000 ? Math.floor(tipPrct /100)+"x":"Thank You!";
+				tipPrct < 100000 ? Math.floor(tipPrct /100)+"x" :
+					text.GIANT_TIP;
 		var ret = {
 			price: money.toStr(price),
 			notes:	!discount && !sc	? new TaxTipNoteView()		:

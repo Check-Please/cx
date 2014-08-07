@@ -47,6 +47,7 @@ public class Loader implements ParamWrapper
 	private List<Entity> entities;
 
 	private List<String> newCookieNames;
+	private List<String> newCookiePaths;
 	private List<String> newCookieValues;
 	private List<Date> newCookieExpiries;
 
@@ -71,6 +72,7 @@ public class Loader implements ParamWrapper
 	public void reset() {
 		newCookieNames = new ArrayList<String>();
 		newCookieValues = new ArrayList<String>();
+		newCookiePaths = new ArrayList<String>();
 		newCookieExpiries = new ArrayList<Date>();
 		keys = new ArrayList<Key>();
 		entities = new ArrayList<Entity>();
@@ -476,15 +478,21 @@ public class Loader implements ParamWrapper
 		return ChannelServiceFactory.getChannelService().parsePresence(req).clientId();
 	}
 
+	public String getPath()
+	{
+		return req.getRequestURI();
+	}
+
 	public Cookie[] getCookies()
 	{
 		return req.getCookies();
 	}
 
-	public void saveCookie(String name, String value, Date expiry)
+	public void saveCookie(String name, String value, String path, Date expiry)
 	{
 		newCookieNames.add(name);
 		newCookieValues.add(value);
+		newCookiePaths.add(path);
 		newCookieExpiries.add(expiry);
 	}
 
@@ -494,7 +502,7 @@ public class Loader implements ParamWrapper
 		for(int i = 0; i < newCookieNames.size(); i++)
 			resp.addHeader("Set-Cookie", newCookieNames.get(i)+"="+newCookieValues.get(i)+
 					"; expires="+dateFormat.format(newCookieExpiries.get(i))+
-					"; path=/"+(secure ? "; secure" : "")+"; HttpOnly");
+					"; path="+newCookiePaths.get(i)+"; HttpOnly"+(secure ? "; secure" : ""));
 	}
 
 	  ///////////////////////////////////////////////////////////

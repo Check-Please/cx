@@ -7,7 +7,7 @@ var LoadingView = Fluid.compileView({
 		if(message == null)
 			return {};
 		else
-			return {message: message,
+			return {message: message || text.LOADING_DONE,
 					percent: percent == null ? "" : percent,
 					hide_percent: percent == null ? "hide" : ""};
 	}

@@ -5,15 +5,11 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import modeltypes.ClosedUserConnection;
-import modeltypes.Restaurant;
 import modeltypes.TableKey;
 
 import org.json.JSONException;
 
 import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.KeyFactory;
 
 import utils.ParamWrapper;
 import utils.PostServletBase;
@@ -40,16 +36,6 @@ public class RateServlet extends PostServletBase
 	}
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException
 	{
-		TableKey table = new TableKey(p.getEntity());
-		try {
-			ClosedUserConnection c = new ClosedUserConnection(
-				KeyFactory.createKey(Restaurant.getKind(),
-					table.getRestrUsername()).getChild(ClosedUserConnection.getKind(),
-						p.getKeyName(0)), ds);
-			c.setRating(p.getLong(0));
-			c.commit(ds);
-		} catch (EntityNotFoundException e) {
-			// There's nothing we can do with their rating really
-		}
+		//TODO
 	}
 }

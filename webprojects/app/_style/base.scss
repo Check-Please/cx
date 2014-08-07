@@ -29,14 +29,14 @@ body {
 
 .confirm {
 	display: block;
-	margin: $side-width/0.8;
-	height: 2em;
-	line-height: 2em;
+	margin: ($side-width/$btn-font-size)*1em;
+	height: $btn-height;
+	line-height: $btn-height;
 	text-align: center;
 	background: $btn-color;
 	color: $btn-text-color;
-	@include border-radius(0.3em);
-	font-size: 0.8em;
+	@include border-radius($btn-border-radius);
+	font-size: $btn-font-size;
 	@include transitionColor();
 	&.disabled {
 		background: $disabled-btn-color;

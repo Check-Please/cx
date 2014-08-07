@@ -3,12 +3,14 @@ var FeedbackView = Fluid.compileView({
 	/*	@param	email See documentation for models.email
 	 *	@param	feedback See documentation for models.feedback	
 	 */
-	fill: function(email, feedback) {
-		var ret = {sent: email ? "sent" : "", email: email || ""};
+	fill: function(email, feedback, done) {
+		var ret = {	sent: email ? "sent" : "", email: email || "",
+					finished: done ? "finished" : "unfinished"};
 		for(var rating in consts.feedback) {
-			ret[rating.toLowerCase()+"_rating"] = consts.feedback[rating];
+			var val = consts.feedback[rating];
+			ret[rating.toLowerCase()+"_rating"] = val;
 			ret[rating.toLowerCase()+"_focus"] =
-										feedback == rating ? " focus" : "";
+				feedback == null ? "" : feedback == val ? "focus" : "blur";
 		}
 		return ret;
 	},
@@ -18,12 +20,13 @@ var FeedbackView = Fluid.compileView({
 			if(isEmail(email))
 				server.sendEmail(email);
 			else
-				alert("Please enter a valid email address");
+				alert(text.INVALID_EMAIL_ALERT);
 		});
 		//We don't use event delegation because the UI does weird stuff
 		//on iOS with event delegation & it's not super valuable here
 		$el.find(".feedback a").click(function() {
 			server.sendRating($(this).attr("rating"));
 		});
+		$el.find(".confirm").click(function() {window.location.reload();});
 	}
 });

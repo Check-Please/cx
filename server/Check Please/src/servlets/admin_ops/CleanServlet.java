@@ -40,7 +40,7 @@ public class CleanServlet extends GetServletBase
 		TableKey m;
 		try {
 			m = new TableKey(KeyFactory.createKey(TableKey.getKind(), "IKA"),ds);
-			m.clearMetadata(ds);
+			m.clearMetadata();
 			m.commit(ds);
 			for(Entity e : ds.prepare(new Query(ConnectionToTablePointer.getKind())).asIterable(FetchOptions.Builder.withLimit(1000)))
 				ds.delete(e.getKey());

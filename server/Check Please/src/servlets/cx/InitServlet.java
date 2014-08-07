@@ -184,7 +184,7 @@ public class InitServlet extends PostServletBase
 				err(ERR__EMPTY_TICKET, out);
 				return;
 			}
-			table.initMetadata(items, ds);
+			table.initMetadata(items);
 			String connectionID = UUID.randomUUID().toString();
 			table.newConnection(connectionID, p.getStr(1), items, ds);
 			table.commit(ds);

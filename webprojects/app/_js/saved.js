@@ -119,8 +119,8 @@ var saved = saved || {};
 				});
 			else
 				cards.splice(i, 1);
-		cards.reverse();
 		device.accData(cardsID, cards);
+		ret.reverse();
 		return ret;
 	}
 
@@ -139,13 +139,14 @@ var saved = saved || {};
 	 *	@param	ciphertext	Encrypted credit card information provided by the
 	 *						server.  Need not be accessible client side in
 	 *						the future.
+	 *	@param	cookieID ID used by server to set cookies for this card
 	 */
-	saved.saveCC = function(ccInfo, ciphertext)
+	saved.saveCC = function(ccInfo, ciphertext, cookieID)
 	{
 		var cards = device.accData(cardsID) || [];
 		var month = parseInt(ccInfo.exprMonth);
 		var year = creditCards.getYear(ccInfo.exprYear);
-		cards.push({
+		cards.unshift({
 			lastFour: ccInfo.pan.slice(-4),
 			len: ccInfo.pan.length,
 			type: ccInfo.type,
@@ -153,7 +154,8 @@ var saved = saved || {};
 			exprMonth: month,
 			exprYear: year,
 			ciphertext: ciphertext,
-			passMod5: strMod5(ccInfo.password)
+			passMod5: strMod5(ccInfo.password),
+			cookieID: cookieID
 		});
 		device.accData(cardsID, cards);
 		models.cards(saved.getCCs());
@@ -173,7 +175,6 @@ var saved = saved || {};
 		return cards[index].passMod5 == strMod5(pass);
 	}
 
-
 	/**	Logs that a credit card has just been used
 	 *
 	 *	@param	index The index of the card which was just used
@@ -181,8 +182,15 @@ var saved = saved || {};
 	saved.logCCUse = function(index)
 	{
 		var cards = device.accData(cardsID) || [];
-		cards.unshift(cards.splice(index, 1));
+		cards.unshift(cards.splice(index, 1)[0]);
 		device.accData(cardsID, cards);
+
+		//Update models
+		var focus = models.cardFocus();
+		if(focus == index)
+			models.cardFocus(index);
+		else((focus != -1) && (focus < index))
+			models.cardFocus(focus+1);
 		models.cards(saved.getCCs());
 	}
 
@@ -204,5 +212,26 @@ var saved = saved || {};
 	{
 		device.accData(cardsID, []);
 		models.cards([]);
+	}
+
+	/**	Get ID used by server to set cookies for the card
+	 */
+	saved.getCCCookieID = function(index)
+	{
+		return ((device.accData(cardsID) || [])[index] || {}).cookieID;
+	}
+
+	/**	Get the smallest possible cookie ID not yet used
+	 */
+	saved.newCCCookieID = function()
+	{
+		var cards = device.accData(cardsID) || [];
+		var taken = {};
+		for(var i = 0; i < cards.length; i++)
+			taken[parseInt(cards[i].cookieID, 36)] = true;
+		var n = 0;
+		while(taken[n])
+			n++;
+		return n.toString(36);
 	}
 })();

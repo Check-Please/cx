@@ -6,7 +6,8 @@ var ErrorView = Fluid.compileView({
 	 *	@param	emHeight Ten times the height in em
 	 */
 	fill: function(heading, message, symbol, emHeight) {
-		return {heading: heading, message: message, symbol: symbol,
+		return {heading: heading, message: message,
+				symbol: symbol != null ? symbol : String.fromCharCode(216),
 				font_ratio: Math.min(1, emHeight/60)};
 	},
 	addControls: function($el) {

@@ -40,7 +40,8 @@ public interface ParamWrapper
 
 	public String getQueryString();
 	public String getChannelID() throws IOException;
+	public String getPath();
 
 	public Cookie[] getCookies();
-	public void saveCookie(String name, String value, Date expiry);
+	public void saveCookie(String name, String value, String path, Date expiry);
 }

@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpSession;
 
 import modeltypes.TableKey;
-import modeltypes.UserConnection;
 
 import com.google.appengine.api.datastore.DatastoreService;
 
@@ -27,14 +26,12 @@ public class LogPositionServlet extends PostServletBase
 	}
 	protected void configure() {
 		config = new Configuration();
-		config.path = a("/", TableKey.getKind(), "tableKey", UserConnection.getKind(), "connectionID");
+		config.path = a("/", TableKey.getKind(), "tableKey");
 		config.exists = true;
-		config.strs = a("position");
+		config.strs = a("position", "connectionID");
 	}
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException
 	{
-		UserConnection c = new UserConnection(p.getEntity());
-		c.logPosition(p.getStr(0));
-		c.commit(ds);
+		//TODO
 	}
 }

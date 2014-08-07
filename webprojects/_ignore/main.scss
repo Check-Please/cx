@@ -109,36 +109,16 @@
 		}
 	}
 	@include prefixed($cmd, $a);
-	@if not $evenOnFlat { .platform-wp &, .platform-iOS & {
-		@include prefixed($cmd, none);
-	}; };
 }
 
 
 
 @mixin border-radius($x, $evenOnWP:false) {
 	@include prefixed(border-radius, $x);
-	@if not $evenOnWP { .platform-wp & {
-		@include prefixed(border-radius, 0px);
-	}; };
 }
 
 @mixin background-gradient($angle, $color1, $offset1, $color2 ,$offset2:100, $color3:null, $offset3:100, $color4:null, $offset4:100, $color5:null, $offset5:100){
 	@include background-gradient-inner($angle, $color1, $offset1, $color2, $offset2, $color3, $offset3, $color4, $offset4, $color5, $offset5);
-	.platform-wp & {
-		$c: $color1;
-		@if $angle == bottom {
-			$c: $color2;
-		}
-		background: #{'#'+$c};
-	}
-	.platform-iOS & {
-		$offset2: 2 * $offset2;
-		$offset3: 2 * $offset3;
-		$offset4: 2 * $offset4;
-		$offset5: 2 * $offset5;
-		@include background-gradient-inner($angle, $color1, $offset1, $color2, $offset2, $color3, $offset3, $color4, $offset4, $color5, $offset5);
-	}
 }
 
 @mixin background-gradient-inner($angle, $color1, $offset1, $color2, $offset2:100, $color3:null, $offset3:100, $color4:null, $offset4:100, $color5:null, $offset5:100){
@@ -211,11 +191,6 @@
 	border: 1px solid rgba(0,0,0,0.1);
 	text-shadow: 1px 1px rgba(0,0,0,0.3);
 	@include box-shadow(inset 0px 1px 1px rgba(255,255,255,0.5));
-	.platform-iOS &, .platform-wp & {
-		border: none;
-		@if not $protectMargin { margin: 1px; }
-		text-shadow: 0px 0px rgba(0,0,0,0);
-	}
 }
 
 @mixin btn-gradients($a, $b, $c, $d)
@@ -293,17 +268,9 @@
 }
 
 @mixin helvetica() {
-	font-family: HelveticaNeueLTPro-Roman, HelveticaNeueLTPro-Md, "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+	font-family: "Helvetica Neue", HelveticaNeue, Helvetica, "Helvetica Neue LT", HelveticaNeueLT, "Helvetica Neue Pro", HelveticaNeuePro, "Helvetica Neue LT Pro", HelveticaNeueLTPro, HelveticaNeueLTPro-Roman, "Source Sans Pro", Arial, "Lucida Grande", sans-serif;
 }
 
-@mixin helvetica-md() {
-	font-family: HelveticaNeueLTPro-Md, "Helvetica Neue", Helvetica, 'Segoe UI', Arial, "Lucida Grande", sans-serif;
-}
-
-
-@mixin helvetica-roman() {
-	font-family: HelveticaNeueLTPro-Roman, "Helvetica Neue", Helvetica, 'Segoe UI', Arial, "Lucida Grande", sans-serif;
-}
 
 @mixin arial() {
 	font-family: Arial, "Lucida Grande", sans-serif;

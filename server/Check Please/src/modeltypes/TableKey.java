@@ -3,8 +3,10 @@ package modeltypes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,11 +25,14 @@ import com.google.appengine.api.channel.ChannelFailureException;
 import com.google.appengine.api.channel.ChannelMessage;
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Transaction;
 
 public class TableKey extends AbstractModelType
 {
@@ -54,6 +59,8 @@ public class TableKey extends AbstractModelType
 	 *	either closed or never opened
 	 */
 	private Map<String, Long> connectionStatus;
+	private Map<String, Long> connectionExpr;
+	private Set<String> deadConnections;
 
 	/*	Items, when split between multiple users, are split into parts.  Each part contains the
 	 *	following information:
@@ -68,6 +75,11 @@ public class TableKey extends AbstractModelType
 	private Map<String, List<String>> itemOwners;
 	private Map<String, List<Frac>> itemFracs;
 
+	private static List<Long> defaultNums = Arrays.asList((Long)0L);
+	private static List<String> defaultOwners = Arrays.asList((String)null);
+	private static List<Frac> defaultFracs = Arrays.asList((Frac)null);
+
+	
 	public TableKey(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
 	public TableKey(Entity e) { super(e); }
 
@@ -76,7 +88,9 @@ public class TableKey extends AbstractModelType
 		setKey(k);
 		this.restr = restr;
 		this.query = query;
+		deadConnections = new HashSet<String>();
 		connectionStatus = new HashMap<String, Long>();
+		connectionExpr = new HashMap<String, Long>();
 		itemFracs = new HashMap<String, List<Frac>>();
 		itemNums = new HashMap<String, List<Long>>();
 		itemOwners = new HashMap<String, List<String>>();
@@ -85,22 +99,86 @@ public class TableKey extends AbstractModelType
 	//-------------------
 	//| PRIVATE METHODS |
 	//-------------------
-	private void removeConnection(String cID, DatastoreService ds)
+	private void closeDeadConnections()
 	{
-		try {
-			UserConnection uc = new UserConnection(this.getKey().getChild(UserConnection.getKind(), cID), ds);
-			new ClosedUserConnection(this.getRestrUsername(), uc, ClosedUserConnection.CLOSE_CAUSE__TICKET_CLOSED, null).commit(ds);
-			uc.rmv(ds);
-		} catch (EntityNotFoundException e) {}//Must already be gone
-		ds.delete(KeyFactory.createKey(ConnectionToTablePointer.getKind(), cID));
-		connectionStatus.remove(cID);
+		AsyncDatastoreService ds = DatastoreServiceFactory.getAsyncDatastoreService();
+		Iterator<String> iter = deadConnections.iterator();
+		while(iter.hasNext()) {
+			ds.delete((Transaction)null, KeyFactory.createKey(ConnectionToTablePointer.getKind(), iter.next()));
+			iter.remove();
+		}
 	}
-	private void removeConnections(Set<String> connections, DatastoreService ds)
+	private void mySetConnectionStatus(String connectionID, ConnectionStatus status, boolean force)
 	{
-		for(String cID : connections)
-			removeConnection(cID, ds);
-	}
+		ConnectionStatus oldStatus = parseCS(connectionStatus.get(connectionID));
+		switch(oldStatus) {
+			case INPUTTING: break;
+			case PROCESSING:
+				if(status == ConnectionStatus.CLOSED)
+					status = ConnectionStatus.LEFT_WHILE_PROCESSING;
+				break;
+			case LEFT_WHILE_PROCESSING: switch(status) {
+					case CLOSED:
+						if(force)
+							break;
+					case PROCESSING:
+						status = ConnectionStatus.LEFT_WHILE_PROCESSING;
+						break;
+					case INPUTTING:
+						status = ConnectionStatus.CLOSED;
+						break;
+					default:
+						break;
+				} break;
+			case PAID:
+				if(!((status == ConnectionStatus.CLOSED) && force))
+					status = ConnectionStatus.PAID;
+				break;
+			case CLOSED: status = ConnectionStatus.CLOSED; break;
+		}
 
+		//Ignore redundant updates
+		if(oldStatus == status)
+			return;
+
+		//Clear fractions
+		if((status == ConnectionStatus.INPUTTING) || (status == ConnectionStatus.CLOSED))
+			for(String id : itemOwners.keySet()) {
+				List<String> owners =  itemOwners.get(id);
+				for(int i = 0; i < owners.size(); i++)
+					if(connectionID.equals(owners.get(i)))
+						itemFracs.get(id).set(i, null);
+			}
+
+		//Actually set the status
+		if(status == ConnectionStatus.CLOSED) {
+			deadConnections.add(connectionID);
+			connectionStatus.remove(connectionID);
+			connectionExpr.remove(connectionID);
+		} else {
+			connectionStatus.put(connectionID, new Long(status.ordinal()));
+			
+			//Set fractions
+			if(oldStatus == ConnectionStatus.INPUTTING)
+				for(String id : itemFracs.keySet()) {
+					List<Frac> fracs = itemFracs.get(id);
+					Frac fillIn = Frac.ONE;
+					Long denom = 0L;
+					for(Frac f : fracs)
+						if(f == null)
+							denom++;
+						else
+							fillIn = fillIn.sub(f);
+					if(denom > 0L) {
+						fillIn = fillIn.div(denom);
+						List<String> owners =  itemOwners.get(id);
+						for(int i = 0; i < owners.size(); i++)
+							if(connectionID.equals(owners.get(i)) && (fracs.get(i) == null))
+								fracs.set(i, fillIn);
+					}
+				}
+		}
+	}
 	/*	Stores information on an item which can be used to later create the JSON object for the ticket
 	 *	for any connection ID
 	 */
@@ -128,6 +206,8 @@ public class TableKey extends AbstractModelType
 			Frac fillerFrac = Frac.ONE;
 			Long denom = 0L;
 			List<Frac> fracs = itemFracs.get(itemID);
+			if(fracs == null)
+				fracs = defaultFracs;
 			for(int i = 0; i < fracs.size(); i++) {
 				Frac f = fracs.get(i);
 				if(f == null)
@@ -138,7 +218,11 @@ public class TableKey extends AbstractModelType
 			if(denom != 0L)
 				fillerFrac = fillerFrac.div(denom);
 			List<Long> nums = itemNums.get(itemID);
+			if(nums == null)
+				nums = defaultNums;
 			List<String> owners = itemOwners.get(itemID);
+			if(owners == null)
+				owners = defaultOwners;
 			for(int i = 0; i < fracs.size(); i++) {
 				Frac frac = fracs.get(i);
 				if(frac == null)
@@ -151,12 +235,12 @@ public class TableKey extends AbstractModelType
 		}
 		return ret;
 	}
-	private void updateListeners(List<TicketItem> items, DatastoreService ds) throws JSONException
+	private void updateListeners(List<TicketItem> items) throws JSONException
 	{
-		updateListeners(items, ds, null);
+		updateListeners(items, null);
 	}
 
-	private void updateListeners(List<TicketItem> items, DatastoreService ds, String connectionID) throws JSONException
+	private void updateListeners(List<TicketItem> items, String connectionID) throws JSONException
 	{
 		ChannelService channelService = ChannelServiceFactory.getChannelService();
 		List<ItemJSONInfo> ppItems = preprocessItems(items);
@@ -210,7 +294,7 @@ public class TableKey extends AbstractModelType
 		Map<String, Frac> ret = new HashMap<String, Frac>();
 		for(String id : itemFracs.keySet()) {
 			Frac unaccounted = Frac.ONE;
-			Frac zerAmount = Frac.ZERO;
+			Frac userAmount = Frac.ZERO;
 			int num = 0;
 			int denom = 0;
 			List<String> owners = itemOwners.get(id);
@@ -221,7 +305,7 @@ public class TableKey extends AbstractModelType
 					if(f == null)
 						num++;
 					else
-						zerAmount = zerAmount.add(f);
+						userAmount = userAmount.add(f);
 				};
 				if(f == null) {
 					denom++;
@@ -230,8 +314,8 @@ public class TableKey extends AbstractModelType
 				}
 			}
 			if(denom > 0)
-				zerAmount = zerAmount.add(unaccounted.mult(new Frac(num, denom)));
-			ret.put(id, zerAmount);
+				userAmount = userAmount.add(unaccounted.mult(new Frac(num, denom)));
+			ret.put(id, userAmount);
 		}
 		return ret;
 	}
@@ -242,33 +326,42 @@ public class TableKey extends AbstractModelType
 	 *	@param	connectionID The person to measure the payment of
 	 *	@return	The total to pay in cents
 	 */
-	public Long getTotalToPay(List<TicketItem> items, String connectionID) {
+	public long getTotalToPay(List<TicketItem> items, String connectionID) throws HttpErrMsg {
 		long total = 0L;
 		Map<String, Frac> payFracs = getPayFracs(connectionID);
-		for(TicketItem item : items)
-			total += payFracs.get(item.getID()).mult(item.getNetPrice()).ceil();
+		for(TicketItem item : items) {
+			Frac f = payFracs.get(item.getID());
+			if(f == null)
+				throw new HttpErrMsg("No metadata for item with ID \""+item.getID()+'"');
+			total += f.mult(item.getNetPrice()).ceil();
+		}
 		return new Frac(total, 100L).ceil();
 	}
 
 	public boolean isPaid() {
+		//Find everyone who owns part of an item
 		Set<String> allOwners = new HashSet<String>();
 		for(String id : itemOwners.keySet()) {
 			List<String> owners = itemOwners.get(id);
 			List<Frac> fracs = itemFracs.get(id);
+	
 			Frac unaccounted = Frac.ONE;
 			for(Frac f : fracs)
 				unaccounted = unaccounted.sub(f == null ? Frac.ZERO : f);
+			boolean nothingUnaccounted = Frac.ZERO.equals(unaccounted);
+
+			//Go through all the owners and add the ones who own something
 			for(int i = 0; i < owners.size(); i++) {
 				Frac f = fracs.get(i);
-				if(!Frac.ZERO.equals(f)) {
-					if(owners.get(i) == null) {
-						if((f == null) && (Frac.ZERO.equals(unaccounted)))
-							return false;
-					} else
+				if(!Frac.ZERO.equals(f) && ((f != null) || !nothingUnaccounted)) {
+					if(owners.get(i) != null)
 						allOwners.add(owners.get(i));
+					else
+						return false;
 				}
 			}
 		}
+		//Check that all those owners are paid
 		for(String owner : allOwners)
 			if(parseCS(connectionStatus.get(owner)) != ConnectionStatus.PAID)
 				return false;
@@ -282,15 +375,44 @@ public class TableKey extends AbstractModelType
 	//--------------------
 	//| MUTATORS METHODS |
 	//--------------------
-	public void clearMetadata(DatastoreService ds)
+	public void clearMetadata()
 	{
-		removeConnections(new HashSet<String>(connectionStatus.keySet()), ds);
-		itemFracs = new HashMap<String, List<Frac>>();
-		itemNums = new HashMap<String, List<Long>>();
-		itemOwners = new HashMap<String, List<String>>();
+		closeDeadConnections();
+
+		ChannelService channelService = ChannelServiceFactory.getChannelService();
+		for(String cID : connectionStatus.keySet())
+			channelService.sendMessage(new ChannelMessage(cID, isPaid() ? "PAID" : "CLEARED"));
+
+
+		deadConnections.addAll(connectionStatus.keySet());
+		connectionStatus.clear();
+		connectionExpr.clear();
+		itemFracs.clear();
+		itemNums.clear();
+		itemOwners.clear();
 	}
-	public boolean initMetadata(List<TicketItem> items, DatastoreService ds) throws JSONException
+	private boolean shouldClose(String cID, boolean current, ChannelService channelService, String uuid)
 	{
+		ConnectionStatus status = parseCS(connectionStatus.get(cID));
+		if(status == ConnectionStatus.CLOSED)
+			return false;//Already closed
+		else if((status == ConnectionStatus.PAID) || (status == ConnectionStatus.LEFT_WHILE_PROCESSING))
+			return !current;
+
+		return false;
+		
+		//TODO use heartbeats
+	}
+	public boolean initMetadata(List<TicketItem> items) throws JSONException
+	{
+		closeDeadConnections();
+
+		//First remove expired connections
+		long time = new Date().getTime();
+		for(String cID : new HashSet<String>(connectionExpr.keySet()))
+			if(time > connectionExpr.get(cID))
+				mySetConnectionStatus(cID, ConnectionStatus.CLOSED, false);
+
 		//Figure out what's we should have on the ticket
 		Set<String> currentItems = new HashSet<String>();
 		for(TicketItem item : items)
@@ -301,16 +423,13 @@ public class TableKey extends AbstractModelType
 		Set<String> itemsAlreadyTracked = new HashSet<String>();
 		Set<String> itemsToUntrack = new HashSet<String>();
 		Set<String> currentConnections = new HashSet<String>();
-		Set<String> oldConnections = new HashSet<String>();
 		for(String itemID : itemOwners.keySet())
 			if(currentItems.contains(itemID)) {
 				for(String connectionID : itemOwners.get(itemID))
-					currentConnections.add(connectionID);
+					if(connectionID != null)
+						currentConnections.add(connectionID);
 				itemsAlreadyTracked.add(itemID);
 			} else {
-				for(String connectionID : itemOwners.get(itemID))
-					if(connectionID != null)
-						oldConnections.add(connectionID);
 				itemsToUntrack.add(itemID);
 			}
 
@@ -324,36 +443,27 @@ public class TableKey extends AbstractModelType
 		Set<String> connectionsToClose = new HashSet<String>();
 		ChannelService channelService = ChannelServiceFactory.getChannelService();
 		String uuid = UUID.randomUUID().toString();
-		for(String cID : connectionStatus.keySet()) {
-			boolean close = true;
-			if(parseCS(connectionStatus.get(cID)) == ConnectionStatus.LEFT_WHILE_PROCESSING)
-				close = !currentConnections.contains(cID) && oldConnections.contains(cID);
-			else try {
-				channelService.sendMessage(new ChannelMessage(cID, "HEARTBEAT\n"+uuid));
-				if(currentConnections.contains(cID) || (!oldConnections.contains(cID) &&
-									!(parseCS(connectionStatus.get(cID)) == ConnectionStatus.PAID)))
-					close = false;
-			} catch(ChannelFailureException e) {}
-			if(close)
+		for(String cID : connectionStatus.keySet())
+			if(shouldClose(cID, currentConnections.contains(cID), channelService, uuid))
 				connectionsToClose.add(cID);
-		}
 
 		//Remove shit, add shit, do shit
-		removeConnections(connectionsToClose, ds);
+		for(String cID : connectionsToClose)
+			mySetConnectionStatus(cID, ConnectionStatus.CLOSED, true);
 		for(String item : itemsToUntrack) {
 			itemFracs.remove(item);
 			itemNums.remove(item);
 			itemOwners.remove(item);
 		}
 		for(String item : itemsToTrack) {
-			itemFracs.put(item, Arrays.asList((Frac)null));
-			itemNums.put(item, Arrays.asList(1L));
-			itemOwners.put(item, Arrays.asList((String)null));
+			itemFracs.put(item, new ArrayList<Frac>(defaultFracs));
+			itemNums.put(item, new ArrayList<Long>(defaultNums));
+			itemOwners.put(item, new ArrayList<String>(defaultOwners));
 		}
 
 		//Sync all connections and return bool showing if commit needed
-		if(itemsToUntrack.size() > 0 || itemsToTrack.size() > 0) {
-			updateListeners(items, ds);
+		if(itemsToUntrack.size() > 0 || itemsToTrack.size() > 0 || connectionsToClose.size() > 0) {
+			updateListeners(items);
 			return true;
 		} else
 			return false;
@@ -361,6 +471,7 @@ public class TableKey extends AbstractModelType
 	public void newConnection(String connectionID, String platform, List<TicketItem> items, DatastoreService ds) throws JSONException
 	{
 		connectionStatus.put(connectionID, new Long(ConnectionStatus.INPUTTING.ordinal()));
+		connectionExpr.put(connectionID, new Date().getTime()+2*60*60*1000);
 		for(String itemID : itemOwners.keySet()) {
 			List<String> owners = itemOwners.get(itemID);
 			for(int i = 0; i < owners.size(); i++) {
@@ -370,59 +481,12 @@ public class TableKey extends AbstractModelType
 			}
 		}
 		new ConnectionToTablePointer(KeyFactory.createKey(ConnectionToTablePointer.getKind(), connectionID), getKey().getName()).commit(ds);
-		new UserConnection(this.getKey().getChild(UserConnection.getKind(), connectionID), platform).commit(ds);
-		updateListeners(items, ds, connectionID);
+		updateListeners(items, connectionID);
 	}
-	public void setConnectionStatus(String connectionID, ConnectionStatus status, List<TicketItem> items, DatastoreService ds) throws JSONException {
-		ConnectionStatus oldStatus = parseCS(connectionStatus.get(connectionID));
-		if(oldStatus == ConnectionStatus.PAID) {
-			status = ConnectionStatus.PAID;
-		} else if((oldStatus == ConnectionStatus.PROCESSING) && (status == ConnectionStatus.CLOSED)) {
-			status = ConnectionStatus.LEFT_WHILE_PROCESSING;
-		} else if((oldStatus == ConnectionStatus.LEFT_WHILE_PROCESSING) && (status == ConnectionStatus.INPUTTING)) {
-			status = ConnectionStatus.CLOSED;
-		}
-
-		//Ignore redundant updates
-		if(oldStatus == status)
-			return;
-
-		//Clear fractions
-		if((status == ConnectionStatus.INPUTTING) || (status == ConnectionStatus.CLOSED))
-			for(String id : itemOwners.keySet()) {
-				List<String> owners =  itemOwners.get(id);
-				for(int i = 0; i < owners.size(); i++)
-					if(connectionID.equals(owners.get(i)))
-						itemFracs.get(id).set(i, null);
-			}
-
-		//Actually set the status
-		if(status == ConnectionStatus.CLOSED)
-			removeConnection(connectionID, ds);
-		else {
-			connectionStatus.put(connectionID, new Long(status.ordinal()));
-			
-			//Set fractions
-			if(oldStatus == ConnectionStatus.INPUTTING)
-				for(String id : itemFracs.keySet()) {
-					List<Frac> fracs = itemFracs.get(id);
-					Frac fillIn = Frac.ONE;
-					Long denom = 0L;
-					for(Frac f : fracs)
-						if(f == null)
-							denom++;
-						else
-							fillIn = fillIn.sub(f);
-					if(denom > 0L) {
-						fillIn = fillIn.div(denom);
-						List<String> owners =  itemOwners.get(id);
-						for(int i = 0; i < owners.size(); i++)
-							if(connectionID.equals(owners.get(i)) && (fracs.get(i) == null))
-								fracs.set(i, fillIn);
-					}
-				}
-		}
-		updateListeners(items, ds, connectionID);
+	public void setConnectionStatus(String connectionID, ConnectionStatus status, List<TicketItem> items, DatastoreService ds) throws JSONException
+	{
+		mySetConnectionStatus(connectionID, status, false);
+		updateListeners(items, connectionID);
 	}
 	public void setOwner(String id, String connectionID, List<TicketItem> items, DatastoreService ds) throws JSONException, HttpErrMsg {
 		if(connectionID != null) {
@@ -445,7 +509,7 @@ public class TableKey extends AbstractModelType
 		if(beingPaid(parseCS(connectionStatus.get(itemOwners.get(id).get(index)))))
 			throw new HttpErrMsg("Current owner cannot give up this item");
 		itemOwners.get(id).set(index, connectionID);
-		updateListeners(items, ds, connectionID);
+		updateListeners(items, connectionID);
 	}
 
 	public void checkAll(String connectionID, List<TicketItem> items, DatastoreService ds) throws JSONException, HttpErrMsg {
@@ -460,7 +524,7 @@ public class TableKey extends AbstractModelType
 					owners.set(i, connectionID);
 			}
 		}
-		updateListeners(items, ds, connectionID);
+		updateListeners(items, connectionID);
 	}
 
 	public void uncheckAll(String connectionID, List<TicketItem> items, DatastoreService ds) throws JSONException, HttpErrMsg {
@@ -473,7 +537,7 @@ public class TableKey extends AbstractModelType
 				if(connectionID.equals(owners.get(i)))
 					owners.set(i, null);
 		}
-		updateListeners(items, ds, connectionID);
+		updateListeners(items, connectionID);
 	}
 
 	public void split(String id, Long nWays, String connectionID, List<TicketItem> items, DatastoreService ds) throws JSONException, HttpErrMsg {
@@ -485,6 +549,8 @@ public class TableKey extends AbstractModelType
 		List<Integer> unownedParts = new ArrayList<Integer>();
 
 		List<String> owners = itemOwners.get(id);
+		if(owners == null)
+			throw new HttpErrMsg("No such item to split");
 		for(int i = 0; i < owners.size(); i++) {
 			String owner = owners.get(i);
 			if(connectionID.equals(owner))
@@ -522,7 +588,7 @@ public class TableKey extends AbstractModelType
 			nums.remove(index);
 			diff++;
 		}
-		updateListeners(items, ds, connectionID);
+		updateListeners(items, connectionID);
 	}
 
 	//--------------------------
@@ -534,7 +600,9 @@ public class TableKey extends AbstractModelType
 		Entity e = new Entity(getKey());
 		e.setProperty("restr", restr);
 		e.setProperty("query", query);
+		DSConverter.set(e, "connectionsToClose", deadConnections, DSConverter.DataTypes.SET);
 		DSConverter.set(e, "connectionStatus", connectionStatus, DSConverter.DataTypes.MAP);
+		DSConverter.set(e, "connectionExpr", connectionExpr, DSConverter.DataTypes.MAP);
 		DSConverter.set(e, "itemFracs", itemFracs, DSConverter.DataTypes.MAP, DSConverter.DataTypes.LIST, DSConverter.DataTypes.FRAC);
 		DSConverter.set(e, "itemNums", itemNums, DSConverter.DataTypes.MAP, DSConverter.DataTypes.LIST);
 		DSConverter.set(e, "itemOwners", itemOwners, DSConverter.DataTypes.MAP, DSConverter.DataTypes.LIST);
@@ -546,7 +614,9 @@ public class TableKey extends AbstractModelType
 	{
 		restr = (String) e.getProperty("restr");
 		query = (String) e.getProperty("query");
+		deadConnections = (Set<String>) DSConverter.get(e, "connectionsToClose", DSConverter.DataTypes.SET);
 		connectionStatus = (Map<String, Long>) DSConverter.get(e, "connectionStatus", DSConverter.DataTypes.MAP);
+		connectionExpr = (Map<String, Long>) DSConverter.get(e, "connectionExpr", DSConverter.DataTypes.MAP);
 		itemFracs = (Map<String, List<Frac>>) DSConverter.get(e, "itemFracs", DSConverter.DataTypes.MAP, DSConverter.DataTypes.LIST, DSConverter.DataTypes.FRAC);
 		itemNums = (Map<String, List<Long>>) DSConverter.get(e, "itemNums", DSConverter.DataTypes.MAP, DSConverter.DataTypes.LIST);
 		itemOwners = (Map<String, List<String>>) DSConverter.get(e, "itemOwners", DSConverter.DataTypes.MAP, DSConverter.DataTypes.LIST);

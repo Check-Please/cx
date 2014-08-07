@@ -4,7 +4,7 @@ var DiscountAndSCView = Fluid.compileView({
 	 *	@param	serviceCharge The service charge in cents
 	 */
 	fill: function(discount, serviceCharge) {
-		return {discount: discount?money.toStr(-discount).substr(1):"$0.00",
-				serviceCharge: money.toStr(serviceCharge)};
+		return {discount: money.toStr(-(discount || 0)).substr(1),
+				serviceCharge: money.toStr(serviceCharge || 0)};
 	}
 });

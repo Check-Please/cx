@@ -29,11 +29,11 @@ var socket = socket || {};
 			models.items(JSON.parse(items));
 		},
 		ERROR: function(msg) {
-			models.error({heading:"Server Error", symbol:"!", message:msg});
+			models.error({	heading: text["500_ERROR_HDG"], symbol:"!",
+							message: msg});
 		},
 		PAYMENT_ERROR: function(msg) {
-			models.error({	heading: "Payment Error", message: msg,
-							symbol: String.fromCharCode(215)});
+			models.error({heading: text.PAY_ERROR_HDG, message: msg});
 		},
 		PAYMENT_SUCCESS: function() {
 			models.validViews([consts.views.FEEDBACK]);
@@ -44,6 +44,13 @@ var socket = socket || {};
 		},
 		HEARTBEAT: function(msg) {
 			server.sendHeartbeat(msg);
+		},
+		PAID: function() {
+			models.validViews([consts.views.FEEDBACK]);
+			models.loading(undefined);
+		},
+		CLEARED: function() {
+			models.error(text.getError("SOCKET_CLEAR"));
 		}
 	}
 
@@ -52,7 +59,7 @@ var socket = socket || {};
 		msg = msg.data.trim().split("\n");
 		var cmd = msg[0].trim().toUpperCase();
 		if(cmds[cmd] == undefined)
-			models.error({heading: "Unknown command", symbol: "!",
+			models.error({heading: text.SOCKET_UNKNOWN_CMD_HDG, symbol: "!",
 				message: "Unknown command \""+cmd+"\" from server"});
 		else
 			cmds[cmd].apply(this, msg.slice(1));
@@ -61,11 +68,9 @@ var socket = socket || {};
 	function onError(err)
 	{
 		if(err.code == 401)
-			models.error({heading: "Inactive", symbol: "",
-				message: "Please reload"});
+			models.error(text.getError("SOCKET_INACTIVE"));
 		else
-			models.error({heading: "Unknown Error", symbol: "?",
-				message: "Please reload"});
+			models.error(text.getError("SOCKET_ERROR"));
 	}
 
 	function onClose() {}

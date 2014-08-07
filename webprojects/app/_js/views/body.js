@@ -4,12 +4,12 @@ var BodyView = Fluid.compileView({
 	 */
 	fill: function(	activeView, width, height, items, split, tipSlider, tip,
 					cards, passwords, newCardInfo, cardFocus, email,
-					feedback, loading, err, allowLandscape){
+					feedback, loading, err, done, allowLandscape) {
 		////////////////////////////////////////////////
 		////		Compute Basic Style Info		////
 		////////////////////////////////////////////////
 		if((activeView == consts.views.RECEIPT) && (split.trgt != null))
-			activeView = " "+consts.views.SPLIT;
+			activeView += " "+consts.views.SPLIT;
 		else if((err == null) && (loading != null))
 			activeView += " "+consts.views.LOADING;
 		var heightClasses = "";
@@ -98,12 +98,13 @@ var BodyView = Fluid.compileView({
 						money.round(totals.serviceCharge/100),
 						tipSlider, tip, 1000000*tip/totals.tippable,
 						lastFour != null ? "X-"+lastFour : cardFocus == -1 ?
-							"(Select Card)" : "(Enter Password)",
+							text.SELECT_CARD_NUM_REPL :
+							text.ENTER_PASSWORD_NUM_REPL,
 						emHeight));
 			views.push(new CardsView(	cardFocus, cards, passwords,
 										newCardInfo, emHeight));
-			views.push(new FeedbackView(email, feedback));
-			views.push(new LoadingView(	loading ? loading.message : "Done!",
+			views.push(new FeedbackView(email, feedback, done));
+			views.push(new LoadingView(	loading && loading.message,
 										loading && loading.percent));
 		} else if(err != null) {
 			views = [new ErrorView(err.heading, err.message, err.symbol,

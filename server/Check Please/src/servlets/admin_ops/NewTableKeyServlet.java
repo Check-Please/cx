@@ -41,7 +41,7 @@ public class NewTableKeyServlet extends GetServletBase {
 		}
 		String code = p.getStr(1);
 		if(code == null) {
-			Globals g = MyUtils.getGlobals(ds);
+			Globals g = Globals.getGlobals(ds);
 			code =  g.getNextTicketKey(ds);
 			g.commit(ds);
 		}

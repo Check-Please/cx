@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpSession;
 
-import modeltypes.ClosedUserConnection;
+import modeltypes.Globals;
 
 import org.json.JSONException;
 
@@ -33,6 +33,6 @@ public class ChannelDisconnectServlet extends PostServletBase
 
 	protected void doPost(ParamWrapper p, HttpSession sesh, DatastoreService ds, PrintWriter out) throws IOException, JSONException, HttpErrMsg
 	{
-		CloseClientServlet.closeChannel(p.getChannelID(), ClosedUserConnection.CLOSE_CAUSE__DISCONNECTED, ds);
+		CloseClientServlet.closeChannel(p.getChannelID(), Globals.CLOSE_CAUSE__DISCONNECTED, ds);
 	}
 }

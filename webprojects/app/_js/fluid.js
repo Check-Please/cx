@@ -553,7 +553,7 @@
 					"Calling view's compiled template is:"+
 					"\n\t" + this.template.split("\n").join("\n\t") + "\n" +
 					"Note that compiled templates don't look exactly like " +
-					"views original template";
+					"view's original template";
 		window.console.log(msg);
 		throw new TypeError(msg);
 	}
@@ -652,6 +652,20 @@
 				View.prototype.viewCommands[vname] = id;
 				return "<span id='"+id+"' style='display: none'></span>";
 			});
+
+		//Check to make sure the template isn't going anything illegal
+		var $tmplt = $(View.prototype.template);
+		for(var vname in View.prototype.viewCommands)
+			if(jqFind($tmplt, "#"+View.prototype.viewCommands[vname]
+													).parent().length == 0) {
+				var msg =	"The following template contains a subview-"+
+							"injection which is not wrapped in a parent "+
+							"tag.  For technical reasons, this is not "+
+							"currently allowed.\n\n"+
+							"Template:\n"+props.template;
+				window.console.log(msg);
+				throw new SyntaxError(msg);
+			}
 
 		return View;
 	};

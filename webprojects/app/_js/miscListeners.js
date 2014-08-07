@@ -1,7 +1,9 @@
 (function() {
 	window.onkeydown = function(x) {
-		if((x.keyCode == 13) && (models.loading() == null))
-			$("#"+models.activeView()+"-view .confirm").click();
+		if((x.keyCode == 13) && (models.loading() == null)) {
+			var view = models.split().trgt ? "split" : models.activeView();
+			$("#"+view+"-view .confirm").click();
+		}
 	};
 
 	var unloading = false;

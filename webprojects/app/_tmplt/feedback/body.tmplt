@@ -1,12 +1,14 @@
-<div id="feedback-view">
+<div id="feedback-view" class={{finished}}>
 	<h1 class="thanks">Thank you!</h1>
 	<div class="email {{sent}}">
-		<p>Enter your email address to get a copy of your receipt</p>
-		<input type="email" />
-		<a>Send</a>
-	</div>
-	<div class="email confirm {{sent}}">
-		<p>Your receipt has been emailed to {{email}}</p>
+		<div class="input">
+			<p>Enter your email address to get a copy of your receipt</p>
+			<input type="email" />
+			<a>Send</a>
+		</div>
+		<div class="confirmation">
+			<p>Your receipt has been emailed to {{email}}</p>
+		</div>
 	</div>
 	<div class="feedback">
 		<p>Rate your experience</p>
@@ -15,7 +17,12 @@
 		<a class="good {{good_focus}}" rating={{good_rating}}></a>
 		<a class="very good {{very_good_focus}}" rating={{very_good_rating}}></a>
 	</div>
-	<div class="app">
+	<div class="app ad">
 		<p>Download our app for an improved experience.  Search for "Check Please" in the Apple App Store.</p>
 	</div>
+	<div class="restr ad">
+		<h4>Run a restaurant?</h4>
+		<p>Email <a href="mailto:sjelin@getthecheck.com">sjelin@getthecheck.com</a> to get Check Please at your location</p>
+	</div>
+	<a class="confirm">New Payment</a>
 </div>

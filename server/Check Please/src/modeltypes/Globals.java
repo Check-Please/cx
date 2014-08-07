@@ -15,9 +15,18 @@ public class Globals extends AbstractModelType
 	public static String getKind() { return "globals"; }
 
 	Long ticketKeysBuilt;
+
+	public static final String CARD_CT_COOKIE = "CCT8";
+	public static final int COOKIE_CARD_CT_LEN = 8;
+	public static final String COOKIED_CARD_CT_PREFIX = "[cookie]";
+
 	public static final long defaultID = 1L;
 	public static final long minSupportedVersion = 1L;
 	public static final String devTableID = "IKA";
+
+	public static final long CLOSE_CAUSE__CLIENT_CLOSE = 0;
+	public static final long CLOSE_CAUSE__ERROR = 1;
+	public static final long CLOSE_CAUSE__DISCONNECTED = 2;
 
 	public Globals(Key k, DatastoreService ds) throws EntityNotFoundException { super(k, ds); }
 	public Globals(Entity e) { super(e); }
@@ -66,5 +75,16 @@ public class Globals extends AbstractModelType
 	public void fromEntity(Entity e)
 	{
 		ticketKeysBuilt = (Long) e.getProperty("ticketKeysBuilt");
+	}
+
+	public static Globals getGlobals(DatastoreService ds)
+	{
+		Key k = KeyFactory.createKey(Globals.getKind(), Globals.defaultID);
+		try {
+			return new Globals(k, ds);
+		} catch (EntityNotFoundException e) {
+			Globals g = new Globals(k, 0L);
+			return g;
+		}
 	}
 }

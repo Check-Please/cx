@@ -1,0 +1,17 @@
+@import "../../_ignore/main.scss";
+@import "vars.scss";
+
+#loading-view, #split-view {
+	background: rgba(200, 200, 200, 0.5);
+	.wrapper {
+		font-size: 0.5em;
+		top: 0px;
+		bottom: 0px;
+		left: 0px;
+		right: 0px;
+		margin: auto;
+		position: absolute;
+		background: rgba(255,255,255,0.95);
+		box-shadow: 0px 0px 0.5em transparentize($btn-color, 0.5);
+	}
+}

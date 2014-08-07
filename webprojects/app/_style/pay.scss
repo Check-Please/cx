@@ -8,6 +8,9 @@
 		overflow: visible
 	};
 
+	//TODO The implementation of this type of thing was done much better in
+	//feedback.scss
+
 	//All heights include margins/padding/etc
 	$back-height: 1em;
 	$amount-height: 3.4em;
@@ -262,7 +265,7 @@
 		&:before {
 			top: 0.85em;
 			height: 0.8em;
-			background: url('../../img/redesign/pay/card-border.svg');
+			background: url('../img/app/card-border.svg');
 			background-size: 100% 100%;
 			background-repeat: no-repeat;
 			@include opacity( 225 / 255 );

@@ -17,6 +17,8 @@ var models = models || {};
 (function(models) {
 	"use strict";
 
+	models.funs = {};
+
 	//=======================================================================
 	//  Session Information
 	//=======================================================================
@@ -109,6 +111,11 @@ var models = models || {};
 					num: 0, denom: 0, price: 0, discount: 0,
 					serviceCharge: 0, tax: 0, mods: []};
 	models.items = Fluid.newModel({a:emptyItem, b:emptyItem, c:emptyItem});
+	models.funs.splitID = function(id) {
+		var i = id.lastIndexOf(":");
+		return [id.slice(0, i), id.slice(i+1)];
+	}
+
 
 	/*	Information about the element currently being split.  An object with
 	 *	the following properties:
@@ -124,12 +131,12 @@ var models = models || {};
 		var split = models.split.get();
 		var items = models.items.get();
 		if(split.trgt !== undefined) {
-			var n = Object.keys(items).filer(function(id) {
-				if(!id.startsWith(split.trgt+":"))
+			var n = Object.keys(items).filter(function(id) {
+				if(models.funs.splitID(id)[0] != split.trgt)
 					return false;
 				split.name = split.name || items[id].name;
 				return items[id].status != consts.statuses.PAID;
-			});
+			}).length;
 			if(split.currNumWays != n) {
 				split.inNumWays = (split.currNumWays = n) + "";
 				models.split.alert();
@@ -289,6 +296,9 @@ var models = models || {};
 			window.onunload();
 		}
 	});
+
+	/**	If the ticket has been paid in full */
+	models.done = Fluid.newModel(false);
 
 	/**	If the user has decided to use landscape, even thought the app warned
 	 *	them!  Boolean.

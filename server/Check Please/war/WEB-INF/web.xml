@@ -274,6 +274,18 @@
 		<url-pattern>/cx/pay_saved/</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>paySavedCardServlet_0</servlet-name>
+		<servlet-class>servlets.cx.PaySavedCardServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>paySavedCardServlet_0</servlet-name>
+		<url-pattern>/cx/pay_saved/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>paySavedCardServlet_0</servlet-name>
+		<url-pattern>/cx/pay_saved/*/</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>rateServlet</servlet-name>
 		<servlet-class>servlets.cx.RateServlet</servlet-class>
 	</servlet>

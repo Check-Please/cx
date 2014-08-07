@@ -41,6 +41,3 @@ Fluid.defineInputType("zip", {
 	typeAttr: "number",
 	validate: /^[0-9]{0,5}$/
 });
-
-//Feedback (polyfill)
-Fluid.defineInputType("email");

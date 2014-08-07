@@ -25,6 +25,7 @@ CX
 .LogPositionServlet, /cx/log_pos/
 .PayNewCardServlet, /cx/pay_new/
 .PaySavedCardServlet, /cx/pay_saved/
+.PaySavedCardServlet, /cx/pay_saved/*
 .RateServlet, /cx/rate/
 .SplitServlet, /cx/split/
 .UncheckServlet, /cx/uncheck/

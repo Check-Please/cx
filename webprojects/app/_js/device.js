@@ -122,8 +122,7 @@ var device = device || {};
 				callback(err);
 			}, {enableHighAccuracy: true, maximumAge: 0});
 		} else
-			callback({code: 2, message:
-				"No geolocation available.  Please upgrade your browser"});
+			callback({code: 2, message: text.NO_GEOLOCATION_ERR});
 	};
 
 	/**	Gets the location of the user, calling the callback quickly.
@@ -142,7 +141,7 @@ var device = device || {};
 	 */
 	device.getPos = function(callback)
 	{
-		var ret = {code: 3, message: "Still waiting for user decision"};
+		var ret = {code: 3, message: text.WAITING_FOR_GEOLOCATION_MSG};
 		var timeoutID = undefined;
 		function callCallback() {
 			clearTimeout(timeoutID);
@@ -168,7 +167,6 @@ var device = device || {};
 	function buildStorageAtopLocalData(rewriteKey)
 	{
 		return function(k, v) {
-			console.log(k);
 			{{ASSERT: k.match(/^[_0-9a-z]*$/i)}};
 			k = rewriteKey(k);
 			if(arguments.length == 1) {

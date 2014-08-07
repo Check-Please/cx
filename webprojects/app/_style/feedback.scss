@@ -2,31 +2,197 @@
 @import "vars.scss";
 
 #feedback-view {
-	$margins: 0.75em;
-	$spacing: 1em;
+
+	/**************** VARIABLES ****************/
+
+	$horz-margin: 0.75em;
+	$top-margin: 0.5em;
+	$bottom-margin: $side-width;
+	$min-spacing: 0.3em;
+	$spacing: 0.5em;
+	$max-spacing: 0.7em;
+
+	//Heights include everything but the vertical spacing between blocks
+	$thanks-height: 1.2em;
+	$email-height: 2.2em;
+	$feedback-min-height: 2.3em;
+	$feedback-max-height: 2.4em;
+	$ad-height: 1.5em;
+
+	/**************** LAYOUT GLOBALS ****************/
+
+	@mixin posElem($i, $n, $content-height, $content-above-height) {
+		@if $i == 0 {
+			top: $top-margin;
+		} @else if $i >= $n {
+			display: none;
+		} @else if $i == $n - 1 {
+			bottom: $bottom-margin;
+			display: block;
+		} @else {
+			bottom: auto;
+			display: block;
+			top: $i * (100% / ($n - 1));
+			margin-top: $content-above-height - ($i / ($n - 1)) * $content-height;
+		}
+	}
+
+	@mixin layout($feedback-height, $content-height, $n, $m:null) {
+		$heights: ($thanks-height, $email-height, $feedback-height, $ad-height, $ad-height);
+		$classes: ("thanks", "email", "feedback", "app.ad", "restr.ad");
+		@if $m == null {
+			$m: $n;
+		}
+
+		$sum: $top-margin;
+		@for $i from 0 through ($m - 1) {
+			.#{nth($classes, $i + 1)} {
+				@include posElem($i, $n, $content-height, $sum);
+			}
+			$sum: $sum + nth($heights, $i + 1);
+		}
+	}
+
+	@mixin start-abs-layout() {
+		padding: 0px;
+		& > * {
+			position: absolute;
+			margin: 0px $horz-margin;
+			left: 0px;
+			right: 0px;
+			&.email { margin: 0px; }
+		}
+	}
+
+	padding: $top-margin 0px $bottom-margin 0px;
+	& > * {
+		position: relative;
+		margin: 0px $horz-margin $min-spacing $horz-margin;
+	}
+	.thanks { height: $thanks-height; }
+	.email { height: $email-height; }
+	.feedback { height: $feedback-min-height; }
+	.ad { height: $ad-height; }
+	* {	line-height: $line-height; }
+	& > * { display: none; }//Hide everything until it is shown
+	.thanks, .email { display: block; }//These two are always visible
+
+	/**************** LAYOUT WITHOUT NEW PAYMENT BTN  ****************/
+
+	&.finished {
+		//Content Heights (numbers generally match # of blocks)
+		$ch2: $thanks-height + $email-height + $feedback-min-height + $top-margin + $bottom-margin;
+		$ch3: $ch2 + ($feedback-max-height - $feedback-min-height);
+		$ch4: $ch3 + $ad-height;
+		$ch5: $ch4 + $ad-height;
+
+		//Full Heights (numbers match those of content heights)
+		$fh2: $ch2 + 2 * $min-spacing;
+		$fh3: $ch3 + 2 * $spacing;
+		$fh4: $ch4 + 3 * $spacing;
+		$fh5: $ch5 + 4 * $max-spacing;
+
+		.h#{round($fh2/0.1em)} & {
+			@include start-abs-layout();
+			@include layout($feedback-min-height, $ch2, 3);
+		}
+		.h#{round($fh3 / 0.1em)} & {
+			@include layout($feedback-max-height, $ch3, 3);
+		}
+		.h#{round($fh4 / 0.1em)} & {
+			@include layout($feedback-max-height, $ch4, 4);
+		}
+		.h#{round($fh5 / 0.1em)} & {
+			@include layout($feedback-max-height, $ch5, 5);
+		}
+
+		.h#{round($fh3/0.1em)} & .feedback { height: $feedback-max-height; }
+	}
+
+	/**************** LAYOUT WITH NEW PAYMENT BTN  ****************/
+
+	&.unfinished {
+		//Content Heights (numbers often match # of blocks)
+		$ch2: $thanks-height + $email-height + $btn-height * ($btn-font-size / 1em) + $top-margin + $bottom-margin;
+		$ch3: $ch2 + $feedback-min-height;
+		$ch4: $ch3 + ($feedback-max-height - $feedback-min-height);
+		$ch5: $ch4 + $ad-height;
+		$ch6: $ch5 + $ad-height;
+
+		//Full Heights (numbers match those of content heights)
+		$fh2: $ch2 + 2 * $min-spacing;
+		$fh3: $ch3 + 3 * $spacing;
+		$fh4: $ch4 + 3 * $spacing;
+		$fh5: $ch5 + 4 * $spacing;
+		$fh6: $ch6 + 5 * $max-spacing;
+
+		.h#{round($fh2/0.1em)} & {
+			@include start-abs-layout();
+			@include layout($feedback-min-height, $ch2, 3, 2);
+			.confirm {
+				margin: 0px ($side-width/$btn-font-size)*1em;
+				margin-bottom: ($bottom-margin / $btn-font-size)*1em;
+				line-height: $btn-height;
+				@include abs-confirm();
+				display: block;
+			}
+		}
+		.h#{round($fh3 / 0.1em)} & {
+			@include layout($feedback-max-height, $ch3, 4, 3);
+		}
+		.h#{round($fh4 / 0.1em)} & {
+			@include layout($feedback-max-height, $ch4, 4, 3);
+		}
+		.h#{round($fh5 / 0.1em)} & {
+			@include layout($feedback-max-height, $ch5, 5, 4);
+		}
+		.h#{round($fh6 / 0.1em)} & {
+			@include layout($feedback-max-height, $ch6, 6, 5);
+		}
+
+		.h#{round($fh4/0.1em)} & .feedback { height: $feedback-max-height; }
+	}
+
+	/**************** STYLE ****************/
 
 	.thanks {
-		margin: 0px;
 		text-align: center;
 		font-size: 1em;
-		padding-top: #{$spacing/2};
 	}
 
 	.email {
-		font-size: 0.5em;
-		margin: #{$spacing / 0.5} #{$margins / 0.5};
+		overflow: hidden;
+		& > * {
+			font-size: 0.5em;
+			position: absolute;
+			padding: 0px 2*$horz-margin;
+			width: calc(100% - #{$horz-margin * 4});
+			height: 100%;
+			top: 0px;
+			@include transitionPos();
+			&.input { right: 0%; }
+			&.confirmation { left: 100%; }
+		}
+		&.sent > * {
+			&.input { right: 100%; }
+			&.confirmation { left: 0%; }
+		}
+	}
+
+	.email .input {
 		p {
 			text-align: center;
-			margin: 0.5em 0px;
+			margin: 0px 0px 0.5em 0px;
+			height: 2*$line-height;
 		}
 		input {
-			font-size: 1em;
+			font-size: 0.7em;
 			border: 1px solid rgba(0, 0, 0, 0.25);
 			border-radius: 0px;
 			@include no-extra-style();
 			height: calc(1.5em - 2px);
 			width: calc(100% - 5.4em - 2px);
-			margin: 0px 1em;
+			margin: 0.225em 1em;
 			padding: 0px 0.1em;
 		}
 		a {
@@ -43,47 +209,53 @@
 			font-weight: 100;
 		}
 	}
+	.email .confirmation {
+		padding: 0px 1.5*$horz-margin;
+		width: calc(100% - #{$horz-margin * 3});
+		text-align: center;
+	}
+
 
 	.feedback {
-		font-size: 0.5em;
-		position: relative;
-		margin: #{$spacing / 0.5} #{$margins / 0.5 * 2 / 3};
 		p {
+			font-size: 0.5em;
 			text-align: center;
-			margin-bottom: 0.5em;
+			margin: 0px 0px 0.5em 0px;
 		}
 		a {
+			@include transitionAll();
 			display: inline-block;
-			height: 3em;
-			width: 3em;
-			border-radius: 3em;
+			height: 1.5em;
+			width: 1.5em;
+			border-radius: 1.5em;
 			position: absolute;
-			margin-left: -1.5em;
 			color: $thumb-color;
+			&.blur { @include opacity(0.3); }
 			&:before {
 				content: "";
 				display: block;
-				width: 3em;
-				height: 3em;
-				background-size: auto 2em;
+				width: 1.5em;
+				height: 1.5em;
+				background-size: auto 1em;
 				background-repeat: no-repeat;
 				background-position: center;
 			}
 			&.bad {
 				background: $bad-color;
-				left: 12.5%;
+				left: 0%;
 				&:before {
-					background-image: url("../../img/redesign/feedback/thumbs-down.png");
+					background-image: url("../img/app/thumbs-down.png");
 				}
 			}
 			&.ok {
 				background: $ok-color;
-				left: 37.5%;
+				left: (100% / 3);
+				margin-left: -0.5em;
 				&:before {
 					content: "Ok";
 					text-transform: uppercase;
 					font-weight: 100;
-					font-size: 1.5em;
+					font-size: 0.75em;
 					width: 2em;
 					height: 2em;
 					line-height: 2em;
@@ -92,22 +264,24 @@
 			}
 			&.good {
 				background: $good-color;
-				left: 62.5%;
+				right: (100% / 3);
+				margin-right: -0.5em;
 				&:before {
-					background-image: url("../../img/redesign/feedback/thumbs-up.png");
+					background-image: url("../img/app/thumbs-up.png");
 				}
 			}
 			&.very.good {
-				left: 87.5%;
+				right: 0%;
+				margin-right: 0px;
 				&:before {
-					background-image: url("../../img/redesign/feedback/thumbs-up-up.png");
+					background-image: url("../img/app/thumbs-up-up.png");
 				}
 			}
 		}
 	}
 
 	@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
-		.email a {
+		.email .input a {
 			font-weight: 300;
 		}
 		.feedback a.ok:before {
@@ -115,14 +289,16 @@
 		}
 	}
 
-	.app {
+	.ad > * {
+		margin: 0px;
 		font-size: 0.4em;
-		position: absolute;
-		bottom: 0px;
-		padding: #{$spacing / 0.4} #{$margins / 0.4};
 		text-align: center;
-		p {
-			margin: 0px;
-		}
+		font-weight: inherit;
+	}
+	.ad h4 {
+		text-decoration: underline;
+	}
+	.ad a {
+		text-decoration: none;
 	}
 }

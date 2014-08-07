@@ -35,12 +35,12 @@ var server = server || {};
 	}
 
 	server.doSplit = function() {
-		var diff = models.split().inNumWays - models.split().currNumWays;
-		if(diff != 0) {
+		var nToAdd = models.split().inNumWays - models.split().currNumWays;
+		if(nToAdd != 0) {
 			var trgt = models.split().trgt;
 			var nWays = models.split().inNumWays;
 			send("split", {itemID: trgt, nWays: nWays});
-			models.split(undefined);
+			models.split({});
 
 			//Rather than waiting for a message from the server, we do the
 			//split client side
@@ -49,7 +49,7 @@ var server = server || {};
 			itemIDs[consts.statuses.CHECKED] = [];
 			itemIDs[consts.statuses.UNCHECKED] = [];
 			itemIDs[consts.statuses.PAID] = [];
-			itemIDs[consts.statuses.SUBTOTAL] = [];
+			itemIDs[consts.statuses.TAKEN] = [];
 			for(var id in items)
 				if(id.startsWith(trgt))
 					itemIDs[items[id].status].push(id);
@@ -68,10 +68,10 @@ var server = server || {};
 			newFrac.n /= gcd;
 			newFrac.d /= gcd;
 
-			if(diff < 0) {
+			if(nToAdd < 0) {
 				["UNCHECKED", "TAKEN", "CHECKED"].each(function(type) {
 					var ids = itemIDs[consts.statuses[type]];
-					for(; diff && ids.length; diff++)
+					for(; nToAdd && ids.length; nToAdd++)
 						delete items[ids.pop()];
 					for(var i = 0; i < ids.length; i++) {
 						items[ids[i]].num = newFrac.n;
@@ -84,13 +84,15 @@ var server = server || {};
 					for(var i = 0; i < itemIDs[type].length; i++) {
 						var id = itemIDs[type][i];
 						newIDNum = Math.max(newIDNum,
-											parseInt(id.split(":").pop()));
-						items[id].num = newFrac.n;
-						items[id].denom = newFrac.d;
+									parseInt(models.funs.splitID(id)[1]));
+						if(items[id].status != consts.statuses.PAID) {
+							items[id].num = newFrac.n;
+							items[id].denom = newFrac.d;
+						}
 					}
 				var newItem = $.extend({}, items[trgt+":"+newIDNum]);
 				newItem.status = consts.statuses.UNCHECKED;
-				while(diff++)
+				while(nToAdd--)
 					items[trgt+":"+(++newIDNum)] = $.extend({}, newItem);
 			}
 			models.items(items);
@@ -127,21 +129,22 @@ var server = server || {};
 		//Get data from models and validate that we're ready to pay
 		var tip = parseInt(models.tip());
 		if(isNaN(tip))
-			return alert("Enter a tip");
+			return alert(text.ENTER_TIP_ALERT);
 		var focus = models.cardFocus();
 		var newCC;
 		var password; //Password for saved card
+		var card = models.cards()[focus];
 		if(focus == -1) {
 			newCC = models.newCardInfo();
 			if(creditCards.validate(newCC) != null)
-				return alert("Select a credit card");
-		} else if(models.cards()[focus].reqPass) {
+				return alert(text.SELECT_CARD_ALERT);
+		} else if(card.reqPass) {
 			password = models.passwords()[focus];
 			if(!password)
-				return alert("Enter card password");
+				return alert(text.ENTER_CARD_PASS_ALERT);
 		}
 
-		models.loading({message: "Sending paymeny information"});
+		models.loading({message: text.STARTING_PAYMENT_LOAD_MSG});
 
 		//Prepare data to send to server
 		var total = 0;
@@ -149,11 +152,11 @@ var server = server || {};
 			var item = models.items()[id];
 			if(item.status == consts.statuses.CHECKED)
 				total += (item.num / item.denom) * (item.price + item.tax +
-										item.serviceCarge - item.discount);
+										item.serviceCharge - item.discount);
 		}
-		var payInfo = {	total: Math.ceil(total/100), tip: tip,
+		var payInfo = {	total: money.round(total/100), tip: tip,
 						protectCT: device.putSecretsInCookies()};
-		var cmd = "pay_saved";
+		var cmd;
 		if(focus == -1) {
 			cmd = "pay_new";
 			payInfo.pan =	newCC.pan;
@@ -162,10 +165,12 @@ var server = server || {};
 			payInfo.cvv =	newCC.cvv;
 			payInfo.zip =	newCC.zip;
 			payInfo.save =	newCC.save;
+			payInfo.cookieID = saved.newCCCookieID();
 			if(newCC.reqPass)
 				payInfo.password = newCC.password;
 		} else {
-			payInfo.cardCT = models.cards()[focus].ciphertext;
+			cmd = "pay_saved/"+saved.getCCCookieID(focus);
+			payInfo.cardCT = card.ciphertext;
 			if(password != null)
 				payInfo.password = password;
 		}
@@ -174,6 +179,7 @@ var server = server || {};
 		send(cmd, payInfo, function(data) {
 			data = data.trim();
 			if(/^\w+$/i.test(data)) {
+				//Error Messages
 				models.activeView(consts.views.CARDS);
 				models.loading(undefined);
 				if(data.startsWith("PASSWORD_")) {
@@ -182,42 +188,42 @@ var server = server || {};
 					$pass.change();//Trigger listeners
 					var focusTime = new Date().getTime()+consts.FOCUS_DELAY;
 					if(data == "PASSWORD_NO_REQ")
-						alert("The card you picked doesn't need a password");
+						alert(text.NO_PADDWORD_REQ_ALERT);
 					else if(data == "PASSWORD_REQ")
-						alert("The card you selected requires a password");
+						alert(text.PASSWORD_REQ_ALERT);
 					else
-						alert("The password you entered is incorrect");
+						alert(text.INCORRECT_PASSWORD_ALERT);
 					setTimeout(function() {
 						$pass.focus();
 					}, Math.max(0, focusTime - new Date().getTime()));
 				} else if(data.startsWith("KEY_")) {
 					saved.deleteCCs();
-					//This one is too complicated to explain...
-					alert("Please re-enter credit card information");
+					alert(text.LOST_ENCRYPT_KEY_ALERT);
 				} else {
 					saved.deleteCC(models.cardFocus());
 					if(data == "NO_CIPHERTEXT")
-						alert(	"Saved credit card information partially "+
-								"missing.  Please use a different card or "+
-								"re-enter information.");
+						alert(text.NO_CIPHERTEXT_ALERT);
 					else
-						alert(	"Saved credit card information corrupted.  "+
-								"Please use a different card or re-enter "+
-								"information.");
+						alert(text.CIPHERTEXT_CORRUPED_ALERT);
 				}
 			} else {
+				//Successful payment
 				data = JSON.parse(data);
-				if((focus == -1) && (newCC.save))
-					saved.saveCC(newCC, data.cardCT);
+				if(focus == -1) {
+					if(newCC.save)
+						saved.saveCC(newCC, data.cardCT, payInfo.cookieID);
+				} else
+					saved.logCCUse(focus);
 				if(data.async)
-					models.loading({message: "Processing Payment"});
+					models.loading({message: text.PROCESSING_PAY_LOAD_MSG});
 				else {
+					models.done(data.done);
 					models.validViews([consts.views.FEEDBACK]);
 					models.loading(undefined);
 				}
 			}
 		}, function(code, _, msg) {
-			models.error({	heading: "Couldn't pay",
+			models.error({	heading: text.CANNOT_PAY_HDG,
 							symbol: String.fromCharCode(215),
 							message: (code == 404 ? "" : code + " ") + msg});
 			models.loading(undefined);
@@ -225,7 +231,7 @@ var server = server || {};
 	}
 
 	server.sendEmail = function(addr) {
-		send("email", {addr: addr});
+		send("email", {email: addr});
 		models.email(addr);
 	}
 

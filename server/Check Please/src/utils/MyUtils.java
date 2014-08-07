@@ -1,23 +1,19 @@
 package utils;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Random;
 import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
-
-import modeltypes.AbstractModelType;
-import modeltypes.Globals;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.utils.SystemProperty;
 
 public class MyUtils
@@ -39,14 +35,6 @@ public class MyUtils
 			return false;
 		else
 			throw new HttpErrMsg(500, "Cannot determine if server is in development or production mode");
-	}
-
-	private static Random rand = null;
-	public static Random getRandom()
-	{
-		if(rand == null)
-			rand = new Random();
-		return rand;
 	}
 
 	private static byte [] saltAndHash(String str, byte [] salt) throws HttpErrMsg
@@ -94,45 +82,13 @@ public class MyUtils
 		return Arrays.equals(proPass, saltAndHash(password, salt));
 	}
 
-	public static AbstractModelType wrapEntity(Entity e)
+	public static String getShortUUID()
 	{
-		if(e.getKind().equals(modeltypes.ConnectionToTablePointer.getKind()))
-			return new modeltypes.ConnectionToTablePointer(e);
-		else if(e.getKind().equals(modeltypes.Globals.getKind()))
-			return new modeltypes.Globals(e);
-		else if(e.getKind().equals(modeltypes.TableKey.getKind()))
-			return new modeltypes.TableKey(e);
-		else if(e.getKind().equals(modeltypes.UserConnection.getKind()))
-			return new modeltypes.UserConnection(e);
-		else if(e.getKind().equals(modeltypes.Restaurant.getKind()))
-			return new modeltypes.Restaurant(e);
-		else
-			throw new IllegalArgumentException("Unknown entity kind");
-	}
-	
-	public static Key newKey(Key parent, String kind)
-	{
-		return KeyFactory.createKey(parent, kind, UUID.randomUUID().toString());
-	}
-
-	public static String ensureNDigits(int x, int n)
-	{
-		String y = ""+x;
-		if(y.length() > n)
-			y = y.substring(y.length()-n);
-		while(y.length() < n)
-			y = "0"+y;
-		return y;
-	}
-	
-	public static long toCentHundredths(double money)
-	{
-		return Math.round(Math.ceil(money*10000-0.001));
-	}
-
-	public static long toCents(double money)
-	{
-		return Math.round(Math.ceil(money*100-0.001));
+		UUID uuid = UUID.randomUUID();
+		ByteBuffer bb = ByteBuffer.allocate(16);
+		bb.putLong(uuid.getMostSignificantBits());
+		bb.putLong(uuid.getLeastSignificantBits());
+		return DatatypeConverter.printBase64Binary(bb.array());
 	}
 
 	public static final long week = 604800000;//One week in miliseconds
@@ -161,16 +117,6 @@ public class MyUtils
 		throw new RuntimeException("PANIC!!!"+
 			(msg == null ? "" : "\nMessage: " + msg + (e==null?"":"\n"))+
 			(e == null ? "" : "\nTriggering Exception: " + e));
-	}
-	public static Globals getGlobals(DatastoreService ds)
-	{
-		Key k = KeyFactory.createKey(Globals.getKind(), Globals.defaultID);
-		try {
-			return new Globals(k, ds);
-		} catch (EntityNotFoundException e) {
-			Globals g = new Globals(k, 0L);
-			return g;
-		}
 	}
 
 	public static String removeParam(String query, String param)
