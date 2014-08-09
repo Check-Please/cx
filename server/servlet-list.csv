@@ -1,4 +1,4 @@
-WELCOME: website.html
+WELCOME: splash.html
 
 
 com.getthecheck.server.GreetingServiceImpl, /chkex/greet, greetServlet

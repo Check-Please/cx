@@ -26,7 +26,7 @@
 
 	<!-- Default page to serve -->
 	<welcome-file-list>
-		<welcome-file>website.html</welcome-file>
+		<welcome-file>splash.html</welcome-file>
 	</welcome-file-list>
 
 	<servlet>
