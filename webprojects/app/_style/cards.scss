@@ -185,7 +185,7 @@
 		&.unknown:before {
 			background-image: url('../../img/redesign/cards/card-border.svg');
 			background-size: 100% 100%;
-			@include opacity( 225 / 255 );
+			opacity: (225 / 255);
 		}
 		&.unknown:after {
 			content: "";

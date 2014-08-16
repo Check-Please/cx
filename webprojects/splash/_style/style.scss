@@ -1,163 +1,334 @@
 @import "../../_ignore/main.scss";
 
-html {
-	background: #e9eaed;
+$sqrt2: 1.41421356237;
+$line-height: 1.2em;
+
+$width: 700px;
+$min-width: $width+50px;
+$trans-time: 0.5s;
+
+$dark-grey: #444444;
+$light-grey: #CCCCCC;
+$white: #FFFFFF;
+$black: #1E1E1E;
+$color: #0DAEA3;
+
+$menu-fs: 24px;
+$menu-height: round($menu-fs*2.5);
+$menu-margin: floor($menu-fs / 3);
+$menu-top-color: rgba(255, 255, 255, 0.95);
+$menu-bottom-color: rgba(240, 240, 240, 0.95);
+$menu-button-padding: 0px 0.6em;
+$menu-button-radius: 0.4em;
+
+$logo-ratio: (171.15 / 123.59);//From image
+$logo-height: $menu-height - 2*$menu-margin;
+$logo-width: round($logo-height / $logo-ratio);
+$logo-space: 10px;
+
+$splash-height: 500px;
+$splash-margin: 60px;
+$phone-ratio: (500/240);//From image
+$phone-width: round($splash-height / $phone-ratio);
+$splash-fs: 3.5em;
+$splash-space: 50px;
+$splash-lines: 5;
+
+$blurb-fs: 2em;
+$blurb-margin: 1em;
+
+$how-margin: 2em;
+$how-text-color: $dark-grey;
+$how-fs: 1.5em;
+$how-space: 35px;
+$how-img-opacity: (1 - (lightness($how-text-color) / 100%))*opacity($how-text-color);
+$how-img-sz: 100px;
+$how-img-border: 7px;
+$how-img-padding: 10px;
+$how-img-radius: 10px;
+$check-ratio: 2.5;
+$check-short: floor($how-img-sz * $sqrt2 / ($check-ratio + 1));
+$check-long: floor($check-ratio*$check-short);
+$check-width: round(0.1 * $how-img-sz);
+$check-top-offset: round(-0.1 * $how-img-sz);
+$check-left-offset: round(0.6 * $how-img-sz);
+
+$footer-margin: 2em;
+
+$popup-height: 185px;
+$popup-width: 550px;
+$popup-radius: 10px;
+$popup-x-fs: 6em;
+$popup-thank-fs: 3em;
+
+a, input[type="button"] {
+	cursor: pointer;
 }
 
 body {
-	color: #333;
-	background: #FFF;
-	box-shadow: 0px 0px 0px 1px #777;
-	@include helvetica();
+	background: $dark-grey;
+	min-width: $min-width;
+	margin: 0px;
+	font-family: Lato;
 	font-weight: 300;
-	display: block;
-	max-width: 800px;
-	margin: auto;
-}
-
-#logo {
-	$h: 0.3em;
-	display: block;
-	padding: 25px;
-	height: $h;
-	position: relative;
-	img {
-		position: absolute;
-		height: $h;
-	}
-	& > span {
-		position: absolute;
-		right: 0px;
-		padding-right: 25px;
-		top: 25px;
-		display: block;
-		font-family: Damion;
-		$fzFactor: 0.15;
-		font-size: #{$fzFactor * 1em};
-		height: #{$h / $fzFactor};
-		line-height: #{$h / $fzFactor};
-		color: #393939;
+	& > * > .wrapper {
+		width: $width;
+		margin: auto;
+		position: relative;
 	}
 }
 
-h2 {
-	margin-top: 0px;
-}
-
-#nav {
-	position: relative;
-	margin-bottom: 25px;
-	height: 32px;
-	padding: 1px 0px;
-	background: rgba(67, 209, 164, 0.98);
-	color: #FFFFFF;
-	text-shadow: 1px 1px rgba(0,0,0,0.1);
-	box-shadow: inset 0px 1px rgba(0,0,0,0.25), inset 0px 2px rgba(255,255,255,0.1), inset 0px -1px rgba(0,0,0,0.25);
-	
-}
-
-#nav a {
-	color: inherit;
-	display: inline-block;
-	width: 25%;
-	text-align: center;
-	line-height: 2em;
-	text-decoration: none;
-	box-shadow: 1px 0px rgba(0,0,0,0.2);
-}
-#nav a:last-child {
-	position: absolute;
-	right: 0px;
-	bottom: 0px;
-	box-shadow: none;
-}
-
-.scroll #nav {
+#menu {
+	z-index: 10;
 	position: fixed;
 	top: 0px;
+	left: 0px;
 	width: 100%;
-	max-width: 800px;
-	z-index: 1;
-	padding-top: 0px;
-	box-shadow: 0px 1px rgba(0, 0, 0, 0.1), inset 0px -1px rgba(0,0,0,0.25);
-}
-
-.scroll #content {
-	margin-top: 59px;
-}
-
-#content {
-	position: relative;
-	padding-bottom: 50px;
-}
-
-#content > div {
-	border-bottom: 1px solid #AAA;
-	padding: 0px 25px;
-	position: relative;
-}
-#content > div:last-child {
-	border-bottom: none;
-}
-
-#content .anchor {
-	display: inline-block;
+	@include background-gradient(0deg, rgba(250, 250, 250, 0.98), rgba(255,255,255,0.98));
+	overflow: visible;
 	height: 0px;
-	width: 0px;
+	color: $white;
+	@include box-shadow(0px 0px rgba(0,0,0,0.1));
+	@include transition($trans-time, (height, color, box-shadow), ("", "", "wm"));
+	font-size: $menu-fs;
+	img, span, a {
+		top: 0px;
+		display: inline-block;
+		position: absolute;
+	}
+	img {
+		height: $logo-height;
+		margin: $menu-margin 0px;
+		left: 0px;
+		&.color {
+			@include transition($trans-time, opacity);
+			opacity: 0;
+		}
+	}
+	span {
+		font-family: Damion;
+		height: $menu-height;
+		line-height: $menu-height;
+		left: $logo-width + $logo-space;
+	}
+	a {
+		margin: $menu-margin 0px;
+		height: $menu-height - 2*$menu-margin;
+		line-height: $menu-height - 2*$menu-margin;
+		right: 0px;
+		padding: $menu-button-padding;
+		background: rgba(255,255,255,0.1);
+		@include transition($trans-time, (background, box-shadow), ("", "wm"));
+		border-radius: $menu-button-radius;
+		@include box-shadow(inset 0px -1px 2px -1px #000000);
+	}
+	&.scroll {
+		height: $menu-height;//??
+		color: $black;
+		@include box-shadow(0px 1px rgba(0,0,0,0.1));
+		img.color { opacity: 1 }
+		a {
+			background: $white;
+			@include box-shadow(inset 0px -1px 2px -1px rgba(0,0,0,0.5));
+		}
+	}
+}
+
+@include keyframes(bottomPhone) {
+	50% { opacity: 1; }
+	51% { opacity: 0; }
+	89% { opacity: 0; }
+	90% { opacity: 1; }
+}
+
+@include keyframes(topPhone) {
+	0% { opacity: 0; }
+	40% { opacity: 0; }
+	50% { opacity: 1; }
+	90% { opacity: 1; }
+}
+
+#splash {
+	padding: ($splash-margin + $menu-height) 0px ($splash-margin + floor($menu-height / 3)) 0px;
+	@include background-gradient(0deg, #050505, $black);
+	color: $white;
+	font-size: $splash-fs;
+	.wrapper {
+		height: $splash-height;
+	}
+	img {
+		height: 100%;
+
+		$anim-period: $trans-time*10;
+		&.pay {
+			@include prefixed(animation, bottomPhone $anim-period infinite);
+		}
+		&.receipt {
+			opacity: 0;
+			@include prefixed(animation, topPhone $anim-period infinite);
+			position: absolute;
+			left: 0px;
+			top: 0px;
+		}
+	}
+	span {
+		position: absolute;
+		right: 0px;
+		left: $phone-width + $splash-space;
+		top: 0px;
+		bottom: 0px;
+		margin: auto;
+		height: $line-height * $splash-lines;
+	}
+}
+
+#blurb {
+	background: $color;
+	color: $white;
+	font-size: $blurb-fs;
+	padding: $blurb-margin 0px;
+	text-align: center;
+}
+
+#how {
+	background: $white;
+	color: $how-text-color;
+	font-size: $how-fs;
+	padding: $how-margin 0px;
+	.bluetooth, .order, .done {
+		width: round(($width - 2*$how-space)/3);
+		text-align: center;
+		margin: auto;
+		position: absolute;
+		top: 0px;
+		img, .checkmark {
+			padding: $how-img-padding;
+			@include border-radius($how-img-radius);
+			height: $how-img-sz;
+			width: $how-img-sz;
+			border: $how-img-border solid #000000;
+			display: block;
+			margin: auto;
+		}
+		img {
+			opacity: $how-img-opacity;
+		}
+		.checkmark {
+			border-color: rgba(0, 0, 0, $how-img-opacity);
+			position: relative;
+			&:before, &:after {
+				content: " ";
+				height: $check-long;
+				width: $check-short;
+				border-bottom: $check-width solid $color;
+				border-right: $check-width solid $color;
+				@include transform(rotate(45deg));
+				position: absolute;
+				top: $check-top-offset;
+				left: $check-left-offset;
+				z-index: 1;
+				display: inline-block;
+			}
+			&:after {
+				border-color: $white;
+				border-right-width: 3*$check-width;
+				left: $check-left-offset - $check-width;
+				top: $check-top-offset - $check-width;
+				height: $check-long + 2*$check-width;
+				z-index: 0;
+			}
+		}
+	}
+	.bluetooth {
+		position: relative;
+		margin: 0px;
+	}
+	.order {
+		left: 0px;
+		right: 0px;
+	}
+	.done {
+		right: 0px;
+	}
+}
+
+#footer {
+	background: $dark-grey;
+	color: $light-grey;
+	text-shadow: #000000;
+	padding: $footer-margin 0px;
+	a {
+		float: right;
+		color: inherit;
+	}
+}
+
+#sign-up {
+	position: fixed;
+	z-index: 20;
+	height: 0%;
+	width: 100%;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	margin: auto;
 	overflow: hidden;
-	position: absolute;
-	top: -54px;
-}
+	@include transition(0.5s, height);
+	&.popup { height: 100%; }
+	background: rgba(100, 100, 100, 0.6);
+	background-image: url("../img/splash/texture.png");
 
-.member {
-	width: 45%;
-	display: inline-block;
-	margin-bottom: 16px;
-}
-
-.member img {
-	margin-right: 1em;
-	max-width: 100%;
-}
-
-.member p {
-	margin: 0.5em 0px;
-	&.name {
-		margin-top: 1em;
+	a {
+		color: #FFFFFF;
+		font-size: $popup-x-fs;
+		margin-left: 0.4em;//Because the "x" is short
 	}
-	&.school {
-		font-style: italic;
+
+	.wrapper {
+		position: absolute;
+		top: 0px;
+		bottom: 0px;
+		left: 0px;
+		right: 0px;
+		height: $popup-height;
+		width: $popup-width;
+		margin: auto;
+		overflow: hidden;
+		@include border-radius($popup-radius);
+		background: $white;
+		@include box-shadow(0px 0px 10px 1px $color);
+		& > * {
+			position: absolute;
+			height: 100%;
+			width: 80%;
+			margin: 0px 10%;
+			top: 0px;
+			@include transition(0.5s, left);
+		}
+		form {
+			input { font-size: 1em; }
+			input[type="button"] { float: right; }
+			left: 0%;
+		}
+		.thank {
+			text-align: center;
+			line-height: $popup-height;
+			font-size: $popup-thank-fs;
+			left: 100%;
+
+		}
 	}
-}
-
-.nickname {
-	display: none;
-}
-
-.cofounder {
-	position: absolute;
-	right: 0px;
-}
-
-@media (min-width: 850px) {
-	.member img {
-		float: left;
-		width: 85px;
+	&.submit {
+		form { left: -100%; }
+		.thank { left: 0%; }
 	}
-	.member p.name {
-		margin-top: 0px;
-	}
-}
-
-@media (max-width: 550px) {
-	#nav a span { display: none; }
-}
-
-@media (min-width: 425px) {
-	.member img {
-		border-radius: 1em;
-	}
-	.nickname {
-		display: inline;
+	&.reset-popup .wrapper > * {
+		@include transition(0s, all);
 	}
 }
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+	#sign-up {
+		background-size: 1px 1px;
+	}
+} 

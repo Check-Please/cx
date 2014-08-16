@@ -268,7 +268,7 @@
 			background: url('../img/app/card-border.svg');
 			background-size: 100% 100%;
 			background-repeat: no-repeat;
-			@include opacity( 225 / 255 );
+			opacity: (225/255);
 		}
 		&:after {
 			top: 1em;

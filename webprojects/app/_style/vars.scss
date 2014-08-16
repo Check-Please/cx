@@ -86,9 +86,9 @@ $trans-time: 0.5s;
 
 @mixin transitionAll()
 {
-	-webkit-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time, height $trans-time, width $trans-time, background-color $trans-time, color $trans-time, -webkit-opacity $trans-time, -webkit-transform $trans-time, -webkit-filter $trans-time;
-	-moz-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time, height $trans-time, width $trans-time, background-color $trans-time, color $trans-time, -moz-opacity $trans-time, -moz-transform $trans-time;
-	-o-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time, height $trans-time, width $trans-time, background-color $trans-time, color $trans-time, -o-opacity $trans-time, -o-transform $trans-time;
+	-webkit-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time, height $trans-time, width $trans-time, background-color $trans-time, color $trans-time, opacity $trans-time, -webkit-transform $trans-time, -webkit-filter $trans-time;
+	-moz-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time, height $trans-time, width $trans-time, background-color $trans-time, color $trans-time, opacity $trans-time, -moz-transform $trans-time;
+	-o-transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time, height $trans-time, width $trans-time, background-color $trans-time, color $trans-time, opacity $trans-time, -o-transform $trans-time;
 	transition: top $trans-time, bottom $trans-time, left $trans-time, right $trans-time, height $trans-time, width $trans-time, background-color $trans-time, color $trans-time, opacity $trans-time, transform $trans-time;
 	.noTrans & {
 		-webkit-transition: none;
@@ -106,7 +106,7 @@ $trans-time: 0.5s;
 	right: 0px;
 	left: 0px;
 	height: 1px;
-	@include opacity($border-opacity);
+	opacity: $border-opacity;
 	background: #000000;
 	@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
 		& {

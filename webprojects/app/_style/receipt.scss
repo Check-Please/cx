@@ -168,7 +168,7 @@
 		&.unchecked .checkbox:before {
 			background: url("../img/app/unchecked_box.svg");
 			background-size: 100%;
-			@include opacity($unchecked-opacity);
+			opacity: $unchecked-opacity;
 		}
 
 		&.unchecked, &.taken, &.paid {

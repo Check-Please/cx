@@ -230,7 +230,7 @@
 			border-radius: 1.5em;
 			position: absolute;
 			color: $thumb-color;
-			&.blur { @include opacity(0.3); }
+			&.blur { opacity: 0.3; }
 			&:before {
 				content: "";
 				display: block;

@@ -29,3 +29,6 @@ CX
 .RateServlet, /cx/rate/
 .SplitServlet, /cx/split/
 .UncheckServlet, /cx/uncheck/
+
+Splash
+.EmailListServlet, /splash/new_email

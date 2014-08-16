@@ -321,4 +321,18 @@
 		<servlet-name>uncheckServlet</servlet-name>
 		<url-pattern>/cx/uncheck/</url-pattern>
 	</servlet-mapping>
+
+	<!-- Splash -->
+	<servlet>
+		<servlet-name>emailListServlet</servlet-name>
+		<servlet-class>servlets.splash.EmailListServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>emailListServlet</servlet-name>
+		<url-pattern>/splash/new_email</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>emailListServlet</servlet-name>
+		<url-pattern>/splash/new_email/</url-pattern>
+	</servlet-mapping>
 </web-app>

@@ -10,39 +10,64 @@
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		<meta name="HandheldFriendly" content="true" />
 		<meta name="MobileOptimized" content="width" />
+		<script type="text/JavaScript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
 		<script type="text/JavaScript" src="js/splash.js"></script>
-		<link href='https://fonts.googleapis.com/css?family=Damion' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Damion|Lato:300' rel='stylesheet' type='text/css'>
 		<link type="text/css" rel="Stylesheet" href="css/splash.css" media="all" />
 	</head>
 	<body>
-		<div id="logo"><img src="img/splash/icon.svg" /><span>Check Please!</span></div>
-		<div id="nav">
-			<a href="#logo">Home</a
-			><a href="#how">How<span> it works</span></a
-			><a href="#demo">Demo</a
-			><a href="#contact">Email<span> Us</span></a>
+		<div id="menu">
+			<div class="wrapper">
+				<img class="white" src="img/splash/icon_white.svg" />
+				<img class="color" src="img/splash/icon.svg" />
+				<span>Check Please!</span>
+				<a>Join our email list</a>
+			</div>
 		</div>
-		<div id="content">
-			<div>
-				<h2>Check Please lets you pay your bill without having to get the check from the waitstaff</h2>
-				<p>Simply open up the app and pay.  Check Please can automatically figure out where you're sitting and look up your order, so there's no need to inform the waitstaff ahead of time or set up any sort of account.  Everything is handled for you.</p>
+		<div id="splash">
+			<div class="wrapper">
+				<img class="pay" src="img/splash/iPhone_Pay.svg" />
+				<img class="receipt" src="img/splash/iPhone_Receipt.svg" />
+				<span>Check Please lets you pay your bill instantly on your smartphone</span>
 			</div>
-			<div>
-				<span class="anchor" id="how"></span>
-				<h1>How it works</h1>
-				<p>Check Please uses Bluetooth technology to automatically identify where you're sitting, and integrates with the restaurant's Point of Sale software to look up your order and let you pay.  Credit card information is encrypted and stored on your phone, so there's no need to register any sort of account.</p>
+		</div>
+		<div id="blurb">
+			<p class="wrapper">Just open up the app any time after you've ordered and pay.  No need set anything up ahead of time, or even tell the waitstaff</p>
+		</div>
+		<div id="how">
+			<div class="wrapper">
+				<div class="bluetooth">
+					<img src="img/splash/bluetooth.svg" />
+					<p>The app automatically finds where you're sitting using Bluetooth</p>
+				</div>
+				<div class="order">
+					<img src="img/splash/order.svg" />
+					<p>The app looks up your order in the restaurant's Point of Sale software</p>
+				</div>
+				<div class="done">
+					<div class="checkmark"></div>
+					<p>When you pay, the app automatically closes your tab and tells the waitstaff</p>
+				</div>
 			</div>
-			<div>
-				<span class="anchor" id="demo"></span>
-				<h1>Online Demo</h1>
-				<p>You can see a demo of how the app works <a href="app.html?IKA">here</a>.</p>
-				<p>Please keep in mind that the app was designed for a smartphone, so you will probably get a better idea of what the app is like if you view it on a smartphone, or at least resize your browser window to be narrow and tall.
-				You need to enter a plausible credit card number for the app to work, but since this is a demo nothing will be charged.  If you do not want to use your real card number we recommend the fake number "4444333322221111".</p>
+		</div>
+		<div id="footer">
+			<div class="wrapper">
+				<span class="copywrite">&copy; 2014</span>
+				<a href="mailto:sjelin@getthecheck.com">Contact</a>
 			</div>
-			<div>
-				<span class="anchor" id="contact"></span>
-				<h1>Contact</h1>
-				<p>If you have any questions, email <a href="mailto:sjelin@getthecheck.com">sjelin@getthecheck.com</a>.</p>
+		</div>
+		<div id="sign-up">
+			<a>&times;</a>
+			<div class="wrapper">
+				<form>
+					<h1>Know when Check Please is available in your area</h1>
+					<input type="email" placeholder="(email)"></input>
+					<input type="text" placeholder="(zip)"></input>
+					<input type="button" value="Sign Up"></input>
+				</form>
+				<p class="thank">
+					Thank you!
+				</p>
 			</div>
 		</div>
 	</body>
