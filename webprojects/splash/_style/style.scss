@@ -4,8 +4,9 @@ $sqrt2: 1.41421356237;
 $line-height: 1.2em;
 
 $width: 700px;
-$min-width: $width+50px;
+$h-padding: 20px;
 $trans-time: 0.5s;
+$min-width: $width + 2*$h-padding;
 
 $dark-grey: #444444;
 $light-grey: #CCCCCC;
@@ -14,8 +15,9 @@ $black: #1E1E1E;
 $color: #0DAEA3;
 
 $menu-fs: 24px;
-$menu-height: round($menu-fs*2.5);
-$menu-margin: floor($menu-fs / 3);
+$menu-height: 2.5em;
+$menu-height-px: $menu-fs * ($menu-height / 1em);
+$menu-margin: (1em / 3);
 $menu-top-color: rgba(255, 255, 255, 0.95);
 $menu-bottom-color: rgba(240, 240, 240, 0.95);
 $menu-button-padding: 0px 0.6em;
@@ -24,15 +26,17 @@ $menu-button-radius: 0.4em;
 $logo-ratio: (171.15 / 123.59);//From image
 $logo-height: $menu-height - 2*$menu-margin;
 $logo-width: round($logo-height / $logo-ratio);
-$logo-space: 10px;
+$logo-space: 0.4;
 
-$splash-height: 500px;
 $splash-margin: 60px;
+$phone-height: 500px;
 $phone-ratio: (500/240);//From image
-$phone-width: round($splash-height / $phone-ratio);
+$phone-width: round($phone-height / $phone-ratio);
+$ss-width: 200px;
 $splash-fs: 3.5em;
-$splash-space: 50px;
-$splash-lines: 5;
+$splash-space: $h-padding;
+$splash-lines: 4;
+$splash-v-space: 50px;
 
 $blurb-fs: 2em;
 $blurb-margin: 1em;
@@ -41,6 +45,7 @@ $how-margin: 2em;
 $how-text-color: $dark-grey;
 $how-fs: 1.5em;
 $how-space: 35px;
+$how-info-width: round(($width - 2*$how-space)/3);
 $how-img-opacity: (1 - (lightness($how-text-color) / 100%))*opacity($how-text-color);
 $how-img-sz: 100px;
 $how-img-border: 7px;
@@ -67,14 +72,16 @@ a, input[type="button"] {
 
 body {
 	background: $dark-grey;
-	min-width: $min-width;
 	margin: 0px;
 	font-family: Lato;
 	font-weight: 300;
-	& > * > .wrapper {
-		width: $width;
-		margin: auto;
-		position: relative;
+	& > * {
+		padding: 0px $h-padding;
+			.wrapper {
+			max-width: $width;
+			margin: auto;
+			position: relative;
+		}
 	}
 }
 
@@ -83,7 +90,7 @@ body {
 	position: fixed;
 	top: 0px;
 	left: 0px;
-	width: 100%;
+	right: 0px;
 	@include background-gradient(0deg, rgba(250, 250, 250, 0.98), rgba(255,255,255,0.98));
 	overflow: visible;
 	height: 0px;
@@ -91,6 +98,10 @@ body {
 	@include box-shadow(0px 0px rgba(0,0,0,0.1));
 	@include transition($trans-time, (height, color, box-shadow), ("", "", "wm"));
 	font-size: $menu-fs;
+	.wrapper {
+		width: auto;
+		max-width: $width;
+	}
 	img, span, a {
 		top: 0px;
 		display: inline-block;
@@ -134,44 +145,43 @@ body {
 	}
 }
 
-@include keyframes(bottomPhone) {
-	50% { opacity: 1; }
-	51% { opacity: 0; }
-	89% { opacity: 0; }
-	90% { opacity: 1; }
-}
-
-@include keyframes(topPhone) {
+@include keyframes(fadingImg) {
 	0% { opacity: 0; }
-	40% { opacity: 0; }
+	45% { opacity: 0; }
 	50% { opacity: 1; }
-	90% { opacity: 1; }
+	95% { opacity: 1; }
 }
 
 #splash {
-	padding: ($splash-margin + $menu-height) 0px ($splash-margin + floor($menu-height / 3)) 0px;
+	padding-top: $splash-margin + $menu-height-px;
+	padding-bottom: $splash-margin + floor($menu-height-px / 3);
 	@include background-gradient(0deg, #050505, $black);
 	color: $white;
 	font-size: $splash-fs;
-	.wrapper {
-		height: $splash-height;
-	}
-	img {
-		height: 100%;
-
-		$anim-period: $trans-time*10;
-		&.pay {
-			@include prefixed(animation, bottomPhone $anim-period infinite);
+	.ss {
+		width: $phone-width;
+		display: block;
+		max-width: 100%;
+		position: relative;
+		$anim-period: ($trans-time / 0.05);
+		img.phone {
+			width: 100%;
 		}
-		&.receipt {
-			opacity: 0;
-			@include prefixed(animation, topPhone $anim-period infinite);
+		img.pay, img.receipt {
+			top: 0%;
+			bottom: 0%;
+			left: 1.25%;
+			right: 0%;
+			margin: auto;
+			width: 100% * ($ss-width / $phone-width);
 			position: absolute;
-			left: 0px;
-			top: 0px;
+		}
+		img.receipt {
+			opacity: 0;
+			@include prefixed(animation, fadingImg ($trans-time / 0.05) infinite);
 		}
 	}
-	span {
+	p {
 		position: absolute;
 		right: 0px;
 		left: $phone-width + $splash-space;
@@ -179,6 +189,22 @@ body {
 		bottom: 0px;
 		margin: auto;
 		height: $line-height * $splash-lines;
+		.short { display: none; }
+		&.shorten {
+			.short { display: inline; }
+			.long { display: none; }
+		}
+	}
+	&.split {
+		p {
+			position: static;
+			width: 100%;
+			text-align: center;
+			margin-bottom: $splash-v-space;
+		}
+		.ss {
+			margin: auto;
+		}
 	}
 }
 
@@ -186,7 +212,8 @@ body {
 	background: $color;
 	color: $white;
 	font-size: $blurb-fs;
-	padding: $blurb-margin 0px;
+	padding-top: $blurb-margin;
+	padding-bottom: $blurb-margin;
 	text-align: center;
 }
 
@@ -194,13 +221,15 @@ body {
 	background: $white;
 	color: $how-text-color;
 	font-size: $how-fs;
-	padding: $how-margin 0px;
+	padding-top: $how-margin;
+	padding-bottom: $how-margin;
 	.bluetooth, .order, .done {
-		width: round(($width - 2*$how-space)/3);
+		width: $how-info-width;
 		text-align: center;
 		margin: auto;
 		position: absolute;
 		top: 0px;
+		display: block;
 		img, .checkmark {
 			padding: $how-img-padding;
 			@include border-radius($how-img-radius);
@@ -238,6 +267,7 @@ body {
 				z-index: 0;
 			}
 		}
+		p { margin-bottom: 0px; }
 	}
 	.bluetooth {
 		position: relative;
@@ -250,13 +280,38 @@ body {
 	.done {
 		right: 0px;
 	}
+	
+}
+
+@media (max-width: $min-width - 1px) {
+	#how {
+		.bluetooth {
+			margin: 0px 50% 0px auto;
+			padding: 0px round($how-space / 2) $how-space 0px;
+		}
+		.order {
+			margin-left: 50%;
+			padding-left: round($how-space / 2);
+		}
+		.done {
+			position: relative;
+		}
+	}
+}
+
+@media (max-width: $min-width - $how-info-width - $how-space - 1px) {
+	#how { .bluetooth, .order {
+		position: relative;
+		margin: auto;
+		padding: 0px 0px $how-space 0px;
+	} }
 }
 
 #footer {
 	background: $dark-grey;
 	color: $light-grey;
 	text-shadow: #000000;
-	padding: $footer-margin 0px;
+	padding: $footer-margin;
 	a {
 		float: right;
 		color: inherit;
@@ -277,6 +332,7 @@ body {
 	&.popup { height: 100%; }
 	background: rgba(100, 100, 100, 0.6);
 	background-image: url("../img/splash/texture.png");
+	padding: 0px;
 
 	a {
 		color: #FFFFFF;
@@ -307,6 +363,8 @@ body {
 		}
 		form {
 			input { font-size: 1em; }
+			input[type="email"] { width: 12em; margin-right: 0.5em; }
+			input[type="text"] { width: 4em; }
 			input[type="button"] { float: right; }
 			left: 0%;
 		}
@@ -326,9 +384,3 @@ body {
 		@include transition(0s, all);
 	}
 }
-
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
-	#sign-up {
-		background-size: 1px 1px;
-	}
-} 

@@ -51,6 +51,9 @@ window.onload = function() {
 									type: "POST"});
 		draw(state.submit = true);
 	});
+
+	window.onresize();
+	draw();
 }
 window.onkeypress = function(ev) {
 	if(state.popup)
@@ -69,7 +72,78 @@ window.onkeypress = function(ev) {
 ///  MENU BAR CODE  ///
 ///////////////////////
 
-window.onscroll = window.ontouchmove = window.onresize = function() {
+window.onscroll = window.ontouchmove = function() {
 	$("#menu").toggleClass("scroll", window.scrollY > 0);
 };
 
+
+/////////////////
+///  RESPOND  ///
+/////////////////
+
+var CSS_VARS = {
+	marginTotal: 40,
+	headerFS: 24,
+	headerMinW: 500,
+	splashFS: 1,
+	splashLineHeight: 70,
+	splashNumLines: 4,
+	splashMinW: 450
+}
+
+var $win = $(window);
+function fixFS($elem, minW, baseFS, unit) {
+	if($win.width() < minW)
+		$elem.css("font-size",	($win.width() - CSS_VARS.marginTotal) /
+								(minW - CSS_VARS.marginTotal)*baseFS + unit);
+	else
+		$elem.css("font-size", "");
+}
+
+var splashShortenWLowerB = 0;
+var splashSplitW = null;
+window.onresize = function() {
+	//Menu
+	fixFS($("#menu"), CSS_VARS.headerMinW, CSS_VARS.headerFS, "px");
+
+	//Splash
+	var shorten = $win.width() <= splashShortenWLowerB;
+	var $p = $("#splash p");
+	$p.height("");
+	$p.width("");
+	$p.css("font-size", "");
+	$("#splash").removeClass("split");
+	$p.toggleClass("shorten", shorten);
+	if(!shorten && ($p[0].scrollHeight > CSS_VARS.splashLineHeight *
+									(0.2+CSS_VARS.splashNumLines))) {
+		shorten = true;
+		$p.addClass("shorten");
+		splashShortenWLowerB = $win.width();
+	}
+	var split = false;
+	if(shorten) {
+		if(splashSplitW == null) {
+			var wNeeded = $p[0].scrollWidth - $p.width();
+			if(wNeeded > 0) {
+				splashSplitW = $win.width() + wNeeded;
+				$("#splash").addClass("split");
+			}
+		}
+		split = splashSplitW && ($win.width() <= splashSplitW);
+	}
+	$("#splash").toggleClass("split", !!split);
+	if(split)
+		$p.height("auto");
+	else {
+		$p.height($p.find(".wrapper").height());
+		$p.width($p.find(".wrapper").width());
+	}
+	fixFS($p, CSS_VARS.splashMinW, CSS_VARS.splashFS, "em");
+	
+
+	//How
+	//TODO
+
+	//Other events
+	window.onscroll();
+}

@@ -5,7 +5,7 @@
 	<head>
 		<title>Check Please</title>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+		<meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=no" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		<meta name="HandheldFriendly" content="true" />
@@ -26,9 +26,12 @@
 		</div>
 		<div id="splash">
 			<div class="wrapper">
-				<img class="pay" src="img/splash/iPhone_Pay.svg" />
-				<img class="receipt" src="img/splash/iPhone_Receipt.svg" />
-				<span>Check Please lets you pay your bill instantly on your smartphone</span>
+				<p><span class="wrapper"><span class="long">Check Please lets you p</span><span class="short">P</span>ay your bill instantly on your smartphone</span></p>
+				<div class="ss">
+					<img class="phone" src="img/splash/iPhone.svg" />
+					<img class="pay" src="img/splash/SS_Pay.png" />
+					<img class="receipt" src="img/splash/SS_Receipt.png" />
+				</div>
 			</div>
 		</div>
 		<div id="blurb">
@@ -62,7 +65,7 @@
 				<form>
 					<h1>Know when Check Please is available in your area</h1>
 					<input type="email" placeholder="(email)"></input>
-					<input type="text" placeholder="(zip)"></input>
+					<input type="text" placeholder="(zip)" maxlength=5></input>
 					<input type="button" value="Sign Up"></input>
 				</form>
 				<p class="thank">
