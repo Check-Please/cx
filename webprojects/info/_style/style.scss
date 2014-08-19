@@ -110,42 +110,50 @@ h2 {
 }
 
 .member {
-	width: 45%;
-	display: inline-block;
+	max-width: 290px;
 	margin-bottom: 16px;
+	padding-right: 25px;
 }
 
 .member img {
 	margin-right: 1em;
-	max-width: 100%;
+	width: 85px;
+	border-radius: 1em;
+	position: absolute;
 }
 
 .member p {
-	margin: 0.5em 0px;
+	margin: 0px 0px 0.5em 100px;
 	&.name {
 		margin-top: 1em;
+		.nickname { display: none; }
 	}
 	&.school {
 		font-style: italic;
+		.short { display: none; }
 	}
 }
 
-.nickname {
-	display: none;
-}
-
-.cofounder {
+$icon-size: 60px;
+.social {
+	height: 2*$icon-size;
+	width: 3*$icon-size;
+	font-size: 0px;
 	position: absolute;
-	right: 0px;
-}
-
-@media (min-width: 850px) {
-	.member img {
-		float: left;
-		width: 85px;
-	}
-	.member p.name {
-		margin-top: 0px;
+	right: 25px;
+	bottom: 0px;
+	a {
+		display: inline-block;
+		font-size: $icon-size;
+		margin: 0.2em 0.1em 0em 0.1em;
+		width: 0.8em;
+		height: 0.8em;
+		position: relative;
+		img {
+			width: 100%;
+			height: 100%;
+			position: absolute;
+		}
 	}
 }
 
@@ -153,11 +161,31 @@ h2 {
 	#nav a span { display: none; }
 }
 
-@media (min-width: 425px) {
-	.member img {
-		border-radius: 1em;
+$icon-size: $icon-size / 3 * 2;
+@media (max-width: 510px) {
+	.social {
+		height: 3*$icon-size;
+		width: 2*$icon-size;
+		a { font-size: $icon-size; }
 	}
-	.nickname {
-		display: inline;
+}
+
+$icon-size: $icon-size / 2;
+@media (max-width: 420px) {
+	.social {
+		height: 6*$icon-size;
+		width: $icon-size;
+		a { font-size: $icon-size; }
+	}
+}
+
+@media (max-width: 350px) {
+	.member p.degree .notes { display: none; }
+}
+
+@media (max-width: 340px) {
+	.member p {
+		&.school .short { display: inline; }
+		&.school .full { display: none; }
 	}
 }
